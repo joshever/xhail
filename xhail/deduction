@@ -1,0 +1,4 @@
+
+class deducer:
+    def __init__(self, B, E):
+        

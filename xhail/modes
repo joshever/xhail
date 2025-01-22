@@ -1,0 +1,14 @@
+from terms import Atom
+
+class Mode:
+    def __init__(self, n, atom: Atom):
+        self.n = n
+        self.atom = atom
+
+class ModeH(Mode):
+    def __init__(self):
+        super().__init__()
+
+class ModeB(Mode):
+    def __init__(self):
+        super().__init__()

@@ -1,3 +1,13 @@
 
 class Abductor:
-    def __init__(self, M, ):
+    def __init__(self, B, E, M, d):
+        self.B = B
+        self.E = E
+        self.M = M
+        self.d = d
+
+    # ---------- STAGE 1 : Compute Set of Ground Facts s.t. B U facts |= E ---------- #
+    
+        
+
+    # ---------- STAGE 2 : 

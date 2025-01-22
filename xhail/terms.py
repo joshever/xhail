@@ -35,3 +35,8 @@ class LogicProgram():
             if clause.isHorn() == False:
                 return False
         return True
+    
+class Term():
+    # to implement
+    # either normal : constant of function
+    # or place marker : +type, -type, #type

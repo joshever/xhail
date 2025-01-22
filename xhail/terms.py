@@ -1,6 +1,10 @@
+class Term:
+    pass
+
 class Atom:
-    def __init__(self, terms):
+    def __init__(self, predicate: str, terms: list[Term]):
         self.terms = terms
+        self.predicate = predicate
 
 class Literal:
     def __init__(self, atom: Atom, negation: bool):
@@ -35,8 +39,19 @@ class LogicProgram():
             if clause.isHorn() == False:
                 return False
         return True
-    
-class Term():
-    # to implement
-    # either normal : constant of function
-    # or place marker : +type, -type, #type
+
+class Normal(Term):
+    def __init__(self, value: str): #constant
+        self.value = value
+
+class Normal(Term):
+    def __init__(self, function: Atom):
+        self.function = function
+
+class PlaceMarker(Term):
+    def __init__(self, marker: str, type: str):
+        self.marker = marker
+        self.type = type
+
+
+        

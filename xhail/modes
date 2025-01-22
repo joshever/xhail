@@ -1,9 +1,9 @@
-from terms import Atom
+from terms import Atom, Term
 
 class Mode:
-    def __init__(self, n, atom: Atom):
+    def __init__(self, n, terms: list[Term]):
         self.n = n
-        self.atom = atom
+        self.terms = terms
 
 class ModeH(Mode):
     def __init__(self):

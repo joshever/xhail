@@ -1,4 +1,5 @@
-
+import xhail.terms
+import xhail.modes
 class Abductor:
     def __init__(self, B, E, M, d):
         self.B = B
@@ -7,7 +8,15 @@ class Abductor:
         self.d = d
 
     # ---------- STAGE 1 : Compute Set of Ground Facts s.t. B U facts |= E ---------- #
-    
-        
+    def stage1(self, M: set[ModeH], E: set[Literal]): #M len 2 - head and body
+        A1 = set()
+        for head in M:
+            A1.add(head.Atom)
+        return A1
 
     # ---------- STAGE 2 : 
+    def stage2(self, B: xhail.terms.LogicProgram):
+        A1 = set()
+        for head in M:
+            A1.add(head.Atom)
+        return A1

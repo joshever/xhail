@@ -1,7 +1,7 @@
-from terms import Atom, Term
+from terms import Atom
 
 class Mode:
-    def __init__(self, n, terms: list[Term]):
+    def __init__(self, n, terms: Atom):
         self.n = n
         self.terms = terms
 

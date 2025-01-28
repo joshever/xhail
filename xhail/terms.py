@@ -24,11 +24,11 @@ class Clause:
 
 class Fact(Clause):
     def __init__(self, head: Atom):
-        super().__init__(head, body=True)
+        self.head = head
 
 class Constraint(Clause):
     def __init__(self, body: list[Literal]):
-        super().__init__(body, head=False)
+        self.body = body
 
 class LogicProgram():
     def __init__(self, clauses: list[Clause]):

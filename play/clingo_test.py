@@ -15,7 +15,6 @@ not flies(d).
 
 flies(X) :- flies_prime(X), flies_star(X).
 flies_star(X) :- bird(X).
-flies_prime(X).
 """
 
 # Create a Clingo control object

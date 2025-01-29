@@ -1,22 +1,30 @@
 
-modeh = [{'pred': 'flies', 'n': '*', 'type': 'bird', 'sign': '+'}]
+from xhail.modes import Mode, Modeh
+from xhail.terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
 
-background = [['clause', {'head': {'pred': 'bird', 'term': 'X'}, 'tail': {'pred': 'penguin', 'term': 'X'}}], 
-            ['fact', {'pred': 'bird', 'term': 'a'}], 
-            ['fact', {'pred': 'bird', 'term': 'b'}], 
-            ['fact', {'pred': 'bird', 'term': 'c'}], 
-            ['fact', {'pred': 'penguin', 'term': 'd'}]]
 
-examples = [{'pred': 'flies', 'term': 'a'},
-            {'pred': 'flies', 'term': 'b'},
-            {'pred': 'flies', 'term': 'c'},
-            {'pred': 'flies', 'term': 'd', 'negation': True}]
+M_p = [Modeh(Atom('flies', PlaceMarker('+', 'bird')), '*')]
+
+B = [
+    Clause(Atom('bird', Normal('X')), Literal(Atom('penguin', Normal('X')), False)),
+    Fact(Atom('bird', Normal('a'))),
+    Fact(Atom('bird', Normal('b'))),
+    Fact(Atom('bird', Normal('c'))),
+    Fact(Atom('penguin', Normal('d'))),
+]
+
+E = [
+    Fact(Atom('bird', Normal('a'))),
+    Fact(Atom('bird', Normal('b'))),
+    Fact(Atom('bird', Normal('c'))),
+    Constraint(Atom('penguin', Normal('d')), False),
+]
 
 # stage 1
 A1 = set()
-for mh in modeh:
-    fresh_fact = {'pred': mh['pred']+"'", 'term': 'X'}
-    A1.add(str(fresh_fact['pred']) + "(" + str(fresh_fact['term']) + ").")
+for m in M_p:
+    fresh_fact = Fact(Atom(m.s.predicate+'_prime', Normal('X')))
+    A1.add(Fact.toString(fresh_fact))
 
 # stage 2
 T1 = set()

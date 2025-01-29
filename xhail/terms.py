@@ -5,11 +5,20 @@ class Atom:
     def __init__(self, predicate: str, terms: list[Term]):
         self.terms = terms
         self.predicate = predicate
+    
+    def toString(self):
+        return self.predicate + '(' + ','.join([term.toString() for term in self.terms]) + ')'
 
 class Literal:
     def __init__(self, atom: Atom, negation: bool):
         self.atom = atom
         self.negation = negation
+    
+    def toString(self):
+        if self.negation:
+            return 'not ' + self.atom.toString()
+        else:
+            return self.atom.toString()
 
 class Clause:
     def __init__(self, head: Atom, body: list[Literal]):
@@ -21,14 +30,23 @@ class Clause:
             if literal.negation == True:
                 return False
         return True
+    
+    def toString(self):
+        return self.head.toString + ' :- ' + ', '.join([literal.toString() for literal in self.body])
 
 class Fact(Clause):
     def __init__(self, head: Atom):
         self.head = head
+    
+    def toString(self):
+        return self.head.toString() + '.\n'
 
 class Constraint(Clause):
     def __init__(self, body: list[Literal]):
         self.body = body
+
+    def toString(self):
+        return ':- ' + ', '.join([literal.toString() for literal in self.body]) + '.\n'
 
 class LogicProgram():
     def __init__(self, clauses: list[Clause]):
@@ -39,19 +57,28 @@ class LogicProgram():
             if clause.isHorn() == False:
                 return False
         return True
+    
+    def toString(self):
+        result = ""
+        for clause in self.clauses:
+            result += clause.toString() + '.\n'
+        return result
 
 class Normal(Term):
     def __init__(self, value: str): #constant
         self.value = value
 
+    def toString(self):
+        return self.value
+
 class Normal(Term):
-    def __init__(self, function: Atom):
+    def __init__(self, function: Atom): #function
         self.function = function
+
+    def toString(self):
+        self.function.toString()
 
 class PlaceMarker(Term):
     def __init__(self, marker: str, type: str):
         self.marker = marker
         self.type = type
-
-
-        

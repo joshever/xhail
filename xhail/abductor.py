@@ -1,4 +1,5 @@
-from terms import Atom, Term, PlaceMarker, Normal
+from terms import Atom, PlaceMarker, Normal
+import clingo
 
 class Example:
     KEY_WORD = '#example'
@@ -17,8 +18,9 @@ class Example:
 
     def createProgram(self):
         program = []
-        negation_string = ' ' if self.negation else ' not '
-        program.append(f'#maximize[{negation_string}{self.atom} ={self.weight} @{self.priority} ].')
+        negation_string = '' if self.negation else 'not '
+        #program.append(f'#maximize [{negation_string}{self.atom} = {self.weight} @{self.priority}].')
+        program.append(f'#maximize [{negation_string}{self.atom}].')
         program.append(f':- {self.atom}' if self.negation else f':- not {self.atom}.')
         return '\n'.join(program)
 
@@ -46,13 +48,18 @@ class Modeh:
     def setLower(self, lower):
         self.lower = lower
     
-    def createProgram(self, eAtom):
+    def createProgram(self):
+        alphabet = [Normal(chr(i)) for i in range(ord('A'), ord('Z'))]
+        vars = alphabet[:len(self.atom.terms)]
+        newAtom = Atom(self.atom.predicate, vars)
+
         program = []
-        constraint_types = ' : '.join(self.types)
-        program.append(str(self.lower) + ' { abduced_' + str(eAtom) + ' : '+ constraint_types + ' } ' + str(self.upper) + '.')
-        program.append(f'#minimize[ abduced_{eAtom} ={str(self.weight)} @{str(self.priority)} : {constraint_types} ].')
-        clause_types = ','.join(self.types)
-        program.append(f'{eAtom} :- abduced_{eAtom}, {clause_types}.')
+        constraint_types = ' : '.join([str(Atom(t, vars)) for t in self.types])
+        program.append(str(self.lower) + ' { abduced_' + str(newAtom) + ' : '+ constraint_types + ' } ' + str(self.upper) + '.')
+        #program.append(f'#minimize [abduced_{newAtom} = {str(self.weight)} @{str(self.priority)} : {constraint_types}].')
+        program.append(f'#minimize [abduced_{newAtom} : {constraint_types}].')
+        clause_types = ', '.join([str(Atom(t, vars)) for t in self.types])
+        program.append(f'{newAtom} :- abduced_{newAtom}, {clause_types}.')
         return '\n'.join(program)
     
 
@@ -63,17 +70,24 @@ class Abductor:
 
     def createProgram(self):
         program = ''
-        preds = {}
         for example in self.E:
             program += example.createProgram() + '\n'
-            for modeh in self.M:
-                if modeh.atom.predicate == example.atom.predicate:
-                    preds[modeh.atom.predicate] = example.atom
         
         for modeh in self.M:
-            program += modeh.createProgram(preds[modeh.atom.predicate]) + '\n'
+            program += modeh.createProgram() + '\n'
 
         return program
+    
+    def callClingo(self, program):
+        control = clingo.Control()
+        control.add("base", [], program)
+        control.ground([("base", [])])
+        models = []
+        def on_model(model):
+            models.append(model)
+            print("Answer Set:", model)
+        control.solve(on_model=on_model)
+        return models
 
 examples = [Example(Atom('flies', [Normal('a')])),
             Example(Atom('flies', [Normal('b')])),
@@ -83,23 +97,16 @@ examples = [Example(Atom('flies', [Normal('a')])),
 modes = [Modeh(Atom('flies', [PlaceMarker('+', 'bird')]), '*')]
 
 background = """
-#hide.
-#show abduced_flies/1.
-#show bird/1.
-#show flies/1.
-#show penguin/1.
-
 bird(X):-penguin(X).
-bird(a;b;c).
+bird(a).
+bird(b).
+bird(c).
 penguin(d).
-
 """
-
+program = background
 abductor = Abductor(examples, modes)
-
-program = abductor.createProgram()
-
-print(background + program)
-
-
-    
+program += abductor.createProgram()
+print(program)
+program += '\n#show flies_prime/1.'
+solution = abductor.callClingo(program)
+print(solution)

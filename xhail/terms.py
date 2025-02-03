@@ -6,20 +6,10 @@ class Atom:
         self.terms = terms
         self.predicate = predicate
     
-    def toString(self):
+    def __str__(self):
         return self.predicate + '(' + ','.join([term.toString() for term in self.terms]) + ')'
 
-class Literal:
-    def __init__(self, atom: Atom, negation: bool):
-        self.atom = atom
-        self.negation = negation
-    
-    def toString(self):
-        if self.negation:
-            return 'not ' + self.atom.toString()
-        else:
-            return self.atom.toString()
-
+"""
 class Clause:
     def __init__(self, head: Atom, body: list[Literal]):
         self.head = head
@@ -82,3 +72,4 @@ class PlaceMarker(Term):
     def __init__(self, marker: str, type: str):
         self.marker = marker
         self.type = type
+"""

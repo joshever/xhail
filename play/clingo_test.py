@@ -1,6 +1,5 @@
 import clingo
 
-# Define the logic program with abduction for flies_prime(X)
 program = """
 bird(X) :- penguin(X).
 bird(a).

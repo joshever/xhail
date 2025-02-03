@@ -7,7 +7,30 @@ class Atom:
         self.predicate = predicate
     
     def __str__(self):
-        return self.predicate + '(' + ','.join([term.toString() for term in self.terms]) + ')'
+        clause_terms = ','.join([str(x) for x in self.terms])
+        return f'{self.predicate}({clause_terms})'
+     
+class Normal(Term):
+    def __init__(self, value: str): #constant
+        self.value = value
+
+    def __str__(self):
+        return self.value
+
+class Normal(Term):
+    def __init__(self, function: Atom): #function
+        self.function = function
+
+    def __str__(self):
+        return str(self.function)
+
+class PlaceMarker(Term):
+    def __init__(self, marker: str, type: str):
+        self.marker = marker
+        self.type = type
+
+
+
 
 """
 class Clause:
@@ -54,22 +77,4 @@ class LogicProgram():
             result += clause.toString() + '.\n'
         return result
 
-class Normal(Term):
-    def __init__(self, value: str): #constant
-        self.value = value
-
-    def toString(self):
-        return self.value
-
-class Normal(Term):
-    def __init__(self, function: Atom): #function
-        self.function = function
-
-    def toString(self):
-        self.function.toString()
-
-class PlaceMarker(Term):
-    def __init__(self, marker: str, type: str):
-        self.marker = marker
-        self.type = type
 """

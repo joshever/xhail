@@ -18,10 +18,9 @@ class Example:
 
     def createProgram(self):
         program = []
-        negation_string = '' if self.negation else 'not '
-        #program.append(f'#maximize [{negation_string}{self.atom} = {self.weight} @{self.priority}].')
-        program.append(f'#maximize [{negation_string}{self.atom}].')
-        program.append(f':- {self.atom}' if self.negation else f':- not {self.atom}.')
+        negation_string = 'not ' if self.negation else ''
+        program.append('#maximize{' + f'{str(self.weight)}@{str(self.priority)} : {negation_string}{self.atom}' + '}.')
+        program.append(f':- {self.atom}.' if self.negation else f':- not {self.atom}.')
         return '\n'.join(program)
 
 class Modeh:
@@ -51,13 +50,13 @@ class Modeh:
     def createProgram(self):
         alphabet = [Normal(chr(i)) for i in range(ord('A'), ord('Z'))]
         vars = alphabet[:len(self.atom.terms)]
+        vars_string = ', '.join([str(v) for v in vars])
         newAtom = Atom(self.atom.predicate, vars)
 
         program = []
-        constraint_types = ' : '.join([str(Atom(t, vars)) for t in self.types])
+        constraint_types = ', '.join([str(Atom(t, vars)) for t in self.types])
         program.append(str(self.lower) + ' { abduced_' + str(newAtom) + ' : '+ constraint_types + ' } ' + str(self.upper) + '.')
-        #program.append(f'#minimize [abduced_{newAtom} = {str(self.weight)} @{str(self.priority)} : {constraint_types}].')
-        program.append(f'#minimize [abduced_{newAtom} : {constraint_types}].')
+        program.append('#minimize {' + f'{str(self.weight)}@{str(self.priority)}, {vars_string}: abduced_{newAtom}, {constraint_types}' + '}.')
         clause_types = ', '.join([str(Atom(t, vars)) for t in self.types])
         program.append(f'{newAtom} :- abduced_{newAtom}, {clause_types}.')
         return '\n'.join(program)
@@ -84,10 +83,10 @@ class Abductor:
         control.ground([("base", [])])
         models = []
         def on_model(model):
+            model = model.symbols(shown=True)
             models.append(model)
-            print("Answer Set:", model)
         control.solve(on_model=on_model)
-        return models
+        return models[0]
 
 examples = [Example(Atom('flies', [Normal('a')])),
             Example(Atom('flies', [Normal('b')])),
@@ -97,16 +96,13 @@ examples = [Example(Atom('flies', [Normal('a')])),
 modes = [Modeh(Atom('flies', [PlaceMarker('+', 'bird')]), '*')]
 
 background = """
+#show abduced_flies/1.
 bird(X):-penguin(X).
-bird(a).
-bird(b).
-bird(c).
+bird(a;b;c).
 penguin(d).
 """
 program = background
 abductor = Abductor(examples, modes)
 program += abductor.createProgram()
-print(program)
-program += '\n#show flies_prime/1.'
 solution = abductor.callClingo(program)
 print(solution)

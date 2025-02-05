@@ -1,4 +1,4 @@
-from abductor import Example, Modeh
+from abductor import Abductor, Example, Modeh
 import re
 from terms import Atom, Normal, PlaceMarker
 
@@ -14,11 +14,9 @@ class Parser:
 
     def __init__(self, program):
         self.program = program.splitlines()
-        print(self.program)
-        self.processAll()
+        self.parseAll()
 
-    def generateAtom(self, stringAtom):
-        print(stringAtom)
+    def parseAtom(self, stringAtom):
         pieces = re.split(r'[(),]', stringAtom)
         terms = []
         for piece in pieces[1:-1]:
@@ -29,9 +27,8 @@ class Parser:
         atom = Atom(pieces[0], terms)
         return atom
     
-    def processAll(self):
+    def parseAll(self):
         for line in self.program:
-            print(line.split(" ")[0])
             if line.split(" ")[0] == Example.KEY_WORD:
                 self.examples.append(line[0:])
             elif line.split(" ")[0] == Modeh.KEY_WORD or line.split(" ")[0] == '#modeb': #update later
@@ -40,6 +37,9 @@ class Parser:
                 self.background.append(line)
             else:
                 pass
+        self.parseExamples()
+        self.parseModes()
+        self.parseBackground()
 
     def parseExamples(self):
         result = []
@@ -47,10 +47,10 @@ class Parser:
             example = example.split(" ")[1:]
             if example[0] == 'not':
                 negation = True
-                atom = self.generateAtom(example[1])
+                atom = self.parseAtom(example[1])
             else:
                 negation = False
-                atom = self.generateAtom(example[0])
+                atom = self.parseAtom(example[0])
             parsedExample = Example(atom, negation)
             result.append(parsedExample)
         self.parsedExamples = result
@@ -61,23 +61,23 @@ class Parser:
         for mode in self.modes:
             mode = mode.split(" ")
             if mode[0] == Modeh.KEY_WORD:
-                atom = self.generateAtom(mode[1])
+                atom = self.parseAtom(mode[1])
                 parsedMode = Modeh(atom, '*')
-                print(parsedMode)
                 result['M+'] = result['M+'] + [parsedMode]
             else:
                 pass
-        print(result['M+'])
-        self.parseModes = result
+        self.parsedModes = result
         return result
-
-
-    def processBackground(self):
+    
+    def parseBackground(self):
+        self.parsedBackground = self.background
         return self.background
 
 if __name__ == '__main__':
     file = open('test.lp', 'r')
     parser = Parser(file.read())
-    print("examples: ", [str(e) for e in parser.parseExamples()])
-    print("modes: ", [str(m) for m in parser.parseModes()['M+']])
-    print("background: ", parser.processBackground())
+    abductor = Abductor(parser.parsedExamples, parser.parsedModes['M+'], parser.parsedBackground)
+    program = abductor.createProgram()
+    results = abductor.callClingo(program)
+    print(results[0])
+    

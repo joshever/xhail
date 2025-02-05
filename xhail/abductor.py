@@ -59,9 +59,10 @@ class Modeh:
         program = []
         constraint_types = ', '.join([str(Atom(t, vars)) for t in self.types])
         program.append(str(self.lower) + ' { abduced_' + str(newAtom) + ' : '+ constraint_types + ' } ' + str(self.upper) + '.')
-        program.append('#minimize {' + f'{str(self.weight)}@{str(self.priority)}, {vars_string}: abduced_{newAtom}, {constraint_types}' + '}.')
+        program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}, {vars_string}: abduced_{newAtom}, {constraint_types}' + '}.')
         clause_types = ', '.join([str(Atom(t, vars)) for t in self.types])
         program.append(f'{newAtom} :- abduced_{newAtom}, {clause_types}.')
+        program.append(f'#show abduced_{newAtom.predicate}/{str(len(newAtom.terms))}.')
         return '\n'.join(program)
     
     def __str__(self):
@@ -69,21 +70,24 @@ class Modeh:
     
 
 class Abductor:
-    def __init__(self, E, M):
+    def __init__(self, E, M, B):
         self.E = E
         self.M = M
+        self.B = B
 
     def createProgram(self):
         program = ''
         for example in self.E:
             program += example.createProgram() + '\n'
-        
+        program += '\n'
         for modeh in self.M:
             program += modeh.createProgram() + '\n'
-
+        
+        program = '\n'.join(self.B) + '\n\n' + program
         return program
     
     def callClingo(self, program):
+        print(program)
         control = clingo.Control()
         control.add("base", [], program)
         control.ground([("base", [])])
@@ -92,5 +96,5 @@ class Abductor:
             model = model.symbols(shown=True)
             models.append(model)
         control.solve(on_model=on_model)
-        return models[0]
+        return models
 

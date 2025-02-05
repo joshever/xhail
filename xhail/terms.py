@@ -29,6 +29,8 @@ class PlaceMarker(Term):
         self.marker = marker
         self.type = type
 
+    def __str__(self):
+        return self.marker + self.type
 
 
 

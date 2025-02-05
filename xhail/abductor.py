@@ -22,6 +22,9 @@ class Example:
         program.append('#maximize{' + f'{str(self.weight)}@{str(self.priority)} : {negation_string}{self.atom}' + '}.')
         program.append(f':- {self.atom}.' if self.negation else f':- not {self.atom}.')
         return '\n'.join(program)
+    
+    def __str__(self):
+        return ('not ' if self.negation else '') + str(self.atom)
 
 class Modeh:
     KEY_WORD = '#modeh'
@@ -61,6 +64,9 @@ class Modeh:
         program.append(f'{newAtom} :- abduced_{newAtom}, {clause_types}.')
         return '\n'.join(program)
     
+    def __str__(self):
+        return 'modeh ' + str(self.atom)
+    
 
 class Abductor:
     def __init__(self, E, M):
@@ -88,21 +94,3 @@ class Abductor:
         control.solve(on_model=on_model)
         return models[0]
 
-examples = [Example(Atom('flies', [Normal('a')])),
-            Example(Atom('flies', [Normal('b')])),
-            Example(Atom('flies', [Normal('c')])),
-            Example(Atom('flies', [Normal('d')]), True)]
-
-modes = [Modeh(Atom('flies', [PlaceMarker('+', 'bird')]), '*')]
-
-background = """
-#show abduced_flies/1.
-bird(X):-penguin(X).
-bird(a;b;c).
-penguin(d).
-"""
-program = background
-abductor = Abductor(examples, modes)
-program += abductor.createProgram()
-solution = abductor.callClingo(program)
-print(solution)

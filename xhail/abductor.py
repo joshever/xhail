@@ -3,6 +3,8 @@ import clingo
 
 class Example:
     KEY_WORD = '#example'
+    WEIGHT_OPERATOR = '='
+    PRIORITY_OPERATOR = '@'
     weight = 1
     priority = 1
 
@@ -28,10 +30,14 @@ class Example:
 
 class Modeh:
     KEY_WORD = '#modeh'
+    WEIGHT_OPERATOR = '='
+    PRIORITY_OPERATOR = '@'
+    CONSTRAINT_OPERATOR = ':'
+    CONSTRAINT_SEPARATOR = '-'
     weight = 1
     priority = 1
-    lower = 0
-    upper = 1000000
+    min = 0 #default 0
+    max = 1000000 #this just has to be super big by default
 
     def __init__(self, atom: Atom, n: str): #these will be placeholder atoms
         self.atom = atom
@@ -44,11 +50,11 @@ class Modeh:
     def setPriority(self, priority):
         self.priority = priority
 
-    def setUpper(self, upper):
-        self.upper = upper
+    def setMax(self, max):
+        self.max = max
 
-    def setLower(self, lower):
-        self.lower = lower
+    def setMin(self, min):
+        self.min = min
     
     def createProgram(self):
         alphabet = [Normal(chr(i)) for i in range(ord('A'), ord('Z'))]
@@ -58,7 +64,7 @@ class Modeh:
 
         program = []
         constraint_types = ', '.join([str(Atom(t, vars)) for t in self.types])
-        program.append(str(self.lower) + ' { abduced_' + str(newAtom) + ' : '+ constraint_types + ' } ' + str(self.upper) + '.')
+        program.append(str(self.min) + ' { abduced_' + str(newAtom) + ' : '+ constraint_types + ' } ' + str(self.max) + '.')
         program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}, {vars_string}: abduced_{newAtom}, {constraint_types}' + '}.')
         clause_types = ', '.join([str(Atom(t, vars)) for t in self.types])
         program.append(f'{newAtom} :- abduced_{newAtom}, {clause_types}.')
@@ -76,14 +82,17 @@ class Abductor:
         self.B = B
 
     def createProgram(self):
-        program = ''
+        program = '%EXAMPLES%\n'
         for example in self.E:
             program += example.createProgram() + '\n'
-        program += '\n'
+        program += '\n' + '%ABDUCIBLES%\n'
         for modeh in self.M:
             program += modeh.createProgram() + '\n'
-        
-        program = '\n'.join(self.B) + '\n\n' + program
+    
+        program = '%BACKGROUND%\n' +'\n'.join(self.B) + '\n\n' + program
+        file = open("abduce.lp", "w")
+        file.write(program)
+        file.close()
         return program
     
     def callClingo(self, program):

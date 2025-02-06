@@ -1,8 +1,8 @@
 %% PENGUINS.lp
 %%%%%%%%%%%%%%
 
-%#display flies/1.
-%#display penguin/1.
+#display flies/1.
+#display penguin/1.
 
 #modeh flies(+bird).
 #modeb penguin(+bird).

@@ -76,6 +76,7 @@ class Parser:
 if __name__ == '__main__':
     file = open('test.lp', 'r')
     parser = Parser(file.read())
+    file.close()
     abductor = Abductor(parser.parsedExamples, parser.parsedModes['M+'], parser.parsedBackground)
     program = abductor.createProgram()
     results = abductor.callClingo(program)

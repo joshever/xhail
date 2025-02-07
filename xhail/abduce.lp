@@ -1,6 +1,5 @@
+
 %BACKGROUND%
-#display flies/1.
-#display penguin/1.
 bird(X) :- penguin(X).
 bird(a;b;c).
 penguin(d).

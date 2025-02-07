@@ -82,14 +82,18 @@ class Abductor:
         self.B = B
 
     def createProgram(self):
-        program = '%EXAMPLES%\n'
+        
+        examplesProgram = '%EXAMPLES%\n'
         for example in self.E:
-            program += example.createProgram() + '\n'
-        program += '\n' + '%ABDUCIBLES%\n'
+            examplesProgram += example.createProgram() + '\n'
+
+        abduciblesProgram = '%ABDUCIBLES%\n'
         for modeh in self.M:
-            program += modeh.createProgram() + '\n'
+            abduciblesProgram += modeh.createProgram() + '\n'
+
+        backgroundProgram = '%BACKGROUND%\n' +'\n'.join(self.B) + '\n'
     
-        program = '%BACKGROUND%\n' +'\n'.join(self.B) + '\n\n' + program
+        program = '\n' + backgroundProgram + '\n' + examplesProgram + '\n' + abduciblesProgram
         file = open("abduce.lp", "w")
         file.write(program)
         file.close()

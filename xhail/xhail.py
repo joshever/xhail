@@ -74,11 +74,17 @@ class Parser:
         return self.background
 
 if __name__ == '__main__':
-    file = open('test.lp', 'r')
+    file = open('test.lp', 'r', encoding="utf-8")
     parser = Parser(file.read())
     file.close()
+
+    # ABDUCTION
     abductor = Abductor(parser.parsedExamples, parser.parsedModes['M+'], parser.parsedBackground)
     program = abductor.createProgram()
     results = abductor.callClingo(program)
+
+    #DEDUCTION
+
+
     print(results[0])
     

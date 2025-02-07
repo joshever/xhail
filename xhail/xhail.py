@@ -17,6 +17,57 @@ class Parser:
         self.parseAll()
 
     def parseAtom(self, stringAtom):
+        # [predicate(term, term, ...)] term=X or term = [predicate(term, term ,...)] etc
+        state = 'PREDICATE' # OR TERM OR SUBATOM OR FINISHED
+        predicate = ''
+        term = None
+        subatom = ''
+        terms = []
+        for c in stringAtom:
+            # log chars - look for '('
+            if state == 'PREDICATE':
+                if c == '(':
+                    state = 'TERM'
+                else:
+                    predicate += c
+            elif state == 'TERM':
+                if c == ',':
+                    terms.append(term)
+                    term = ''
+                elif c == '(':
+                    state = 'SUBATOM'
+                    subatom = term + c
+                    term = ''
+                elif c == ')':
+                    state = 'DONE'
+                else:
+                    term += c
+            elif state == 'SUBATOM':
+                if c == ')':
+                    term = subatom + c
+                    state = 'TERM'
+                else:
+                    subatom += c
+            else:
+                pass
+
+        newTerms = []
+        for term in terms:
+            if term.contains('('):
+                newTerm = Normal(self.parseAtom(term))
+            else:
+                newTerm = Normal(term)
+            newTerms.append(newTerm)
+        
+        
+
+
+
+
+                    
+                
+
+
         pieces = re.split(r'[(),]', stringAtom)
         terms = []
         for piece in pieces[1:-1]:
@@ -42,15 +93,31 @@ class Parser:
         self.parseBackground()
 
     def parseExamples(self):
+        # [negation] [predicate(term, term, ...)] term=X or term = [predicate(term, term ,...)] etc
         result = []
         for example in self.examples:
+
+            # extract rest of line.
             example = example.split(" ")[1:]
+
+            # check negation property
             if example[0] == 'not':
                 negation = True
-                atom = self.parseAtom(example[1])
+
+                # get rid of white space
+                atomString = ''.join(example[1:]).replace('.', '').replace(' ', '')
+
+                # find atom
+                atom = self.parseAtom(atomString)
             else:
                 negation = False
-                atom = self.parseAtom(example[0])
+
+                # get rid of white space
+                atomString = ''.join(example).replace('.', '').replace(' ', '')
+
+                # find atom
+                atom = self.parseAtom(atomString)
+
             parsedExample = Example(atom, negation)
             result.append(parsedExample)
         self.parsedExamples = result

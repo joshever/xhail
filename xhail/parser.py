@@ -1,5 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
+from abductor import Example
+from terms import Atom
 
 # List of tokens
 tokens = (
@@ -51,20 +53,18 @@ def p_clause(p):
 def p_example(p):
     '''example : KEYWORD PREDICATE LP TERM COMMA TERM RP DOT'''
     print(f"Parsed example: {p[2]}({p[4]}, {p[6]})")
-    print(p[0:9])
+    p[0] = Example(Atom(p{2}, p{3}))
 
 # Modeh clause: "#modeh attack(+cat)."
 def p_modeh(p):
     '''modeh : KEYWORD PREDICATE LP MARKER TERM RP DOT'''
     # p[2]: predicate, p[4]: marker, p[5]: term
     print(f"Parsed modeh: {p[2]}({p[4]}{p[5]})")
-    print(p)
 
 # Modeb clause: "#modeb predicate(x)."
 def p_modeb(p):
     '''modeb : KEYWORD PREDICATE LP TERM RP DOT'''
     print(f"Parsed modeb: {p[2]}({p[4]})")
-    print(p)
 
 def p_error(p):
     if p:

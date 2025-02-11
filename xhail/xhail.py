@@ -8,11 +8,12 @@ from terms import Fact
 if __name__ == '__main__':
     file = open('test.lp', 'r', encoding="utf-8")
     data = file.read()
+    #print(data)
     result = parseProgram(data)
     file.close()
 
     for clause in result:
-        print(clause)
+        print(f"Parsed: {clause} -> {type(clause)}")
 
     # ABDUCTION
     #abductor = Abductor(parser.parsedExamples, parser.parsedModes['M+'], parser.parsedBackground)

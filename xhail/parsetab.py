@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'programCOMMA DOT EXAMPLE IMPLIES LPAREN MARKER MODEB MODEH NOT PREDICATE RPAREN TERMprogram : program clause\n               | clauseclause : example\n              | modeb\n              | modeh\n              | rule\n              | fact\n              | constraint\n    fact : atom DOTconstraint : IMPLIES body DOTrule : atom IMPLIES body DOTliteral : NOT atom\n               | atom\n    atom : PREDICATE LPAREN terms RPARENbody : body COMMA literal\n            | literal\n    terms : TERM\n             | TERM COMMA terms\n             | PREDICATE LPAREN terms RPAREN\n             | PREDICATE LPAREN terms RPAREN COMMA terms\n    example : EXAMPLE atom DOT\n               | EXAMPLE NOT atom DOT\n    modeh : MODEH PREDICATE LPAREN MARKER TERM RPAREN DOTmodeb : MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT\n             | MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT\n             '
+_lr_signature = 'programCOMMA DOT EXAMPLE_KEY IMPLIES LPAREN MARKER MODEB_KEY MODEH_KEY NOT PREDICATE RPAREN TERMprogram : program clause\n               | clauseclause : example\n              | modeb\n              | modeh\n    atom : PREDICATE LPAREN terms RPARENschema : PREDICATE LPAREN schema_terms RPARENschema_terms : MARKER TERM\n                    | MARKER TERM COMMA schema_terms\n                    | schema\n                    | schema COMMA schema_terms\n    example : EXAMPLE_KEY atom DOT\n               | EXAMPLE_KEY NOT atom DOT\n    modeh : MODEH_KEY schema DOTmodeb : MODEB_KEY schema DOT\n             | MODEB_KEY NOT schema DOT\n             terms : TERM\n             | atom\n             | TERM COMMA terms\n             | atom COMMA terms\n    '
     
-_lr_action_items = {'EXAMPLE':([0,1,2,3,4,5,6,7,8,15,19,28,37,40,41,58,61,62,],[9,9,-2,-3,-4,-5,-6,-7,-8,-1,-9,-21,-10,-22,-11,-24,-23,-25,]),'MODEB':([0,1,2,3,4,5,6,7,8,15,19,28,37,40,41,58,61,62,],[11,11,-2,-3,-4,-5,-6,-7,-8,-1,-9,-21,-10,-22,-11,-24,-23,-25,]),'MODEH':([0,1,2,3,4,5,6,7,8,15,19,28,37,40,41,58,61,62,],[13,13,-2,-3,-4,-5,-6,-7,-8,-1,-9,-21,-10,-22,-11,-24,-23,-25,]),'IMPLIES':([0,1,2,3,4,5,6,7,8,10,15,19,28,37,40,41,45,58,61,62,],[14,14,-2,-3,-4,-5,-6,-7,-8,18,-1,-9,-21,-10,-22,-11,-14,-24,-23,-25,]),'PREDICATE':([0,1,2,3,4,5,6,7,8,9,11,13,14,15,17,18,19,21,22,26,28,37,38,40,41,44,46,58,60,61,62,],[12,12,-2,-3,-4,-5,-6,-7,-8,12,20,23,12,-1,12,12,-9,32,33,12,-21,-10,12,-22,-11,33,33,-24,33,-23,-25,]),'$end':([1,2,3,4,5,6,7,8,15,19,28,37,40,41,58,61,62,],[0,-2,-3,-4,-5,-6,-7,-8,-1,-9,-21,-10,-22,-11,-24,-23,-25,]),'NOT':([9,11,14,18,38,],[17,21,26,26,26,]),'DOT':([10,16,24,25,27,29,30,39,45,48,54,57,59,],[19,28,37,-16,-13,40,41,-12,-14,-15,58,61,62,]),'LPAREN':([12,20,23,32,33,],[22,31,36,43,44,]),'TERM':([22,42,44,46,47,50,60,],[35,49,35,35,53,55,35,]),'COMMA':([24,25,27,30,35,39,45,48,56,],[38,-16,-13,38,46,-12,-14,-15,60,]),'MARKER':([31,36,43,],[42,47,50,]),'RPAREN':([34,35,49,51,52,53,55,56,63,],[45,-17,54,56,-18,57,59,-19,-20,]),}
+_lr_action_items = {'EXAMPLE_KEY':([0,1,2,3,4,5,9,17,20,23,24,28,],[6,6,-2,-3,-4,-5,-1,-12,-15,-14,-13,-16,]),'MODEB_KEY':([0,1,2,3,4,5,9,17,20,23,24,28,],[7,7,-2,-3,-4,-5,-1,-12,-15,-14,-13,-16,]),'MODEH_KEY':([0,1,2,3,4,5,9,17,20,23,24,28,],[8,8,-2,-3,-4,-5,-1,-12,-15,-14,-13,-16,]),'$end':([1,2,3,4,5,9,17,20,23,24,28,],[0,-2,-3,-4,-5,-1,-12,-15,-14,-13,-16,]),'NOT':([6,7,],[11,14,]),'PREDICATE':([6,7,8,11,14,19,22,33,34,37,40,],[12,15,15,12,15,12,15,12,12,15,15,]),'DOT':([10,13,16,18,21,32,35,],[17,20,23,24,28,-6,-7,]),'LPAREN':([12,15,],[19,22,]),'TERM':([19,30,33,34,],[26,36,26,26,]),'MARKER':([22,37,40,],[30,30,30,]),'RPAREN':([25,26,27,29,31,32,35,36,38,39,41,42,],[32,-17,-18,35,-10,-6,-7,-8,-19,-20,-11,-9,]),'COMMA':([26,27,31,32,35,36,],[33,34,37,-6,-7,40,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'program':([0,],[1,]),'clause':([0,1,],[2,15,]),'example':([0,1,],[3,3,]),'modeb':([0,1,],[4,4,]),'modeh':([0,1,],[5,5,]),'rule':([0,1,],[6,6,]),'fact':([0,1,],[7,7,]),'constraint':([0,1,],[8,8,]),'atom':([0,1,9,14,17,18,26,38,],[10,10,16,27,29,27,39,27,]),'body':([14,18,],[24,30,]),'literal':([14,18,38,],[25,25,48,]),'terms':([22,44,46,60,],[34,51,52,63,]),}
+_lr_goto_items = {'program':([0,],[1,]),'clause':([0,1,],[2,9,]),'example':([0,1,],[3,3,]),'modeb':([0,1,],[4,4,]),'modeh':([0,1,],[5,5,]),'atom':([6,11,19,33,34,],[10,18,27,27,27,]),'schema':([7,8,14,22,37,40,],[13,16,21,31,31,31,]),'terms':([19,33,34,],[25,38,39,]),'schema_terms':([22,37,40,],[29,41,42,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,29 +27,24 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> program","S'",1,None,None,None),
-  ('program -> program clause','program',2,'p_program','parser.py',48),
-  ('program -> clause','program',1,'p_program','parser.py',49),
-  ('clause -> example','clause',1,'p_clause','parser.py',56),
-  ('clause -> modeb','clause',1,'p_clause','parser.py',57),
-  ('clause -> modeh','clause',1,'p_clause','parser.py',58),
-  ('clause -> rule','clause',1,'p_clause','parser.py',59),
-  ('clause -> fact','clause',1,'p_clause','parser.py',60),
-  ('clause -> constraint','clause',1,'p_clause','parser.py',61),
-  ('fact -> atom DOT','fact',2,'p_fact','parser.py',66),
-  ('constraint -> IMPLIES body DOT','constraint',3,'p_constraint','parser.py',70),
-  ('rule -> atom IMPLIES body DOT','rule',4,'p_rule','parser.py',74),
-  ('literal -> NOT atom','literal',2,'p_literal','parser.py',78),
-  ('literal -> atom','literal',1,'p_literal','parser.py',79),
-  ('atom -> PREDICATE LPAREN terms RPAREN','atom',4,'p_atom','parser.py',84),
-  ('body -> body COMMA literal','body',3,'p_body','parser.py',88),
-  ('body -> literal','body',1,'p_body','parser.py',89),
-  ('terms -> TERM','terms',1,'p_terms','parser.py',97),
-  ('terms -> TERM COMMA terms','terms',3,'p_terms','parser.py',98),
-  ('terms -> PREDICATE LPAREN terms RPAREN','terms',4,'p_terms','parser.py',99),
-  ('terms -> PREDICATE LPAREN terms RPAREN COMMA terms','terms',6,'p_terms','parser.py',100),
-  ('example -> EXAMPLE atom DOT','example',3,'p_example','parser.py',113),
-  ('example -> EXAMPLE NOT atom DOT','example',4,'p_example','parser.py',114),
-  ('modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT','modeh',7,'p_modeh','parser.py',123),
-  ('modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT','modeb',7,'p_modeb','parser.py',128),
-  ('modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT','modeb',8,'p_modeb','parser.py',129),
+  ('program -> program clause','program',2,'p_program','parser.py',49),
+  ('program -> clause','program',1,'p_program','parser.py',50),
+  ('clause -> example','clause',1,'p_clause','parser.py',57),
+  ('clause -> modeb','clause',1,'p_clause','parser.py',58),
+  ('clause -> modeh','clause',1,'p_clause','parser.py',59),
+  ('atom -> PREDICATE LPAREN terms RPAREN','atom',4,'p_atom','parser.py',66),
+  ('schema -> PREDICATE LPAREN schema_terms RPAREN','schema',4,'p_schema','parser.py',71),
+  ('schema_terms -> MARKER TERM','schema_terms',2,'p_schema_terms','parser.py',75),
+  ('schema_terms -> MARKER TERM COMMA schema_terms','schema_terms',4,'p_schema_terms','parser.py',76),
+  ('schema_terms -> schema','schema_terms',1,'p_schema_terms','parser.py',77),
+  ('schema_terms -> schema COMMA schema_terms','schema_terms',3,'p_schema_terms','parser.py',78),
+  ('example -> EXAMPLE_KEY atom DOT','example',3,'p_example','parser.py',91),
+  ('example -> EXAMPLE_KEY NOT atom DOT','example',4,'p_example','parser.py',92),
+  ('modeh -> MODEH_KEY schema DOT','modeh',3,'p_modeh','parser.py',101),
+  ('modeb -> MODEB_KEY schema DOT','modeb',3,'p_modeb','parser.py',106),
+  ('modeb -> MODEB_KEY NOT schema DOT','modeb',4,'p_modeb','parser.py',107),
+  ('terms -> TERM','terms',1,'p_terms','parser.py',116),
+  ('terms -> atom','terms',1,'p_terms','parser.py',117),
+  ('terms -> TERM COMMA terms','terms',3,'p_terms','parser.py',118),
+  ('terms -> atom COMMA terms','terms',3,'p_terms','parser.py',119),
 ]

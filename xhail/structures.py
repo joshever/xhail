@@ -26,7 +26,7 @@ class Example:
         return '\n'.join(program)
     
     def __str__(self):
-        return ('not ' if self.negation else '') + str(self.atom)
+        return '#example '+ ('not ' if self.negation else '') + str(self.atom)
 
 class Modeh:
     KEY_WORD = '#modeh'
@@ -72,7 +72,7 @@ class Modeh:
         return '\n'.join(program)
     
     def __str__(self):
-        return 'modeh ' + str(self.atom)
+        return '#modeh ' + str(self.atom)
     
 
 class Modeb:
@@ -90,7 +90,6 @@ class Modeb:
         self.atom = atom
         self.n = n
         self.negation = negation
-        self.types = [term.type for term in atom.terms]
 
     def setWeight(self, weight):
         self.weight = weight
@@ -108,4 +107,4 @@ class Modeb:
         pass
     
     def __str__(self):
-        return 'modeh ' + str(self.atom)
+        return f'#modeb {'not ' if self.negation == True else ''}{str(self.atom)}'

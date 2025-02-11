@@ -81,7 +81,7 @@ def p_schema_terms(p):
         p[0] = [PlaceMarker(marker=p[1], type=p[2])]
     elif len(p) == 5:
         p[0] = [PlaceMarker(marker=p[1], type=p[2])] + p[4]
-    elif len(p) == 1:
+    elif len(p) == 2:
         p[0] = [p[1]]
     else:
         p[0] = [p[1]] + p[3]
@@ -121,7 +121,7 @@ def p_terms(p):
     if len(p) == 2 and not isinstance(p[1], Atom):
         p[0] = [Normal(p[1])]
     elif len(p) == 2:
-        p[0] = p[1]
+        p[0] = [p[1]]
     elif len(p) == 4 and not isinstance(p[1], Atom):
         p[0] = [Normal(p[1])] + p[3]
     else:
@@ -141,13 +141,20 @@ def parseProgram(data):
 
 if __name__ == '__main__':
     my_program = """
-    #modeb not cars(+mole).
+    #modeb not cars(mole(+cat, -badger), +cat).
     #modeh bright(-right).
     #example car(car(yes)).
     """
     result = parseProgram(my_program)
     for item in result:
-        print(type(item))
+        if isinstance(item, Example):
+            print(str(item))
+        elif isinstance(item, Modeb):
+            print(str(item))
+        elif isinstance(item, Modeh):
+            print(str(item))
+        
+
 
     # lexer = lex.lex()
 

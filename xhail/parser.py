@@ -1,70 +1,138 @@
 import ply.lex as lex
 import ply.yacc as yacc
-from abductor import Example
-from terms import Atom
+from structures import Modeb, Example, Modeh
+from terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
 
 # List of tokens
 tokens = (
-    'KEYWORD',
+    'EXAMPLE',
+    'MODEB',
+    'MODEH',
     'PREDICATE',
     'TERM',
-    'LP',
-    'RP',
+    'LPAREN',
+    'RPAREN',
     'COMMA',
+    'IMPLIES',
     'DOT',
     'NOT',
     'MARKER',
-    'COMMENT',
 )
 
 # Token definitions
-t_KEYWORD = r'\#(example|modeh|modeb)'
+t_EXAMPLE = r'\#example'
+t_MODEH = r'\#modeh'
+t_MODEB = r'\#modeb'
 t_PREDICATE = r'([a-zA-Z_][a-zA-Z_0-9]*)(?=\()'
 t_TERM = r'[a-zA-Z_][a-zA-Z_0-9]*|[0-9]+'
-t_LP = r'\('
-t_RP = r'\)'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
 t_COMMA = r','
+t_IMPLIES = r':-'
 t_DOT = r'\.'
 t_NOT = r'not'
 t_MARKER = r'\+|\-|\$'
-t_COMMENT = r'%.*'
-
 t_ignore = ' \t\n'
 
 def t_error(t):
     print(f"Illegal character '{t.value[0]}'")
     t.lexer.skip(1)
 
+def t_ignore_COMMENT(t):
+    r'%.*'
+    pass
+
 lexer = lex.lex()
 
 def p_program(p):
     '''program : program clause
                | clause'''
-    # You can collect the clauses here if needed.
-    pass
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[2]]
 
 def p_clause(p):
     '''clause : example
+              | modeb
               | modeh
-              | modeb'''
-    pass
+              | rule
+              | fact #this is taking precidence
+              | constraint
+    '''
+    p[0] = p[1]
 
-# Example clause: "#example predicate(x, y)."
+def p_fact(p):
+    '''fact : atom DOT'''
+    p[0] = Fact(p[1])
+
+def p_constraint(p):
+    '''constraint : IMPLIES body DOT'''
+    p[0] = Constraint(p[2])
+
+def p_rule(p):
+    '''rule : atom IMPLIES body DOT'''
+    p[0] = Clause(p[1], p[3])
+
+def p_literal(p):
+    '''literal : NOT atom
+               | atom
+    '''
+    p[0] = Literal(p[2], negation=True) if len(p) == 3 else Literal(p[1], negation=False)
+
+def p_atom(p):
+    '''atom : PREDICATE LPAREN terms RPAREN'''
+    p[0] = Atom(p[1], p[3])
+
+def p_body(p):
+    '''body : body COMMA literal
+            | literal
+    '''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = p[1] + [p[3]]
+
+def p_terms(p):
+    '''terms : TERM
+             | TERM COMMA terms
+             | PREDICATE LPAREN terms RPAREN
+             | PREDICATE LPAREN terms RPAREN COMMA terms
+    '''
+    if len(p) == 2:
+        p[0] = [Normal(p[1])]
+    elif len(p) == 4:
+        p[0] = [Normal(p[1])] + p[3]
+    elif len(p) == 5:
+        p[0] = [Normal(Atom(p[1], p[3]))]
+    else:
+        p[0] = [Normal(Atom(p[1], p[3]))] + p[6]
+
+
 def p_example(p):
-    '''example : KEYWORD PREDICATE LP TERM COMMA TERM RP DOT'''
-    print(f"Parsed example: {p[2]}({p[4]}, {p[6]})")
-    p[0] = Example(Atom(p{2}, p{3}))
+    '''example : EXAMPLE atom DOT
+               | EXAMPLE NOT atom DOT
+    '''
+    if len(p) == 4:
+        p[0] = Example(p[2], negation=False)
+    else:
+        p[0] = Example(p[3], negation=True)
 
 # Modeh clause: "#modeh attack(+cat)."
 def p_modeh(p):
-    '''modeh : KEYWORD PREDICATE LP MARKER TERM RP DOT'''
-    # p[2]: predicate, p[4]: marker, p[5]: term
-    print(f"Parsed modeh: {p[2]}({p[4]}{p[5]})")
+    '''modeh : MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT'''
+    p[0] = Modeh(Atom(p[2], [PlaceMarker(marker=p[4], type=p[5])]), '*')
 
-# Modeb clause: "#modeb predicate(x)."
+# Modeb clause: "#modeb predicate(+x)." or "modeb not predicate(-x)"
 def p_modeb(p):
-    '''modeb : KEYWORD PREDICATE LP TERM RP DOT'''
-    print(f"Parsed modeb: {p[2]}({p[4]})")
+    '''modeb : MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT
+             | MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT
+             '''
+    if len(p) == 8:
+        p[0] = Modeb(Atom(p[2], [PlaceMarker(p[4], p[5])]), '*', False)
+    else:
+        p[0] = Modeb(Atom(p[3], [PlaceMarker(p[5], p[6])]), '*', True)
+    
 
 def p_error(p):
     if p:
@@ -72,15 +140,9 @@ def p_error(p):
     else:
         print("Syntax error at EOF")
 
-parser = yacc.yacc(start='program')
+def parseProgram(data):
+    parser = yacc.yacc(start='program', debug=True)
 
-data = "#example predicate(x, y). #example predicate(x, y). #modeh attack(+cat)."
+    result = parser.parse(data)
 
-lexer.input(data)
-while True:
-    tok = lexer.token()
-    if not tok:
-        break
-    print(f"{tok.type}: {tok.value}")
-
-parser.parse(data)
+    return result

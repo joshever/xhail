@@ -14,5 +14,7 @@
 #example not flies(d).
 
 bird(X) :- penguin(X).
-bird(a;b;c).
+bird(a).
+bird(b).
+bird(c).
 penguin(d).

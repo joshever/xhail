@@ -1,7 +1,7 @@
 class Term:
     pass
 
-class Atom:
+class Atom(Term):
     def __init__(self, predicate: str, terms: list[Term]):
         self.terms = terms
         self.predicate = predicate
@@ -17,13 +17,6 @@ class Normal(Term):
     def __str__(self):
         return self.value
 
-class Normal(Term):
-    def __init__(self, function: Atom): #function
-        self.function = function
-
-    def __str__(self):
-        return str(self.function)
-
 class PlaceMarker(Term):
     def __init__(self, marker: str, type: str):
         self.marker = marker
@@ -32,9 +25,11 @@ class PlaceMarker(Term):
     def __str__(self):
         return self.marker + self.type
 
+class Literal:
+    def __init__(self, atom: Atom, negation: bool):
+        self.atom = atom
+        self.negation = negation
 
-
-"""
 class Clause:
     def __init__(self, head: Atom, body: list[Literal]):
         self.head = head
@@ -78,5 +73,3 @@ class LogicProgram():
         for clause in self.clauses:
             result += clause.toString() + '.\n'
         return result
-
-"""

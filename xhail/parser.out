@@ -1,0 +1,726 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> program clause
+Rule 2     program -> clause
+Rule 3     clause -> example
+Rule 4     clause -> modeb
+Rule 5     clause -> modeh
+Rule 6     clause -> rule
+Rule 7     clause -> fact
+Rule 8     clause -> constraint
+Rule 9     fact -> atom DOT
+Rule 10    constraint -> IMPLIES body DOT
+Rule 11    rule -> atom IMPLIES body DOT
+Rule 12    literal -> NOT atom
+Rule 13    literal -> atom
+Rule 14    atom -> PREDICATE LPAREN terms RPAREN
+Rule 15    body -> body COMMA literal
+Rule 16    body -> literal
+Rule 17    terms -> TERM
+Rule 18    terms -> TERM COMMA terms
+Rule 19    terms -> PREDICATE LPAREN terms RPAREN
+Rule 20    terms -> PREDICATE LPAREN terms RPAREN COMMA terms
+Rule 21    example -> EXAMPLE atom DOT
+Rule 22    example -> EXAMPLE NOT atom DOT
+Rule 23    modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT
+Rule 24    modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT
+Rule 25    modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT
+
+Terminals, with rules where they appear
+
+COMMA                : 15 18 20
+DOT                  : 9 10 11 21 22 23 24 25
+EXAMPLE              : 21 22
+IMPLIES              : 10 11
+LPAREN               : 14 19 20 23 24 25
+MARKER               : 23 24 25
+MODEB                : 24 25
+MODEH                : 23
+NOT                  : 12 22 25
+PREDICATE            : 14 19 20 23 24 25
+RPAREN               : 14 19 20 23 24 25
+TERM                 : 17 18 23 24 25
+error                : 
+
+Nonterminals, with rules where they appear
+
+atom                 : 9 11 12 13 21 22
+body                 : 10 11 15
+clause               : 1 2
+constraint           : 8
+example              : 3
+fact                 : 7
+literal              : 15 16
+modeb                : 4
+modeh                : 5
+program              : 1 0
+rule                 : 6
+terms                : 14 18 19 20 20
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . program clause
+    (2) program -> . clause
+    (3) clause -> . example
+    (4) clause -> . modeb
+    (5) clause -> . modeh
+    (6) clause -> . rule
+    (7) clause -> . fact
+    (8) clause -> . constraint
+    (21) example -> . EXAMPLE atom DOT
+    (22) example -> . EXAMPLE NOT atom DOT
+    (24) modeb -> . MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT
+    (25) modeb -> . MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT
+    (23) modeh -> . MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT
+    (11) rule -> . atom IMPLIES body DOT
+    (9) fact -> . atom DOT
+    (10) constraint -> . IMPLIES body DOT
+    (14) atom -> . PREDICATE LPAREN terms RPAREN
+
+    EXAMPLE         shift and go to state 9
+    MODEB           shift and go to state 11
+    MODEH           shift and go to state 13
+    IMPLIES         shift and go to state 14
+    PREDICATE       shift and go to state 12
+
+    program                        shift and go to state 1
+    clause                         shift and go to state 2
+    example                        shift and go to state 3
+    modeb                          shift and go to state 4
+    modeh                          shift and go to state 5
+    rule                           shift and go to state 6
+    fact                           shift and go to state 7
+    constraint                     shift and go to state 8
+    atom                           shift and go to state 10
+
+state 1
+
+    (0) S' -> program .
+    (1) program -> program . clause
+    (3) clause -> . example
+    (4) clause -> . modeb
+    (5) clause -> . modeh
+    (6) clause -> . rule
+    (7) clause -> . fact
+    (8) clause -> . constraint
+    (21) example -> . EXAMPLE atom DOT
+    (22) example -> . EXAMPLE NOT atom DOT
+    (24) modeb -> . MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT
+    (25) modeb -> . MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT
+    (23) modeh -> . MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT
+    (11) rule -> . atom IMPLIES body DOT
+    (9) fact -> . atom DOT
+    (10) constraint -> . IMPLIES body DOT
+    (14) atom -> . PREDICATE LPAREN terms RPAREN
+
+    EXAMPLE         shift and go to state 9
+    MODEB           shift and go to state 11
+    MODEH           shift and go to state 13
+    IMPLIES         shift and go to state 14
+    PREDICATE       shift and go to state 12
+
+    clause                         shift and go to state 15
+    example                        shift and go to state 3
+    modeb                          shift and go to state 4
+    modeh                          shift and go to state 5
+    rule                           shift and go to state 6
+    fact                           shift and go to state 7
+    constraint                     shift and go to state 8
+    atom                           shift and go to state 10
+
+state 2
+
+    (2) program -> clause .
+
+    EXAMPLE         reduce using rule 2 (program -> clause .)
+    MODEB           reduce using rule 2 (program -> clause .)
+    MODEH           reduce using rule 2 (program -> clause .)
+    IMPLIES         reduce using rule 2 (program -> clause .)
+    PREDICATE       reduce using rule 2 (program -> clause .)
+    $end            reduce using rule 2 (program -> clause .)
+
+
+state 3
+
+    (3) clause -> example .
+
+    EXAMPLE         reduce using rule 3 (clause -> example .)
+    MODEB           reduce using rule 3 (clause -> example .)
+    MODEH           reduce using rule 3 (clause -> example .)
+    IMPLIES         reduce using rule 3 (clause -> example .)
+    PREDICATE       reduce using rule 3 (clause -> example .)
+    $end            reduce using rule 3 (clause -> example .)
+
+
+state 4
+
+    (4) clause -> modeb .
+
+    EXAMPLE         reduce using rule 4 (clause -> modeb .)
+    MODEB           reduce using rule 4 (clause -> modeb .)
+    MODEH           reduce using rule 4 (clause -> modeb .)
+    IMPLIES         reduce using rule 4 (clause -> modeb .)
+    PREDICATE       reduce using rule 4 (clause -> modeb .)
+    $end            reduce using rule 4 (clause -> modeb .)
+
+
+state 5
+
+    (5) clause -> modeh .
+
+    EXAMPLE         reduce using rule 5 (clause -> modeh .)
+    MODEB           reduce using rule 5 (clause -> modeh .)
+    MODEH           reduce using rule 5 (clause -> modeh .)
+    IMPLIES         reduce using rule 5 (clause -> modeh .)
+    PREDICATE       reduce using rule 5 (clause -> modeh .)
+    $end            reduce using rule 5 (clause -> modeh .)
+
+
+state 6
+
+    (6) clause -> rule .
+
+    EXAMPLE         reduce using rule 6 (clause -> rule .)
+    MODEB           reduce using rule 6 (clause -> rule .)
+    MODEH           reduce using rule 6 (clause -> rule .)
+    IMPLIES         reduce using rule 6 (clause -> rule .)
+    PREDICATE       reduce using rule 6 (clause -> rule .)
+    $end            reduce using rule 6 (clause -> rule .)
+
+
+state 7
+
+    (7) clause -> fact .
+
+    EXAMPLE         reduce using rule 7 (clause -> fact .)
+    MODEB           reduce using rule 7 (clause -> fact .)
+    MODEH           reduce using rule 7 (clause -> fact .)
+    IMPLIES         reduce using rule 7 (clause -> fact .)
+    PREDICATE       reduce using rule 7 (clause -> fact .)
+    $end            reduce using rule 7 (clause -> fact .)
+
+
+state 8
+
+    (8) clause -> constraint .
+
+    EXAMPLE         reduce using rule 8 (clause -> constraint .)
+    MODEB           reduce using rule 8 (clause -> constraint .)
+    MODEH           reduce using rule 8 (clause -> constraint .)
+    IMPLIES         reduce using rule 8 (clause -> constraint .)
+    PREDICATE       reduce using rule 8 (clause -> constraint .)
+    $end            reduce using rule 8 (clause -> constraint .)
+
+
+state 9
+
+    (21) example -> EXAMPLE . atom DOT
+    (22) example -> EXAMPLE . NOT atom DOT
+    (14) atom -> . PREDICATE LPAREN terms RPAREN
+
+    NOT             shift and go to state 17
+    PREDICATE       shift and go to state 12
+
+    atom                           shift and go to state 16
+
+state 10
+
+    (11) rule -> atom . IMPLIES body DOT
+    (9) fact -> atom . DOT
+
+    IMPLIES         shift and go to state 18
+    DOT             shift and go to state 19
+
+
+state 11
+
+    (24) modeb -> MODEB . PREDICATE LPAREN MARKER TERM RPAREN DOT
+    (25) modeb -> MODEB . NOT PREDICATE LPAREN MARKER TERM RPAREN DOT
+
+    PREDICATE       shift and go to state 20
+    NOT             shift and go to state 21
+
+
+state 12
+
+    (14) atom -> PREDICATE . LPAREN terms RPAREN
+
+    LPAREN          shift and go to state 22
+
+
+state 13
+
+    (23) modeh -> MODEH . PREDICATE LPAREN MARKER TERM RPAREN DOT
+
+    PREDICATE       shift and go to state 23
+
+
+state 14
+
+    (10) constraint -> IMPLIES . body DOT
+    (15) body -> . body COMMA literal
+    (16) body -> . literal
+    (12) literal -> . NOT atom
+    (13) literal -> . atom
+    (14) atom -> . PREDICATE LPAREN terms RPAREN
+
+    NOT             shift and go to state 26
+    PREDICATE       shift and go to state 12
+
+    body                           shift and go to state 24
+    literal                        shift and go to state 25
+    atom                           shift and go to state 27
+
+state 15
+
+    (1) program -> program clause .
+
+    EXAMPLE         reduce using rule 1 (program -> program clause .)
+    MODEB           reduce using rule 1 (program -> program clause .)
+    MODEH           reduce using rule 1 (program -> program clause .)
+    IMPLIES         reduce using rule 1 (program -> program clause .)
+    PREDICATE       reduce using rule 1 (program -> program clause .)
+    $end            reduce using rule 1 (program -> program clause .)
+
+
+state 16
+
+    (21) example -> EXAMPLE atom . DOT
+
+    DOT             shift and go to state 28
+
+
+state 17
+
+    (22) example -> EXAMPLE NOT . atom DOT
+    (14) atom -> . PREDICATE LPAREN terms RPAREN
+
+    PREDICATE       shift and go to state 12
+
+    atom                           shift and go to state 29
+
+state 18
+
+    (11) rule -> atom IMPLIES . body DOT
+    (15) body -> . body COMMA literal
+    (16) body -> . literal
+    (12) literal -> . NOT atom
+    (13) literal -> . atom
+    (14) atom -> . PREDICATE LPAREN terms RPAREN
+
+    NOT             shift and go to state 26
+    PREDICATE       shift and go to state 12
+
+    atom                           shift and go to state 27
+    body                           shift and go to state 30
+    literal                        shift and go to state 25
+
+state 19
+
+    (9) fact -> atom DOT .
+
+    EXAMPLE         reduce using rule 9 (fact -> atom DOT .)
+    MODEB           reduce using rule 9 (fact -> atom DOT .)
+    MODEH           reduce using rule 9 (fact -> atom DOT .)
+    IMPLIES         reduce using rule 9 (fact -> atom DOT .)
+    PREDICATE       reduce using rule 9 (fact -> atom DOT .)
+    $end            reduce using rule 9 (fact -> atom DOT .)
+
+
+state 20
+
+    (24) modeb -> MODEB PREDICATE . LPAREN MARKER TERM RPAREN DOT
+
+    LPAREN          shift and go to state 31
+
+
+state 21
+
+    (25) modeb -> MODEB NOT . PREDICATE LPAREN MARKER TERM RPAREN DOT
+
+    PREDICATE       shift and go to state 32
+
+
+state 22
+
+    (14) atom -> PREDICATE LPAREN . terms RPAREN
+    (17) terms -> . TERM
+    (18) terms -> . TERM COMMA terms
+    (19) terms -> . PREDICATE LPAREN terms RPAREN
+    (20) terms -> . PREDICATE LPAREN terms RPAREN COMMA terms
+
+    TERM            shift and go to state 35
+    PREDICATE       shift and go to state 33
+
+    terms                          shift and go to state 34
+
+state 23
+
+    (23) modeh -> MODEH PREDICATE . LPAREN MARKER TERM RPAREN DOT
+
+    LPAREN          shift and go to state 36
+
+
+state 24
+
+    (10) constraint -> IMPLIES body . DOT
+    (15) body -> body . COMMA literal
+
+    DOT             shift and go to state 37
+    COMMA           shift and go to state 38
+
+
+state 25
+
+    (16) body -> literal .
+
+    DOT             reduce using rule 16 (body -> literal .)
+    COMMA           reduce using rule 16 (body -> literal .)
+
+
+state 26
+
+    (12) literal -> NOT . atom
+    (14) atom -> . PREDICATE LPAREN terms RPAREN
+
+    PREDICATE       shift and go to state 12
+
+    atom                           shift and go to state 39
+
+state 27
+
+    (13) literal -> atom .
+
+    DOT             reduce using rule 13 (literal -> atom .)
+    COMMA           reduce using rule 13 (literal -> atom .)
+
+
+state 28
+
+    (21) example -> EXAMPLE atom DOT .
+
+    EXAMPLE         reduce using rule 21 (example -> EXAMPLE atom DOT .)
+    MODEB           reduce using rule 21 (example -> EXAMPLE atom DOT .)
+    MODEH           reduce using rule 21 (example -> EXAMPLE atom DOT .)
+    IMPLIES         reduce using rule 21 (example -> EXAMPLE atom DOT .)
+    PREDICATE       reduce using rule 21 (example -> EXAMPLE atom DOT .)
+    $end            reduce using rule 21 (example -> EXAMPLE atom DOT .)
+
+
+state 29
+
+    (22) example -> EXAMPLE NOT atom . DOT
+
+    DOT             shift and go to state 40
+
+
+state 30
+
+    (11) rule -> atom IMPLIES body . DOT
+    (15) body -> body . COMMA literal
+
+    DOT             shift and go to state 41
+    COMMA           shift and go to state 38
+
+
+state 31
+
+    (24) modeb -> MODEB PREDICATE LPAREN . MARKER TERM RPAREN DOT
+
+    MARKER          shift and go to state 42
+
+
+state 32
+
+    (25) modeb -> MODEB NOT PREDICATE . LPAREN MARKER TERM RPAREN DOT
+
+    LPAREN          shift and go to state 43
+
+
+state 33
+
+    (19) terms -> PREDICATE . LPAREN terms RPAREN
+    (20) terms -> PREDICATE . LPAREN terms RPAREN COMMA terms
+
+    LPAREN          shift and go to state 44
+
+
+state 34
+
+    (14) atom -> PREDICATE LPAREN terms . RPAREN
+
+    RPAREN          shift and go to state 45
+
+
+state 35
+
+    (17) terms -> TERM .
+    (18) terms -> TERM . COMMA terms
+
+    RPAREN          reduce using rule 17 (terms -> TERM .)
+    COMMA           shift and go to state 46
+
+
+state 36
+
+    (23) modeh -> MODEH PREDICATE LPAREN . MARKER TERM RPAREN DOT
+
+    MARKER          shift and go to state 47
+
+
+state 37
+
+    (10) constraint -> IMPLIES body DOT .
+
+    EXAMPLE         reduce using rule 10 (constraint -> IMPLIES body DOT .)
+    MODEB           reduce using rule 10 (constraint -> IMPLIES body DOT .)
+    MODEH           reduce using rule 10 (constraint -> IMPLIES body DOT .)
+    IMPLIES         reduce using rule 10 (constraint -> IMPLIES body DOT .)
+    PREDICATE       reduce using rule 10 (constraint -> IMPLIES body DOT .)
+    $end            reduce using rule 10 (constraint -> IMPLIES body DOT .)
+
+
+state 38
+
+    (15) body -> body COMMA . literal
+    (12) literal -> . NOT atom
+    (13) literal -> . atom
+    (14) atom -> . PREDICATE LPAREN terms RPAREN
+
+    NOT             shift and go to state 26
+    PREDICATE       shift and go to state 12
+
+    literal                        shift and go to state 48
+    atom                           shift and go to state 27
+
+state 39
+
+    (12) literal -> NOT atom .
+
+    DOT             reduce using rule 12 (literal -> NOT atom .)
+    COMMA           reduce using rule 12 (literal -> NOT atom .)
+
+
+state 40
+
+    (22) example -> EXAMPLE NOT atom DOT .
+
+    EXAMPLE         reduce using rule 22 (example -> EXAMPLE NOT atom DOT .)
+    MODEB           reduce using rule 22 (example -> EXAMPLE NOT atom DOT .)
+    MODEH           reduce using rule 22 (example -> EXAMPLE NOT atom DOT .)
+    IMPLIES         reduce using rule 22 (example -> EXAMPLE NOT atom DOT .)
+    PREDICATE       reduce using rule 22 (example -> EXAMPLE NOT atom DOT .)
+    $end            reduce using rule 22 (example -> EXAMPLE NOT atom DOT .)
+
+
+state 41
+
+    (11) rule -> atom IMPLIES body DOT .
+
+    EXAMPLE         reduce using rule 11 (rule -> atom IMPLIES body DOT .)
+    MODEB           reduce using rule 11 (rule -> atom IMPLIES body DOT .)
+    MODEH           reduce using rule 11 (rule -> atom IMPLIES body DOT .)
+    IMPLIES         reduce using rule 11 (rule -> atom IMPLIES body DOT .)
+    PREDICATE       reduce using rule 11 (rule -> atom IMPLIES body DOT .)
+    $end            reduce using rule 11 (rule -> atom IMPLIES body DOT .)
+
+
+state 42
+
+    (24) modeb -> MODEB PREDICATE LPAREN MARKER . TERM RPAREN DOT
+
+    TERM            shift and go to state 49
+
+
+state 43
+
+    (25) modeb -> MODEB NOT PREDICATE LPAREN . MARKER TERM RPAREN DOT
+
+    MARKER          shift and go to state 50
+
+
+state 44
+
+    (19) terms -> PREDICATE LPAREN . terms RPAREN
+    (20) terms -> PREDICATE LPAREN . terms RPAREN COMMA terms
+    (17) terms -> . TERM
+    (18) terms -> . TERM COMMA terms
+    (19) terms -> . PREDICATE LPAREN terms RPAREN
+    (20) terms -> . PREDICATE LPAREN terms RPAREN COMMA terms
+
+    TERM            shift and go to state 35
+    PREDICATE       shift and go to state 33
+
+    terms                          shift and go to state 51
+
+state 45
+
+    (14) atom -> PREDICATE LPAREN terms RPAREN .
+
+    IMPLIES         reduce using rule 14 (atom -> PREDICATE LPAREN terms RPAREN .)
+    DOT             reduce using rule 14 (atom -> PREDICATE LPAREN terms RPAREN .)
+    COMMA           reduce using rule 14 (atom -> PREDICATE LPAREN terms RPAREN .)
+
+
+state 46
+
+    (18) terms -> TERM COMMA . terms
+    (17) terms -> . TERM
+    (18) terms -> . TERM COMMA terms
+    (19) terms -> . PREDICATE LPAREN terms RPAREN
+    (20) terms -> . PREDICATE LPAREN terms RPAREN COMMA terms
+
+    TERM            shift and go to state 35
+    PREDICATE       shift and go to state 33
+
+    terms                          shift and go to state 52
+
+state 47
+
+    (23) modeh -> MODEH PREDICATE LPAREN MARKER . TERM RPAREN DOT
+
+    TERM            shift and go to state 53
+
+
+state 48
+
+    (15) body -> body COMMA literal .
+
+    DOT             reduce using rule 15 (body -> body COMMA literal .)
+    COMMA           reduce using rule 15 (body -> body COMMA literal .)
+
+
+state 49
+
+    (24) modeb -> MODEB PREDICATE LPAREN MARKER TERM . RPAREN DOT
+
+    RPAREN          shift and go to state 54
+
+
+state 50
+
+    (25) modeb -> MODEB NOT PREDICATE LPAREN MARKER . TERM RPAREN DOT
+
+    TERM            shift and go to state 55
+
+
+state 51
+
+    (19) terms -> PREDICATE LPAREN terms . RPAREN
+    (20) terms -> PREDICATE LPAREN terms . RPAREN COMMA terms
+
+    RPAREN          shift and go to state 56
+
+
+state 52
+
+    (18) terms -> TERM COMMA terms .
+
+    RPAREN          reduce using rule 18 (terms -> TERM COMMA terms .)
+
+
+state 53
+
+    (23) modeh -> MODEH PREDICATE LPAREN MARKER TERM . RPAREN DOT
+
+    RPAREN          shift and go to state 57
+
+
+state 54
+
+    (24) modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN . DOT
+
+    DOT             shift and go to state 58
+
+
+state 55
+
+    (25) modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM . RPAREN DOT
+
+    RPAREN          shift and go to state 59
+
+
+state 56
+
+    (19) terms -> PREDICATE LPAREN terms RPAREN .
+    (20) terms -> PREDICATE LPAREN terms RPAREN . COMMA terms
+
+    RPAREN          reduce using rule 19 (terms -> PREDICATE LPAREN terms RPAREN .)
+    COMMA           shift and go to state 60
+
+
+state 57
+
+    (23) modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN . DOT
+
+    DOT             shift and go to state 61
+
+
+state 58
+
+    (24) modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT .
+
+    EXAMPLE         reduce using rule 24 (modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    MODEB           reduce using rule 24 (modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    MODEH           reduce using rule 24 (modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    IMPLIES         reduce using rule 24 (modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    PREDICATE       reduce using rule 24 (modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    $end            reduce using rule 24 (modeb -> MODEB PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+
+
+state 59
+
+    (25) modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN . DOT
+
+    DOT             shift and go to state 62
+
+
+state 60
+
+    (20) terms -> PREDICATE LPAREN terms RPAREN COMMA . terms
+    (17) terms -> . TERM
+    (18) terms -> . TERM COMMA terms
+    (19) terms -> . PREDICATE LPAREN terms RPAREN
+    (20) terms -> . PREDICATE LPAREN terms RPAREN COMMA terms
+
+    TERM            shift and go to state 35
+    PREDICATE       shift and go to state 33
+
+    terms                          shift and go to state 63
+
+state 61
+
+    (23) modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT .
+
+    EXAMPLE         reduce using rule 23 (modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    MODEB           reduce using rule 23 (modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    MODEH           reduce using rule 23 (modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    IMPLIES         reduce using rule 23 (modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    PREDICATE       reduce using rule 23 (modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    $end            reduce using rule 23 (modeh -> MODEH PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+
+
+state 62
+
+    (25) modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT .
+
+    EXAMPLE         reduce using rule 25 (modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    MODEB           reduce using rule 25 (modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    MODEH           reduce using rule 25 (modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    IMPLIES         reduce using rule 25 (modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    PREDICATE       reduce using rule 25 (modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+    $end            reduce using rule 25 (modeb -> MODEB NOT PREDICATE LPAREN MARKER TERM RPAREN DOT .)
+
+
+state 63
+
+    (20) terms -> PREDICATE LPAREN terms RPAREN COMMA terms .
+
+    RPAREN          reduce using rule 20 (terms -> PREDICATE LPAREN terms RPAREN COMMA terms .)
+

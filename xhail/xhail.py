@@ -1,4 +1,4 @@
-from abductor import Abduction
+from abduction import Abduction
 from parser import parseProgram
 from structures import Example, Modeh, Modeb
 from terms import Clause
@@ -37,7 +37,8 @@ if __name__ == '__main__':
     delta = abduction.getDelta()
 
     # ---------- deduction phase (2) ---------- #
-    
+    print([m.name for m in abduction.models[0]])
+
 
     # ---------- induction phase (3) ---------- #
     #TODO : induce kernel set (?)

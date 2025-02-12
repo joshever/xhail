@@ -1,6 +1,9 @@
+# ----- CLASS DEFINITIONS FOR HOLDING XHAIL DATA ----- #
+# ---------- term (covers atom, placemarker, and normal) ---------- #
 class Term:
     pass
 
+# ---------- atom term ---------- #   
 class Atom(Term):
     def __init__(self, predicate: str, terms: list[Term]):
         self.terms = terms
@@ -9,7 +12,8 @@ class Atom(Term):
     def __str__(self):
         clause_terms = ','.join([str(x) for x in self.terms])
         return f'{self.predicate}({clause_terms})'
-     
+
+# ---------- normal term ---------- #   
 class Normal(Term):
     def __init__(self, value: str): #constant
         self.value = value
@@ -17,6 +21,7 @@ class Normal(Term):
     def __str__(self):
         return self.value
 
+# ---------- placemarker term ---------- #   
 class PlaceMarker(Term):
     def __init__(self, marker: str, type: str):
         self.marker = marker
@@ -25,11 +30,16 @@ class PlaceMarker(Term):
     def __str__(self):
         return self.marker + self.type
 
+# ---------- literal ---------- #   
 class Literal:
     def __init__(self, atom: Atom, negation: bool):
         self.atom = atom
         self.negation = negation
+    
+    def __str__(self):
+        return 'not ' if self.negation else '' + str(self.atom)
 
+# ---------- noraml clause (covers normal clause, fact and constraint) ---------- #   
 class Clause:
     def __init__(self, head: Atom, body: list[Literal]):
         self.head = head
@@ -41,24 +51,31 @@ class Clause:
                 return False
         return True
     
-    def toString(self):
-        return self.head.toString + ' :- ' + ', '.join([literal.toString() for literal in self.body])
+    def __str__(self):
+        return str(self.head) + ' :- ' + ', '.join([str(literal) for literal in self.body]) + '.'
 
+# ---------- fact clause ---------- #   
 class Fact(Clause):
     def __init__(self, head: Atom):
         self.head = head
     
-    def toString(self):
-        return self.head.toString() + '.\n'
+    def __str__(self):
+        return str(self.head) + '.'
 
+# ---------- constraint clause ---------- #   
 class Constraint(Clause):
     def __init__(self, body: list[Literal]):
         self.body = body
 
-    def toString(self):
-        return ':- ' + ', '.join([literal.toString() for literal in self.body]) + '.\n'
+    def __str__(self):
+        return ':- ' + ', '.join([str(literal) for literal in self.body]) + '.'
 
-class LogicProgram():
+"""
+# ---------- program??? ---------- #   
+
+Q: is a program only made of clauses?
+
+class Program():
     def __init__(self, clauses: list[Clause]):
         self.clauses = clauses
 
@@ -68,8 +85,9 @@ class LogicProgram():
                 return False
         return True
     
-    def toString(self):
+    def __str__(self):
         result = ""
         for clause in self.clauses:
-            result += clause.toString() + '.\n'
+            result += str(clause) + '.\n'
         return result
+"""

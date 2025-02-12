@@ -3,7 +3,7 @@ import ply.yacc as yacc
 from structures import Modeb, Example, Modeh
 from terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
 
-# List of tokens
+# ---------- prepare tokens ----------- #
 tokens = (
     'NOT',
     'EXAMPLE_KEY',
@@ -19,7 +19,7 @@ tokens = (
     'MARKER',
 )
 
-# Token definitions
+# ---------- define tokens ----------- #
 t_NOT = r'(?<!\S)not(?!\S)'
 t_EXAMPLE_KEY = r'\#example'
 t_MODEH_KEY = r'\#modeh'
@@ -34,6 +34,7 @@ t_DOT = r'\.'
 t_MARKER = r'\+|\-|\$'
 t_ignore = ' \t\n'
 
+# ---------- special tokens ----------- #
 def t_error(t):
     print(f"Illegal character '{t.value[0]}'")
     t.lexer.skip(1)
@@ -173,32 +174,15 @@ def p_error(p):
     else:
         print("Syntax error at EOF")
 
+# ---------- default parse mode ----------- #
 def parseProgram(data):
     parser = yacc.yacc(debug=True, start='program')
     result = parser.parse(data)
     return result
 
+# ---------- debug parse mode ----------- #
 def tokenByToken(data):
     lexer = lex.lex()
     lexer.input(data)
     for token in lexer:
         print(f"Token type: {token.type}, Token value: {token.value}")
-        
-
-if __name__ == '__main__':
-    data = """
-    #example flies(a).
-    #example flies(b).
-    #example flies(c).
-    #example not flies(d).
-    penguin(d).
-    """
-    result = parseProgram(data)
-    for item in result:
-        if isinstance(item, Example):
-            print(str(item))
-        elif isinstance(item, Modeb):
-            print(str(item))
-        elif isinstance(item, Modeh):
-            print(str(item))
-

@@ -1,6 +1,6 @@
 from terms import Atom, Normal
-
-
+# ----- STRUCTURE CLASS DEFINITIONS ------ #
+# ---------- example ----------- #
 class Example:
     KEY_WORD = '#example'
     WEIGHT_OPERATOR = '='
@@ -28,6 +28,7 @@ class Example:
     def __str__(self):
         return '#example '+ ('not ' if self.negation else '') + str(self.atom)
 
+# ---------- modeh ----------- #
 class Modeh:
     KEY_WORD = '#modeh'
     WEIGHT_OPERATOR = '='
@@ -74,7 +75,7 @@ class Modeh:
     def __str__(self):
         return '#modeh ' + str(self.atom)
     
-
+# ---------- modeb ----------- #
 class Modeb:
     KEY_WORD = '#modeb'
     WEIGHT_OPERATOR = '='

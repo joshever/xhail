@@ -1,51 +1,43 @@
 from abductor import Abductor, Example, Modeh
 from parser import parseProgram
 from structures import Modeb
-from terms import Fact
+from terms import Clause, Fact
 
-# ---------- string -> Example() | Modeh() | string(background) ---------- #
-
+# ---------- string -> Example | Modeh | Modeb | Background ---------- #
 def separate(result):
     examples = []
     modehs = []
     modebs = []
+    background = []
     for item in result:
-        print(item)
         if isinstance(item, Example):
             examples.append(item)
         elif isinstance(item, Modeb):
             modebs.append(item)
         elif isinstance(item, Modeh):
             modehs.append(item)
-    return examples, modehs, modebs
+        elif isinstance(item, Clause):
+            background.append(item)
+    return examples, modehs, modebs, background
 
 if __name__ == '__main__':
-    # ---------- read and parse input program ---------- #
+    # ---------- read input ---------- #
     file = open('test.lp', 'r', encoding="utf-8")
     data = file.read()
 
-    #data = """
-    #modeb not cars(mole(+cat, -badger), +cat).
-    #modeh bright(-right).
-    #example car(car(yes)).
-    #"""
-
+    # ---------- parse data ---------- #
     result = parseProgram(data)
     print(result)
-    E, H, B = separate(result)
+    EX, MH, MB, BG = separate(result) #EX - examples, MH - modeh, MB - modeb, BG - background
     file.close()
 
-    temp_background = '''
-    bird(X) :- penguin(X).
-    bird(a).
-    bird(b).
-    bird(c).
-    penguin(d).
-    '''
-
-    # ---------- abduction ---------- #
-    abductor = Abductor(E, H, temp_background)
+    # ---------- abduction phase (1) ---------- #
+    abductor = Abductor(EX, MH, BG)
     program = abductor.createProgram()
     results = abductor.callClingo(program)
 
-    
+    # ---------- deduction phase (2) ---------- #
+    #TODO : deduce body components
+
+    # ---------- induciton phase (3) ---------- #
+    #TODO : induce kernel set (?)

@@ -1,7 +1,7 @@
-from abductor import Abductor, Example, Modeh
+from abductor import Abduction
 from parser import parseProgram
-from structures import Modeb
-from terms import Clause, Fact
+from structures import Example, Modeh, Modeb
+from terms import Clause
 
 # ---------- string -> Example | Modeh | Modeb | Background ---------- #
 def separate(result):
@@ -26,18 +26,18 @@ if __name__ == '__main__':
     data = file.read()
 
     # ---------- parse data ---------- #
-    result = parseProgram(data)
-    print(result)
-    EX, MH, MB, BG = separate(result) #EX - examples, MH - modeh, MB - modeb, BG - background
+    parsedData = parseProgram(data)
+    EX, MH, MB, BG = separate(parsedData) #EX - examples, MH - modeh, MB - modeb, BG - background
     file.close()
 
     # ---------- abduction phase (1) ---------- #
-    abductor = Abductor(EX, MH, BG)
-    program = abductor.createProgram()
-    results = abductor.callClingo(program)
+    abduction = Abduction(EX, MH, BG)
+    abduction.createProgram()
+    abduction.callClingo()
+    delta = abduction.getDelta()
 
     # ---------- deduction phase (2) ---------- #
-    #TODO : deduce body components
+    
 
-    # ---------- induciton phase (3) ---------- #
+    # ---------- induction phase (3) ---------- #
     #TODO : induce kernel set (?)

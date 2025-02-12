@@ -91,7 +91,7 @@ class Abductor:
         for modeh in self.M:
             abduciblesProgram += modeh.createProgram() + '\n'
 
-        backgroundProgram = '%BACKGROUND%\n' +'\n'.join(self.B) + '\n'
+        backgroundProgram = '%BACKGROUND%\n' + self.B + '\n'
     
         program = '\n' + backgroundProgram + '\n' + examplesProgram + '\n' + abduciblesProgram
         file = open("abduce.lp", "w")

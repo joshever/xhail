@@ -1,7 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 from structures import Modeb, Example, Modeh
-from terms import Atom, Normal, PlaceMarker
+from terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
 
 # List of tokens
 tokens = (
@@ -57,6 +57,9 @@ def p_clause(p):
     '''clause : example
               | modeb
               | modeh
+              | fact
+              | normal_clause
+              | constraint
     '''
     p[0] = p[1]
 
@@ -127,6 +130,42 @@ def p_terms(p):
     else:
         p[0] = [p[1]] + p[3]
 
+# ---------- fact ---------- #
+def p_fact(p):
+    '''fact : atom DOT
+    '''
+    p[0] = Fact(p[1])
+
+# ---------- contraint ---------- #
+def p_constraint(p):
+    '''constraint : NOT body DOT
+    '''
+    p[0] = Constraint(p[2], True)
+
+# ---------- normal_clause ---------- #
+def p_normal_clause(p):
+    '''normal_clause : atom IMPLIES body DOT
+    '''
+    p[0] = Clause(p[1], p[3])
+
+def p_body(p):
+    '''body : literal COMMA body
+            | literal
+    '''
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = p[1] + p[3]
+
+def p_literal(p):
+    '''literal : NOT atom
+               | atom
+    '''
+    if len(p) == 2:
+        p[0] = [Literal(p[1], False)]
+    else:
+        p[0] = [Literal(p[2], True)]
+
 # ---------- error ---------- #
 def p_error(p):
     if p:
@@ -139,13 +178,22 @@ def parseProgram(data):
     result = parser.parse(data)
     return result
 
+def tokenByToken(data):
+    lexer = lex.lex()
+    lexer.input(data)
+    for token in lexer:
+        print(f"Token type: {token.type}, Token value: {token.value}")
+        
+
 if __name__ == '__main__':
-    my_program = """
-    #modeb not cars(mole(+cat, -badger), +cat).
-    #modeh bright(-right).
-    #example car(car(yes)).
+    data = """
+    #example flies(a).
+    #example flies(b).
+    #example flies(c).
+    #example not flies(d).
+    penguin(d).
     """
-    result = parseProgram(my_program)
+    result = parseProgram(data)
     for item in result:
         if isinstance(item, Example):
             print(str(item))
@@ -153,20 +201,4 @@ if __name__ == '__main__':
             print(str(item))
         elif isinstance(item, Modeh):
             print(str(item))
-        
-
-
-    # lexer = lex.lex()
-
-    # # Input string to be processed
-    # input_string = """
-    # #modeb not cars(+mole).
-    # """
-
-    # # Pass the input string to the lexer
-    # lexer.input(input_string)
-
-    # # Iterate through all tokens and print them
-    # for token in lexer:
-    #     print(f"Token type: {token.type}, Token value: {token.value}")
 

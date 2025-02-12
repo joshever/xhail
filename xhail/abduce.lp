@@ -1,12 +1,10 @@
 
 %BACKGROUND%
-
-    bird(X) :- penguin(X).
-    bird(a).
-    bird(b).
-    bird(c).
-    penguin(d).
-    
+bird(X) :- penguin(X).
+bird(a).
+bird(b).
+bird(c).
+penguin(d).
 
 %EXAMPLES%
 #maximize{1@1 : flies(a)}.

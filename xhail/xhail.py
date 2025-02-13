@@ -1,4 +1,5 @@
 from abduction import Abduction
+from deduction import Deduction
 from parser import parseProgram
 from structures import Example, Modeh, Modeb
 from terms import Clause
@@ -38,6 +39,8 @@ if __name__ == '__main__':
 
     # ---------- deduction phase (2) ---------- #
     print([m.name for m in abduction.models[0]])
+    deduction = Deduction(delta, EX, MH, MB, BG)
+    deduction.deduce()
 
 
     # ---------- induction phase (3) ---------- #

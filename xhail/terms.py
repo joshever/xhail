@@ -37,7 +37,7 @@ class Literal:
         self.negation = negation
     
     def __str__(self):
-        return 'not ' if self.negation else '' + str(self.atom)
+        return ('not ' if self.negation else '') + str(self.atom)
 
 # ---------- noraml clause (covers normal clause, fact and constraint) ---------- #   
 class Clause:
@@ -68,7 +68,7 @@ class Constraint(Clause):
         self.body = body
 
     def __str__(self):
-        return ':- ' + ', '.join([str(literal) for literal in self.body]) + '.'
+        return f':- {', '.join([str(literal) for literal in self.body])}.'
 
 """
 # ---------- program??? ---------- #   

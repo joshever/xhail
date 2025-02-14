@@ -33,14 +33,13 @@ if __name__ == '__main__':
 
     # ---------- abduction phase (1) ---------- #
     abduction = Abduction(EX, MH, BG)
-    abduction.createProgram()
+    program = abduction.createProgram()
     abduction.callClingo()
     delta = abduction.getDelta()
 
     # ---------- deduction phase (2) ---------- #
-    print([m.name for m in abduction.models[0]])
     deduction = Deduction(delta, EX, MH, MB, BG)
-    deduction.deduce()
+    k = deduction.deduce(program)
 
 
     # ---------- induction phase (3) ---------- #

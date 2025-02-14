@@ -1,7 +1,7 @@
-
-
+import copy
 from structures import Modeh
 from terms import Atom, Constraint, Fact, Literal, Normal, PlaceMarker
+import clingo
 
 class Deduction:
     def __init__(self, delta, EX, MH, MB, BG):
@@ -27,21 +27,35 @@ class Deduction:
                 continue
         return t
     
-    def substitute(self, a, n): # a starts a copy of s
+    def substitute(self, s, a, n): # a starts a copy of s
         nt = set()
         nt.update(n)
-        for i in range(len(a.terms)):
-            if isinstance(a.terms[i], PlaceMarker) and a.terms[i].marker == '+':
-                a.terms[i] = Normal(nt.pop()[0])
-            elif isinstance(a.terms[i], Atom):
-                a.terms[i] = self.substitute(self, a.terms[i], nt)
+        for i in range(len(s.terms)):
+            if isinstance(s.terms[i], PlaceMarker) and s.terms[i].marker == '+':
+                a.terms += [Normal(nt.pop()[0])]
+            elif isinstance(s.terms[i], Atom):
+                a.terms += [self.substitute(self, s, a, nt)]
             else:
-                continue 
+                a.terms += [s.terms[i]]
+                continue
         return a
+    
+    # ---------- call clingo to generate solutions ----------- #
+    def isSatisfiable(self, program):
+        control = clingo.Control()
+        control.add("base", [], program)
+        control.ground([("base", [])])
+        models = []
+        def on_model(model):
+            model = model.symbols(shown=True)
+            models.append(model)
+        result = control.solve(on_model=on_model)
+        isSat = result.satisfiable
+        return True if (isSat == True) else False
 
-    def deduce(self):
-        A = []
-        T = self.BG + [Fact(d) for d in self.delta]
+    def deduce(self, program):
+        #A = []
+        #T = self.BG + [Fact(d) for d in self.delta]
         k = {}
 
         # loop through alpha values (subset of delta)
@@ -70,19 +84,26 @@ class Deduction:
                 modeb = self.MB[d]
 
                 # step 1 : extract schema from modeb
-                print("n", n)
-                schema = str(Constraint([Literal(self.substitute(Atom(modeb.atom.predicate, modeb.atom.terms), n), not modeb.negation)]))
-                print("n", n)
+                schema_literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), not modeb.negation)
+                schema = str(Constraint([schema_literal]))
                 types = '\n'.join( [ str(Constraint([Literal(Atom(x[1], [Normal(x[0])]), True)])) for x in n] )
-                exampleProgram = '\n'.join([e.createProgram() for e in self.EX])
-                backgroundProgram = '\n'.join([str(b) for b in self.BG])
-                deltaProgram = '\n'.join([str(d) for d in self.delta])
-                query = types + '\n' + schema + '\n' + deltaProgram + '\n' + backgroundProgram  +'\n' + exampleProgram
+                deltaProgram = '\n'.join([str(Fact(d)) for d in self.delta])
+                deductiveProgram = '%DEDUCTIVES \n' + deltaProgram + '\n' + types + '\n' + schema
+                query = program + '\n' + deductiveProgram
 
                 # step 2 : add to clingo model, see if terms are allowed.
-                print("\n\n\nQUERY --------------------", query)
+                #print("\n\n\nQUERY --------------------\n", query)
+                isSat = self.isSatisfiable(query)
+                #print("SATISFIABLE? ", isSat)
 
                 # step 3 : if terms allowed, add to body of kernel set.
+                if isSat:
+                    k[alpha] = k[alpha] + [Literal(schema_literal.atom, not schema_literal.negation)]
+        for key in k.keys():
+            print(f"key : {str(key)}")
+            print(f"values : {[str(body) for body in k[key]]}\n")
+        
+
 
 
 

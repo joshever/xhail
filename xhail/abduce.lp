@@ -20,3 +20,4 @@ penguin(d).
 0 { abduced_flies(A) : bird(A) } 1000000.
 #minimize{1@1, A: abduced_flies(A), bird(A)}.
 flies(A) :- abduced_flies(A), bird(A).
+#show abduced_flies/1.

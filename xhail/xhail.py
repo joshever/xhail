@@ -19,12 +19,9 @@ if __name__ == '__main__':
     abduction = Abduction(model)
     abduction.runPhase()
 
-    print([str(m) for m in model.getDelta()])
-
     # ---------- deduction phase (2) ---------- #
     deduction = Deduction(model)
     deduction.runPhase()
-
 
     # ---------- induction phase (3) ---------- #
     #TODO : induce kernel set (?)

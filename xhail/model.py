@@ -6,6 +6,7 @@ from terms import Atom
 class Model:
     program = ""
     clingo_models = []
+    delta = []
 
     def __init__(self, EX, MH, MB, BG):
         self.EX = EX
@@ -56,7 +57,7 @@ class Model:
         return self.program
     
     def getClingoModels(self):
-        return self.clingo_models
+        return self.clingo_models[0]
     
     def isSubsumed(self, atom: Atom, modeh: Modeh):
         if atom.predicate == modeh.atom.predicate:
@@ -65,7 +66,7 @@ class Model:
     
     # ---------- find abduced predicates ---------- #
     def getDelta(self):
-        model = self.getClingoModels()[0]
+        model = self.getClingoModels()
         strModel = ""
         for m in model:
             strModel += str(m) + '.\n'
@@ -74,10 +75,9 @@ class Model:
         simpleParser.loadString(strModel)
         facts = simpleParser.parseProgram()
 
-        delta = []
         for fact in facts:
             for mh in self.MH:
                 if self.isSubsumed(fact.head, mh):
-                    delta.append(fact.head)
-        return delta
+                    self.delta.append(fact.head)
+        return self.delta
     

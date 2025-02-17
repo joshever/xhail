@@ -4,17 +4,12 @@ from terms import Atom, Constraint, Fact, Literal, Normal, PlaceMarker
 import clingo
 
 class Deduction:
-    def __init__(self, delta, MH, MB, BG, model):
-        self.delta = delta
-        self.MH = MH
-        self.MB = MB
-        self.BG = BG
+    def __init__(self, model):
+        self.delta = model.delta
+        self.MH = model.MH
+        self.MB = model.MB
+        self.BG = model.BG
         self.model = model
-
-    def isSubsumed(self, atom: Atom, modeh: Modeh):
-        if atom.predicate == modeh.atom.predicate:
-            return True
-        return False
 
     def positiveHelper(self, a, m):
         t = set()
@@ -41,21 +36,14 @@ class Deduction:
         return a
     
     # ---------- call clingo to generate solutions ----------- #
-    def isSatisfiable(self, program):
-        control = clingo.Control()
-        control.add("base", [], program)
-        control.ground([("base", [])])
-        models = []
-        def on_model(model):
-            model = model.symbols(shown=True)
-            models.append(model)
-        result = control.solve(on_model=on_model)
-        isSat = result.satisfiable
-        return True if (isSat == True) else False
+    def isSat(self, atom):
+        tally = [str(ca) == str(atom) for ca in  self.model.getClingoModels()]
+        if tally.contains(True):
+            return True
+        return False
+   
 
-    def deduce(self, program):
-        #A = []
-        #T = self.BG + [Fact(d) for d in self.delta]
+    def runPhase(self, program):
         k = {}
 
         # loop through alpha values (subset of delta)
@@ -64,7 +52,7 @@ class Deduction:
             # find modeh that is subsumed by alpha
             modeh = None
             for m in self.MH:
-                if self.isSubsumed(alpha, m):
+                if self.model.isSubsumed(alpha, m):
                     modeh = m
             
             # if no modeh found skip for alpha
@@ -91,22 +79,13 @@ class Deduction:
                 modeb = self.MB[d]
 
                 # step 1 : extract schema from modeb
-                schema_literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), not modeb.negation)
-                schema = str(Constraint([schema_literal]))
-                types = '\n'.join( [ str(Constraint([Literal(Atom(x[1], [Normal(x[0])]), True)])) for x in n] )
+                schema_literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), modeb.negation)
+                #schema = str(Constraint([schema_literal]))
+                #types = '\n'.join( [ str(Constraint([Literal(Atom(x[1], [Normal(x[0])]), True)])) for x in n] )
 
 
+                isSat = self.isSat(schema_literal.atom)
 
-                deltaProgram = '\n'.join([str(Fact(d)) for d in self.delta])
-                deductiveProgram = '%DEDUCTIVES \n' + deltaProgram + '\n' + types + '\n' + schema
-                query = program + '\n' + deductiveProgram
-
-                # step 2 : add to clingo model, see if terms are allowed.
-                print("\n\n\nQUERY --------------------\n", query)
-                isSat = self.isSatisfiable(query)
-                print("SATISFIABLE? ", isSat)
-
-                # step 3 : if terms allowed, add to body of kernel set.
                 if isSat:
                     k[alpha] = k[alpha] + [Literal(schema_literal.atom, not schema_literal.negation)]
         for key in k.keys():

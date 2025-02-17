@@ -1,45 +1,29 @@
 from abduction import Abduction
 from deduction import Deduction
-from parser import parseProgram
-from structures import Example, Modeh, Modeb
-from terms import Clause
-
-# ---------- string -> Example | Modeh | Modeb | Background ---------- #
-def separate(result):
-    examples = []
-    modehs = []
-    modebs = []
-    background = []
-    for item in result:
-        if isinstance(item, Example):
-            examples.append(item)
-        elif isinstance(item, Modeb):
-            modebs.append(item)
-        elif isinstance(item, Modeh):
-            modehs.append(item)
-        elif isinstance(item, Clause):
-            background.append(item)
-    return examples, modehs, modebs, background
+from model import Model
+from parser import Parser
 
 if __name__ == '__main__':
     # ---------- read input ---------- #
-    file = open('test.lp', 'r', encoding="utf-8")
-    data = file.read()
 
     # ---------- parse data ---------- #
-    parsedData = parseProgram(data)
-    EX, MH, MB, BG = separate(parsedData) #EX - examples, MH - modeh, MB - modeb, BG - background
-    file.close()
+    parser = Parser()
+    parser.loadFile('test.lp')
+    parser.parseProgram()
+    EX, MH, MB, BG = parser.separate()
+
+    # create empty clingo Model
+    model = Model(EX, MH, MB, BG)
 
     # ---------- abduction phase (1) ---------- #
-    abduction = Abduction(EX, MH, BG)
-    program = abduction.createProgram()
-    abduction.callClingo()
-    delta = abduction.getDelta()
+    abduction = Abduction(model)
+    abduction.runPhase()
+
+    print([str(m) for m in model.getDelta()])
 
     # ---------- deduction phase (2) ---------- #
-    deduction = Deduction(delta, EX, MH, MB, BG)
-    k = deduction.deduce(program)
+    deduction = Deduction(model)
+    deduction.runPhase()
 
 
     # ---------- induction phase (3) ---------- #

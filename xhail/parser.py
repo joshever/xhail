@@ -17,6 +17,7 @@ tokens = (
     'IMPLIES',
     'DOT',
     'MARKER',
+    'OPERATOR',
 )
 
 # ---------- define tokens ----------- #
@@ -32,6 +33,7 @@ t_COMMA = r','
 t_IMPLIES = r':-'
 t_DOT = r'\.'
 t_MARKER = r'\+|\-|\$'
+t_OPERATOR = r'(==|!=|<=|>=|<|>)'
 t_ignore = ' \t\n'
 
 # ---------- special tokens ----------- #
@@ -161,6 +163,7 @@ def p_body(p):
 def p_literal(p):
     '''literal : NOT atom
                | atom
+               | TERM OPERATOR TERM
     '''
     if len(p) == 2:
         p[0] = [Literal(p[1], False)]
@@ -174,15 +177,49 @@ def p_error(p):
     else:
         print("Syntax error at EOF")
 
-# ---------- default parse mode ----------- #
-def parseProgram(data):
-    parser = yacc.yacc(debug=True, start='program')
-    result = parser.parse(data)
-    return result
+class Parser:
+    data = ""
+    parsedData = []
+    
+    def __init__(self):
+        return
 
-# ---------- debug parse mode ----------- #
-def tokenByToken(data):
-    lexer = lex.lex()
-    lexer.input(data)
-    for token in lexer:
-        print(f"Token type: {token.type}, Token value: {token.value}")
+    # ---------- string -> Example | Modeh | Modeb | Background ---------- #
+    def separate(self):
+        examples = []
+        modehs = []
+        modebs = []
+        background = []
+        for item in self.parsedData:
+            if isinstance(item, Example):
+                examples.append(item)
+            elif isinstance(item, Modeb):
+                modebs.append(item)
+            elif isinstance(item, Modeh):
+                modehs.append(item)
+            elif isinstance(item, Clause):
+                background.append(item)
+        return examples, modehs, modebs, background
+
+    # ---------- default parse mode ----------- #
+    def parseProgram(self):
+        parser = yacc.yacc(debug=True, start='program')
+        self.parsedData = parser.parse(self.data)
+        return self.parsedData
+
+    # ---------- debug parse mode ----------- #
+    def tokenByToken(self):
+        lexer = lex.lex()
+        lexer.input(self.data)
+        for token in lexer:
+            print(f"Token type: {token.type}, Token value: {token.value}")
+
+    def loadFile(self, filename):
+        file = open(filename, 'r', encoding="utf-8")
+        self.data = file.read()
+        file.close()
+        return self.data
+    
+    def loadString(self, str):
+        self.data = str
+

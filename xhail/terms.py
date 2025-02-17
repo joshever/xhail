@@ -38,6 +38,13 @@ class Literal:
     
     def __str__(self):
         return ('not ' if self.negation else '') + str(self.atom)
+    
+class MiscLiteral:
+    def __init__(self, misc: str):
+        self.misc = misc
+    
+    def __str__(self):
+        return self.misc
 
 # ---------- noraml clause (covers normal clause, fact and constraint) ---------- #   
 class Clause:

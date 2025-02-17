@@ -4,12 +4,12 @@ from terms import Atom, Constraint, Fact, Literal, Normal, PlaceMarker
 import clingo
 
 class Deduction:
-    def __init__(self, delta, EX, MH, MB, BG):
+    def __init__(self, delta, MH, MB, BG, model):
         self.delta = delta
-        self.EX = EX
         self.MH = MH
         self.MB = MB
         self.BG = BG
+        self.model = model
 
     def isSubsumed(self, atom: Atom, modeh: Modeh):
         if atom.predicate == modeh.atom.predicate:
@@ -78,6 +78,13 @@ class Deduction:
             k[alpha] = []
 
             # iterative expansion
+            """
+            think about depth
+            q(+r, +r, -r)
+            p(a) :- q(a, a, b), 
+            - becomes + after
+            """
+
             depth = len(self.MB) # TEMPORARY -> this needs updating
             for d in range(depth):
                 # iteratively add constraints and see if satisfiable.
@@ -87,14 +94,17 @@ class Deduction:
                 schema_literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), not modeb.negation)
                 schema = str(Constraint([schema_literal]))
                 types = '\n'.join( [ str(Constraint([Literal(Atom(x[1], [Normal(x[0])]), True)])) for x in n] )
+
+
+
                 deltaProgram = '\n'.join([str(Fact(d)) for d in self.delta])
                 deductiveProgram = '%DEDUCTIVES \n' + deltaProgram + '\n' + types + '\n' + schema
                 query = program + '\n' + deductiveProgram
 
                 # step 2 : add to clingo model, see if terms are allowed.
-                #print("\n\n\nQUERY --------------------\n", query)
+                print("\n\n\nQUERY --------------------\n", query)
                 isSat = self.isSatisfiable(query)
-                #print("SATISFIABLE? ", isSat)
+                print("SATISFIABLE? ", isSat)
 
                 # step 3 : if terms allowed, add to body of kernel set.
                 if isSat:
@@ -102,11 +112,5 @@ class Deduction:
         for key in k.keys():
             print(f"key : {str(key)}")
             print(f"values : {[str(body) for body in k[key]]}\n")
-        
 
-
-
-
-
-
-        
+        #REPLACE WITH FRESH VARIABLES

@@ -69,7 +69,7 @@ class Modeh:
         program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}, {vars_string}: abduced_{newAtom}, {constraint_types}' + '}.')
         clause_types = ', '.join([str(Atom(t, vars)) for t in self.types])
         program.append(f'{newAtom} :- abduced_{newAtom}, {clause_types}.')
-        program.append(f'#show abduced_{newAtom.predicate}/{str(len(newAtom.terms))}.')
+        #program.append(f'#show abduced_{newAtom.predicate}/{str(len(newAtom.terms))}.')
         return '\n'.join(program)
     
     def __str__(self):

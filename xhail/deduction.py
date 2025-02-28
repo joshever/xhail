@@ -12,17 +12,6 @@ class Deduction:
         self.BG = model.BG
         self.DEPTH = model.DEPTH
         self.model = model
-
-    def positiveHelper(self, a, m):
-        t = set()
-        for term1, term2 in zip(a.terms, m.terms):
-            if isinstance(term2, Atom):
-                t.update(self.positiveHelper(term1, term2))
-            elif isinstance(term2, PlaceMarker) and term2.marker == '+':
-                t.add((term1.value, term2.type))
-            else:
-                continue
-        return t
     
     def markerHelper(self, a, m, marker):
         t = set()
@@ -49,12 +38,14 @@ class Deduction:
         return a
     
     # ---------- call clingo to generate solutions ----------- #
-    def isSat(self, atom):
+    def isSat(self, literal):
+        atom = literal.atom
         tally = [str(ca) == str(atom) for ca in  self.model.getClingoModels()]
-        if tally.contains(True):
+        if literal.negation == False and tally.contains(True):
+            return True
+        if literal.negation == True and not tally.contains(True):
             return True
         return False
-   
 
     def runPhase(self):
 
@@ -73,45 +64,27 @@ class Deduction:
                 continue
 
             # get set of variables we can use for body (+ markers) and set head declaration
-            n = self.markerHelper(alpha, modeh.atom, '+')
+            N = self.markerHelper(alpha, modeh.atom, '+')
             k[alpha] = []
 
-
+            # loop through body options
             combinations = list(itertools.combinations_with_replacement(self.MB, self.DEPTH))
-            for comb in combinations:
-                
+            valid = False
+            while valid == False and combinations != []:
+                body = []
+                n = N
+                combination = combinations.pop()
+                for i in range(self.DEPTH):
+                    modeb = self.MB[combination[i]]
+                    literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), modeb.negation)
+                    if self.isSat(literal):
+                        valid = True
+                    else:
+                        valid = False
+                    n += self.markerHelper(literal.atom, modeb.atom, '-')
 
-                
-
-               
-
-                
-
-
-
-                # O(n^2) time
-                for i in range(len(self.MB)):
-                    for j in range(len(self.MB)):
-                        self.addBody(n, )
-                
-                # iteratively add constraints and see if satisfiable.
-                modeb = self.MB[d]
-
-                # step 1 : extract schema from modeb
-                schema_literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), modeb.negation)
-
-                #schema = str(Constraint([schema_literal]))
-                #types = '\n'.join( [ str(Constraint([Literal(Atom(x[1], [Normal(x[0])]), True)])) for x in n] )
-
-                # think about + and -. - of body added to n once added
-                isSat = self.isSat(schema_literal.atom)
-
-                if isSat:
-                    k[alpha] = k[alpha] + [Literal(schema_literal.atom, not schema_literal.negation)]
-                    new_positives = self.markerHelper(alpha, modeh.atom, '-')
+            k[alpha] = [Literal(literal.atom, not literal.negation)]
                     
-
-
         for key in k.keys():
             print(f"key : {str(key)}")
             print(f"values : {[str(body) for body in k[key]]}\n")

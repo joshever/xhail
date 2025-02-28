@@ -5,6 +5,7 @@ from parser import Parser
 
 if __name__ == '__main__':
     # ---------- read input ---------- #
+    DEPTH = 2
 
     # ---------- parse data ---------- #
     parser = Parser()
@@ -13,7 +14,7 @@ if __name__ == '__main__':
     EX, MH, MB, BG = parser.separate()
 
     # create empty clingo Model
-    model = Model(EX, MH, MB, BG)
+    model = Model(EX, MH, MB, BG, DEPTH)
 
     # ---------- abduction phase (1) ---------- #
     abduction = Abduction(model)

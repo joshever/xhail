@@ -8,11 +8,12 @@ class Model:
     clingo_models = []
     delta = []
 
-    def __init__(self, EX, MH, MB, BG):
+    def __init__(self, EX, MH, MB, BG, DEPTH):
         self.EX = EX
         self.MH = MH
         self.MB = MB
         self.BG = BG
+        self.DEPTH = DEPTH
 
     def call(self):
         control = clingo.Control()
@@ -80,4 +81,3 @@ class Model:
                 if self.isSubsumed(fact.head, mh):
                     self.delta.append(fact.head)
         return self.delta
-    

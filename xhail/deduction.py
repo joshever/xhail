@@ -71,22 +71,22 @@ class Deduction:
             combinations = list(itertools.combinations_with_replacement(self.MB, self.DEPTH))
             valid = False
             while valid == False and combinations != []:
-                body = []
                 n = N
+                body = []
                 combination = combinations.pop()
                 for i in range(self.DEPTH):
                     modeb = self.MB[combination[i]]
                     literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), modeb.negation)
                     if self.isSat(literal):
+                        body.append(literal)
                         valid = True
                     else:
                         valid = False
                     n += self.markerHelper(literal.atom, modeb.atom, '-')
-
-            k[alpha] = [Literal(literal.atom, not literal.negation)]
+            k[alpha] = body
                     
         for key in k.keys():
             print(f"key : {str(key)}")
             print(f"values : {[str(body) for body in k[key]]}\n")
 
-        #REPLACE WITH FRESH VARIABLES
+    

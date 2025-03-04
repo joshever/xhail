@@ -39,7 +39,7 @@ class Deduction:
     # ---------- call clingo to generate solutions ----------- #
     def isSat(self, literal):
         atom = literal.atom
-        tally = [str(ca) == str(atom) for ca in self.model.getClingoModels()]
+        tally = [str(ca) == str(atom) for ca in self.model.getClingoModels()[0]]
         if literal.negation == False and True in tally:
             return True
         if literal.negation == True and not True in tally:
@@ -74,7 +74,6 @@ class Deduction:
                 body = []
                 combination = combinations.pop()
                 for i in range(self.DEPTH):
-                    print(n)
                     modeb = combination[i]
                     literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), modeb.negation)
                     if self.isSat(literal):

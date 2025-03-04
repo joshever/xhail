@@ -16,6 +16,7 @@ class Model:
         self.BG = BG
         self.DEPTH = DEPTH
 
+    # ---------- METHODS ---------- #
     def call(self):
         control = clingo.Control()
         control.add("base", [], self.program)
@@ -27,6 +28,11 @@ class Model:
         control.solve(on_model=on_model)
         self.clingo_models = clingo_models
         return clingo_models
+    
+    def writeProgram(self):
+        file = open("abduce.lp", "w")
+        file.write(self.program)
+        file.close()
     
     def loadExamples(self, examples):
         examplesProgram = '%EXAMPLES%\n'
@@ -46,32 +52,25 @@ class Model:
         backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
         self.program += backgroundProgram
         return backgroundProgram + '\n'
-    
-    def writeProgram(self):
-        file = open("abduce.lp", "w")
-        file.write(self.program)
-        file.close()
 
     def clearProgram(self):
         self.program = ""
+
+    def isSubsumed(self, atom: Atom, modeh: Modeh):
+        if atom.predicate == modeh.atom.predicate:
+            return True
+        return False
+
+    # ---------- GETTERS ---------- #
 
     def getProgram(self):
         return self.program
     
     def getClingoModels(self):
-        return self.clingo_models[0]
+        return self.clingo_models
     
-    def setKernel(self, kernel):
-        self.kernel = kernel
-    
-    def isSubsumed(self, atom: Atom, modeh: Modeh):
-        if atom.predicate == modeh.atom.predicate:
-            return True
-        return False
-    
-    # ---------- find abduced predicates ---------- #
     def getDelta(self):
-        model = self.getClingoModels()
+        model = self.getClingoModels()[0]
         strModel = ""
         for m in model:
             strModel += str(m) + '.\n'
@@ -85,3 +84,14 @@ class Model:
                 if self.isSubsumed(fact.head, mh):
                     self.delta.append(fact.head)
         return self.delta
+    
+    # ---------- SETTERS ---------- #
+    
+    def setKernel(self, kernel):
+        self.kernel = kernel
+
+    def setProgram(self, program):
+        self.program = program
+    
+    
+    

@@ -1,3 +1,5 @@
+from parser import Parser
+
 class Induction:
     def __init__(self, model):
         self.model = model
@@ -6,11 +8,10 @@ class Induction:
         self.BG = model.BG
     
     def runPhase(self):
-        program = ""
-
+        program = "#show use_clause_literal/2.\n" + self.model.getProgram()
         # hypothesis space expansion
-        program += "{ use_clause_literl(V1, 0) } :- clause(V1).\n"
-        program += "{ use_clause_literl(V1, V2) } :- clause(V1), literal(V1, V2).\n"
+        program += "{ use_clause_literal(V1, 0) } :- clause(V1).\n"
+        program += "{ use_clause_literal(V1, V2) } :- clause(V1), literal(V1, V2).\n"
         program += "clause(0).\nliteral(0,1).\n"
 
         # rule construction
@@ -27,4 +28,19 @@ class Induction:
         program += "try_clause_literal(0, 1, V1) :- use_clause_literal(0, 1), not penguin(V1), bird(V1).\n"
         program += "try_clause_literal(0, 1, V1) :- not use_clause_literal(0, 1), bird(V1).\n"
 
-        model.
+        print(program)
+
+        self.model.setProgram(program)
+        self.model.call()
+        clingo_models = self.model.getClingoModels()
+
+        for cm in clingo_models:
+            if str(cm) != "[]":
+                strModel = ""
+                for fact in cm:
+                    strModel += str(fact) + '.\n'
+                simpleParser = Parser()
+                simpleParser.loadString(strModel)
+                facts = simpleParser.parseProgram()
+        for fact in facts:
+            print([int(str(term)) for term in fact.head.terms])

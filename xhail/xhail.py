@@ -25,4 +25,6 @@ if __name__ == '__main__':
     deduction.runPhase()
 
     # ---------- induction phase (3) ---------- #
-    #TODO : induce kernel set (?)
+    induction = Induction(model)
+    induction.runPhase()
+    

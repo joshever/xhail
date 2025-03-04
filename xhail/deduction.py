@@ -6,13 +6,12 @@ import itertools
 
 class Deduction:
     def __init__(self, model):
-        self.delta = model.delta
         self.MH = model.MH
         self.MB = model.MB
         self.BG = model.BG
         self.DEPTH = model.DEPTH
         self.model = model
-    
+
     def markerHelper(self, a, m, marker):
         t = set()
         for term1, term2 in zip(a.terms, m.terms):
@@ -40,10 +39,10 @@ class Deduction:
     # ---------- call clingo to generate solutions ----------- #
     def isSat(self, literal):
         atom = literal.atom
-        tally = [str(ca) == str(atom) for ca in  self.model.getClingoModels()]
-        if literal.negation == False and tally.contains(True):
+        tally = [str(ca) == str(atom) for ca in self.model.getClingoModels()]
+        if literal.negation == False and True in tally:
             return True
-        if literal.negation == True and not tally.contains(True):
+        if literal.negation == True and not True in tally:
             return True
         return False
 
@@ -53,7 +52,7 @@ class Deduction:
         k = {}
 
         # loop through alpha values (subset of delta)
-        for alpha in self.delta:
+        for alpha in self.model.getDelta():
 
             # find modeh that is subsumed by alpha and skip if none found
             modeh = None
@@ -75,18 +74,19 @@ class Deduction:
                 body = []
                 combination = combinations.pop()
                 for i in range(self.DEPTH):
-                    modeb = self.MB[combination[i]]
+                    print(n)
+                    modeb = combination[i]
                     literal = Literal(self.substitute(modeb.atom, Atom(modeb.atom.predicate, []), n), modeb.negation)
                     if self.isSat(literal):
                         body.append(literal)
                         valid = True
                     else:
                         valid = False
-                    n += self.markerHelper(literal.atom, modeb.atom, '-')
+                    n.update(self.markerHelper(literal.atom, modeb.atom, '-'))
             k[alpha] = body
                     
         for key in k.keys():
             print(f"key : {str(key)}")
             print(f"values : {[str(body) for body in k[key]]}\n")
 
-    
+        self.model.setKernel(k)

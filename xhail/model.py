@@ -7,6 +7,7 @@ class Model:
     program = ""
     clingo_models = []
     delta = []
+    kernel = {}
 
     def __init__(self, EX, MH, MB, BG, DEPTH):
         self.EX = EX
@@ -59,6 +60,9 @@ class Model:
     
     def getClingoModels(self):
         return self.clingo_models[0]
+    
+    def setKernel(self, kernel):
+        self.kernel = kernel
     
     def isSubsumed(self, atom: Atom, modeh: Modeh):
         if atom.predicate == modeh.atom.predicate:

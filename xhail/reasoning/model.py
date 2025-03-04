@@ -1,7 +1,7 @@
 import clingo
-from parser import Parser
-from structures import Modeh
-from terms import Atom
+from ..parser.parser import Parser
+from ..language.structures import Modeh
+from ..language.terms import Atom
 
 class Model:
     program = ""
@@ -30,7 +30,7 @@ class Model:
         return clingo_models
     
     def writeProgram(self):
-        file = open("abduce.lp", "w")
+        file = open("xhail/output/abduce.lp", "w")
         file.write(self.program)
         file.close()
     

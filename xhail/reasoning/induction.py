@@ -1,4 +1,4 @@
-from parser import Parser
+from ..parser.parser import Parser
 
 class Induction:
     def __init__(self, model):
@@ -27,8 +27,6 @@ class Induction:
         program += "flies(V1) :- use_clause_literal(0, 0), try_clause_literal(0, 1, V1), bird(V1).\n"
         program += "try_clause_literal(0, 1, V1) :- use_clause_literal(0, 1), not penguin(V1), bird(V1).\n"
         program += "try_clause_literal(0, 1, V1) :- not use_clause_literal(0, 1), bird(V1).\n"
-
-        print(program)
 
         self.model.setProgram(program)
         self.model.call()

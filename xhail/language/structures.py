@@ -1,4 +1,4 @@
-from terms import Atom, Normal
+from ..language.terms import Atom, Normal
 # ----- STRUCTURE CLASS DEFINITIONS ------ #
 # ---------- example ----------- #
 class Example:

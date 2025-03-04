@@ -1,8 +1,8 @@
-from abduction import Abduction
-from deduction import Deduction
-from model import Model
-from parser import Parser
-from induction import Induction
+from xhail.reasoning.abduction import Abduction
+from xhail.reasoning.deduction import Deduction
+from xhail.reasoning.induction import Induction
+from xhail.reasoning.model import Model
+from xhail.parser.parser import Parser
 
 if __name__ == '__main__':
     # ---------- read input ---------- #

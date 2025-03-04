@@ -1,7 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
-from structures import Modeb, Example, Modeh
-from terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
+from ..language.structures import Modeb, Example, Modeh
+from ..language.terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
 
 # ---------- prepare tokens ----------- #
 tokens = (
@@ -215,7 +215,8 @@ class Parser:
             print(f"Token type: {token.type}, Token value: {token.value}")
 
     def loadFile(self, filename):
-        file = open(filename, 'r', encoding="utf-8")
+        path = f'{filename}'
+        file = open(path, 'r', encoding="utf-8")
         self.data = file.read()
         file.close()
         return self.data

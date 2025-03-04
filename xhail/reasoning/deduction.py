@@ -1,7 +1,4 @@
-import copy
-from structures import Modeh
-from terms import Atom, Constraint, Fact, Literal, Normal, PlaceMarker
-import clingo
+from ..language.terms import Atom, Literal, Normal, PlaceMarker
 import itertools
 
 class Deduction:
@@ -84,8 +81,8 @@ class Deduction:
                     n.update(self.markerHelper(literal.atom, modeb.atom, '-'))
             k[alpha] = body
                     
-        for key in k.keys():
-            print(f"key : {str(key)}")
-            print(f"values : {[str(body) for body in k[key]]}\n")
+        #for key in k.keys():
+        #    print(f"key : {str(key)}")
+        #    print(f"values : {[str(body) for body in k[key]]}\n")
 
         self.model.setKernel(k)

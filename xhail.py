@@ -6,11 +6,12 @@ from xhail.parser.parser import Parser
 
 if __name__ == '__main__':
     # ---------- read input ---------- #
-    DEPTH = 1
+    DEPTH = 3
+    INPUT_FILENAME = 'tests/deduction.lp'
 
     # ---------- parse data ---------- #
     parser = Parser()
-    parser.loadFile('test.lp')
+    parser.loadFile(INPUT_FILENAME)
     parser.parseProgram()
     EX, MH, MB, BG = parser.separate()
 
@@ -34,4 +35,3 @@ if __name__ == '__main__':
     induction = Induction(model)
     induction.runPhase()
     print("Complete.")
-    

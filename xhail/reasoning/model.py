@@ -1,7 +1,7 @@
 import clingo
 from ..parser.parser import Parser
-from ..language.structures import Modeh
-from ..language.terms import Atom
+from ..language.structures import Modeb, Modeh
+from ..language.terms import Atom, Normal
 
 class Model:
     program = ""
@@ -55,11 +55,19 @@ class Model:
 
     def clearProgram(self):
         self.program = ""
-
-    def isSubsumed(self, atom: Atom, modeh: Modeh):
-        if atom.predicate == modeh.atom.predicate:
-            return True
-        return False
+    
+    # ensures normal values are the same, and any placeholders can be different.
+    def isSubsumed(self, a, m): 
+        for term1, term2 in zip(a.terms, m.terms):
+            if isinstance(term2, Atom):
+               if not self.isSubsumed(term1, term2):
+                   return False
+            elif isinstance(term2, Normal):
+                if term1.value != term2.value:
+                    return False
+            else:
+                continue
+        return True
 
     # ---------- GETTERS ---------- #
 
@@ -70,6 +78,10 @@ class Model:
         return self.clingo_models
     
     def getDelta(self):
+        self.delta = self.getAtoms(self.MH)
+        return self.delta
+    
+    def getMatches(self, atomConditions):
         model = self.getClingoModels()[0]
         strModel = ""
         for m in model:
@@ -79,11 +91,13 @@ class Model:
         simpleParser.loadString(strModel)
         facts = simpleParser.parseProgram()
 
+        result = []
         for fact in facts:
-            for mh in self.MH:
+            for mh in atomConditions:
                 if self.isSubsumed(fact.head, mh):
-                    self.delta.append(fact.head)
-        return self.delta
+                    result.append(fact.head)
+        return result
+
     
     # ---------- SETTERS ---------- #
     

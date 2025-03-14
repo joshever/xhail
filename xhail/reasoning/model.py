@@ -1,7 +1,7 @@
 import clingo
 from ..parser.parser import Parser
 from ..language.structures import Modeb, Modeh
-from ..language.terms import Atom, Normal
+from ..language.terms import Atom, Normal, PlaceMarker
 
 class Model:
     program = ""
@@ -48,6 +48,9 @@ class Model:
         self.program += abduciblesProgram
         return abduciblesProgram + '\n'
     
+    def loadModebs(self, modebs):
+        
+    
     def loadBackground(self, background):
         backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
         self.program += backgroundProgram
@@ -58,12 +61,17 @@ class Model:
     
     # ensures normal values are the same, and any placeholders can be different.
     def isSubsumed(self, a, m): 
+        if a.predicate != m.predicate:
+            return False
         for term1, term2 in zip(a.terms, m.terms):
             if isinstance(term2, Atom):
                if not self.isSubsumed(term1, term2):
                    return False
             elif isinstance(term2, Normal):
                 if term1.value != term2.value:
+                    return False
+            elif isinstance(term2, PlaceMarker) and isinstance(term1, Normal):
+                if self.getMatches([Atom(term2.type, [term1])]) == []:
                     return False
             else:
                 continue
@@ -98,7 +106,7 @@ class Model:
                     result.append(fact.head)
         return result
 
-    
+
     # ---------- SETTERS ---------- #
     
     def setKernel(self, kernel):

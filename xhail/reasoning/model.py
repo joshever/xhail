@@ -65,7 +65,7 @@ class Model:
 
     def clearProgram(self):
         self.program = ""
-    
+
     # ensures normal values are the same, and any placeholders can be different.
     def isSubsumed(self, a, m): 
         if a.predicate != m.predicate:

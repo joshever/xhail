@@ -105,7 +105,15 @@ class Modeb:
         self.min = min
     
     def createProgram(self):
-        pass
+        alphabet = [chr(i) for i in range(ord('A'), ord('Z'))]
+        vars = alphabet[:len(self.atom.terms)]
+        vars_string = ', '.join([v for v in vars])
+
+        if self.negation == True:
+            program = f"not_{self.atom.predicate}({vars_string}) :- not {self.atom.predicate}({vars_string})"
+        else:
+            program = ""
+        return program
     
     def __str__(self):
         return f'#modeb {'not ' if self.negation == True else ''}{str(self.atom)}'

@@ -72,7 +72,8 @@ class Deduction:
         print([str(m) for m in heads])
 
         bodies = [mb.atom for mb in self.MB if mb.negation == False]
-        negated_bodies = [mb.atom for mb in self.MB if mb.negation == True]
+        negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]
+        bodies += negated_bodies
         print([str(m) for m in bodies])
 
         conditions = heads + bodies

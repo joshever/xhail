@@ -5,6 +5,7 @@ class Abduction:
     def __init__(self, model):
         self.EX = model.EX
         self.MH = model.MH
+        self.MB = model.MB
         self.BG = model.BG
         self.model = model
 
@@ -13,5 +14,6 @@ class Abduction:
         self.model.loadBackground(self.BG)
         self.model.loadExamples(self.EX)
         self.model.loadAbducibles(self.MH)
+        self.model.loadNegations(self.MB)
         self.model.call()
         self.model.writeProgram()

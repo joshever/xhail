@@ -45,15 +45,22 @@ class Model:
         abduciblesProgram = '%ABDUCIBLES%\n'
         for modeh in modehs:
             abduciblesProgram += modeh.createProgram() + '\n'
-        self.program += abduciblesProgram
-        return abduciblesProgram + '\n'
+        self.program += abduciblesProgram + '\n'
+        return abduciblesProgram
     
-    def loadModebs(self, modebs):
+    def loadNegations(self, modebs):
+        negationProgram = '%NEGATIONS%\n'
+        for modeb in modebs:
+            if modeb.negation == True:
+                negationProgram += modeb.createProgram() + '\n'
+            else:
+                continue
+        self.program += negationProgram
+        return negationProgram + '\n'
         
-    
     def loadBackground(self, background):
         backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
-        self.program += backgroundProgram
+        self.program += backgroundProgram + '\n'
         return backgroundProgram + '\n'
 
     def clearProgram(self):

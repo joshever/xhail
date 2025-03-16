@@ -110,7 +110,7 @@ class Modeb:
         vars_string = ', '.join([v for v in vars])
 
         if self.negation == True:
-            program = f"not_{self.atom.predicate}({vars_string}) :- not {self.atom.predicate}({vars_string})"
+            program = f"not_{self.atom.predicate}({vars_string}) :- not {self.atom.predicate}({vars_string}), {self.atom.terms[0].type}({vars_string})."
         else:
             program = ""
         return program

@@ -1,3 +1,4 @@
+from xhail.language.structures import Modeb, Modeh
 from ..language.terms import Atom, Literal, Normal, PlaceMarker
 import itertools
 
@@ -64,27 +65,71 @@ class Deduction:
                 return [[None]]
             
         return solutions
+    
+    def extractTerms(self, schemas, facts, priorityTerms, backupTerms, previous):
+        #print([str(fact) for fact in facts], priorityTerms, backupTerms, previous)
+        level = []
+        for schema in schemas:
+            for fact in facts:
+                if self.model.isSubsumed(fact, schema):
+                    if isinstance(schema, Modeh):
+                        print("modeh")
+                        priorityTerms = priorityTerms.update(self.getMarkerTerms(fact, schema, '+'))
+                    elif isinstance(schema, Modeb):
+                        # check if positive terms fulfilled.
+                        positiveTerms = self.getMarkerTerms(fact, schema, '+')
+                        # if positive terms in priorty or backup...
+                        if positiveTerms.issubset(priorityTerms.union(backupTerms)):
+                            priorityTerms = priorityTerms.difference(positiveTerms)
+                            backupTerms = backupTerms.difference(positiveTerms)
+                            priorityTerms = priorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
+                        else:
+                            continue                            
+                    else:
+                        continue
+                    level.append([fact, priorityTerms, backupTerms, previous])
+        return level
 
 
     def runPhase(self):
+        heads = self.MH
+        head_atoms = [mh.atom for mh in self.MH]
+        print([str(m) for m in head_atoms])
 
-        heads = [mh.atom for mh in self.MH]
-        print([str(m) for m in heads])
-
-        bodies = [mb.atom for mb in self.MB if mb.negation == False]
+        bodies = self.MB
+        body_atoms = [mb.atom for mb in self.MB if mb.negation == False]
         negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]
-        bodies += negated_bodies
-        print([str(m) for m in bodies])
+        body_atoms += negated_bodies
 
-        conditions = heads + bodies
+        print([str(m) for m in body_atoms])
+
+        conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
 
         print([str(m) for m in matches])
-
-        # negated bodies.
         
-        # match types.
-        # for each matched type, modeb has not matches.
+        d = 1
+        levels = {} # [level (ie 0, 1, 2) : {fact, priorityTerms, backupTerms}
+        priorityTerms, backupTerms = set(), set()
+        levels[0] = self.extractTerms(self.MH, matches, priorityTerms, backupTerms, None)
+        print(levels[0])
+
+        while d <= self.DEPTH:
+            for prevMatch in levels[d-1].values():
+                levels[d] = levels[d] + self.extractTerms(self.MB, matches, prevMatch[1], prevMatch[2], prevMatch[0])
+            d += 1
+    
+        currentLevel = max(levels.keys())
+        for solution in levels[currentLevel]: # solution is possible end body literal
+            result = ""
+            while solution[3] != None: # while not head
+                result += str(levels[solution][0].head) + ", " # add fact
+                for option in levels[currentLevel - 1]:
+                    if option[0] == solution[3]:
+                        solution = option
+                        break
+            print(result + "\n")
+
 
 
         """

@@ -65,105 +65,84 @@ class Deduction:
                 return [[None]]
             
         return solutions
+ 
     
-    def extractTerms(self, schemas, facts, priorityTerms, backupTerms, previous):
-        #print([str(fact) for fact in facts], priorityTerms, backupTerms, previous)
+    def extractTerms(self, schemas, facts, priorityTerms, allTerms, previous, mode):
         level = []
         for schema in schemas:
             for fact in facts:
                 if self.model.isSubsumed(fact, schema):
-                    if isinstance(schema, Modeh):
-                        print("modeh")
-                        priorityTerms = priorityTerms.update(self.getMarkerTerms(fact, schema, '+'))
-                    elif isinstance(schema, Modeb):
+                    if mode == 'head':
+                        priorityTerms = self.getMarkerTerms(fact, schema, '+')
+                        allTerms = priorityTerms
+                    elif mode == 'body':
                         # check if positive terms fulfilled.
                         positiveTerms = self.getMarkerTerms(fact, schema, '+')
                         # if positive terms in priorty or backup...
-                        if positiveTerms.issubset(priorityTerms.union(backupTerms)):
+                        if positiveTerms.issubset(allTerms):
                             priorityTerms = priorityTerms.difference(positiveTerms)
-                            backupTerms = backupTerms.difference(positiveTerms)
+                            positiveTerms = positiveTerms.difference(priorityTerms)
+                            positiveTerms = positiveTerms.difference(allTerms)
                             priorityTerms = priorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
                         else:
-                            continue                            
+                            continue         
                     else:
                         continue
-                    level.append([fact, priorityTerms, backupTerms, previous])
+                    level.append([fact, priorityTerms, allTerms, previous])
         return level
+    
+
 
 
     def runPhase(self):
-        heads = self.MH
         head_atoms = [mh.atom for mh in self.MH]
-        print([str(m) for m in head_atoms])
 
-        bodies = self.MB
         body_atoms = [mb.atom for mb in self.MB if mb.negation == False]
         negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]
         body_atoms += negated_bodies
 
-        print([str(m) for m in body_atoms])
-
         conditions = head_atoms + body_atoms
+        print([str(c) for c in conditions])
+
         matches = self.model.getMatches(conditions)
-
         print([str(m) for m in matches])
-        
-        d = 1
-        levels = {} # [level (ie 0, 1, 2) : {fact, priorityTerms, backupTerms}
-        priorityTerms, backupTerms = set(), set()
-        levels[0] = self.extractTerms(self.MH, matches, priorityTerms, backupTerms, None)
-        print(levels[0])
 
+        d = 1
+        levels = [] # [level (ie 0, 1, 2) : {fact, priorityTerms, backupTerms}
+        priorityTerms, allTerms = set([]), set([])
+        levels.append(self.extractTerms(head_atoms, matches, priorityTerms, allTerms, None, 'head'))
         while d <= self.DEPTH:
-            for prevMatch in levels[d-1].values():
-                levels[d] = levels[d] + self.extractTerms(self.MB, matches, prevMatch[1], prevMatch[2], prevMatch[0])
+            currentLevel = []
+            for prevMatch in levels[d-1]:
+                if prevMatch[1] == None:
+                    continue
+                else:
+                    results = self.extractTerms(body_atoms, matches, prevMatch[1], prevMatch[2], prevMatch[0], 'body')
+                    if results == None:
+                        continue
+                    for result in results:
+                        currentLevel.append(result)
+            if currentLevel == []:
+                d = self.DEPTH + 1
+                continue
+            levels.append(currentLevel)
             d += 1
-    
-        currentLevel = max(levels.keys())
+            
+        
+        currentLevel = len(levels) - 1
         for solution in levels[currentLevel]: # solution is possible end body literal
+            i = currentLevel
             result = ""
             while solution[3] != None: # while not head
-                result += str(levels[solution][0].head) + ", " # add fact
+                if i == currentLevel:
+                    result += str(solution[0]) # add fact
+                else:
+                    result += str(solution[0]) + ", "
                 for option in levels[currentLevel - 1]:
                     if option[0] == solution[3]:
                         solution = option
+                        i -= 1
                         break
+            if solution[3] == None:
+                result = str(solution[0]) + " :- " + result + "."
             print(result + "\n")
-
-
-
-        """
-        # loop through alpha values (subset of delta)
-        for alpha in self.model.getDelta():
-            print("new alpha \n")
-            # find modeh that is subsumed by alpha and skip if none found
-            modeh = None
-            for m in self.MH:
-                if self.model.isSubsumed(alpha, m):
-                    modeh = m
-            if modeh == None:
-                continue
-
-            # get set of variables we can use for body (+ markers) and set head declaration
-            N = self.getMarkerTerms(alpha, modeh.atom, '+')
-            k[alpha] = []
-
-            # loop through body options
-            combinations = list(itertools.combinations_with_replacement(self.MB, self.DEPTH))
-            #for combination in combinations:
-            #    print([(str(c.atom), str(c.negation)) for c in combination])
-            valid = False
-            while valid == False and combinations != []:
-                n = N
-                body = []
-                combination = combinations.pop()
-                remaining_modebs = 
-                self.tryCombination()
-            k[alpha] = body
-                    
-        #for key in k.keys():
-        #    print(f"key : {str(key)}")
-        #    print(f"values : {[str(body) for body in k[key]]}\n")
-
-        self.model.setKernel(k)"
-        """

@@ -80,8 +80,9 @@ class Deduction:
                         positiveTerms = self.getMarkerTerms(fact, schema, '+')
                         # if positive terms in priorty or backup...
                         if positiveTerms.issubset(allTerms):
-                            priorityTerms = priorityTerms.difference(positiveTerms)
-                            positiveTerms = positiveTerms.difference(priorityTerms)
+                            if priorityTerms != None:
+                                priorityTerms = priorityTerms.difference(positiveTerms)
+                                positiveTerms = positiveTerms.difference(priorityTerms)
                             positiveTerms = positiveTerms.difference(allTerms)
                             priorityTerms = priorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
                         else:

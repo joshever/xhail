@@ -7,7 +7,7 @@ from xhail.parser.parser import Parser
 if __name__ == '__main__':
     # ---------- read input ---------- #
     DEPTH = 3
-    INPUT_FILENAME = 'tests/deduction.lp'#'test.lp'#
+    INPUT_FILENAME = 'test.lp'#'tests/deduction.lp'#'test.lp'#
 
     # ---------- parse data ---------- #
     parser = Parser()
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     print("Complete.")
 
     # # ---------- induction phase (3) ---------- #
-    # print("Induction...")
-    # induction = Induction(model)
-    # induction.runPhase()
-    # print("Complete.")
+    print("Induction...")
+    induction = Induction(model)
+    induction.runPhase()
+    print("Complete.")

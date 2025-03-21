@@ -35,7 +35,6 @@ penguin(b).
 #modeh penguin(+bird).
 
 #modeb penguin(+bird).
-
 #modeb not penguin(+bird).
 #modeb creates(+bird, +bird, -bird).
 #modeb not creates(+bird, +bird, -bird).

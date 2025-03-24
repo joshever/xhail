@@ -16,7 +16,7 @@ class Atom(Term):
     def getTypes(self):
         types = []
         for term in self.terms:
-            if isinstance(term, Normal):
+            if isinstance(term, Normal) and term.getType() != '':
                 types.append(Atom(term.type, [Normal(term.value)]))
             elif isinstance(term, Atom):
                 types.append(term.getTypes())

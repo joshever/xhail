@@ -17,21 +17,9 @@ class Deduction:
                 n.update(self.getMarkerTerms(term1, term2, marker))
             elif isinstance(term2, PlaceMarker) and term2.marker == marker:
                 n.add(term1.value)
-            elif isinstance(term2, Normal):
-                type
             else:
                 continue
         return n
-    
-    # ---------- call clingo to generate solutions ----------- #
-    def isSat(self, literal):
-        atom = literal.atom
-        tally = [str(ca) == str(atom) for ca in self.model.getClingoModels()[0]]
-        if literal.negation == False and True in tally:
-            return True
-        if literal.negation == True and not True in tally:
-            return True
-        return False
     
     def extractTerms(self, schemas, facts, priorityTerms, allTerms, previous, mode):
         level = []

@@ -1,6 +1,6 @@
 import clingo
 from ..parser.parser import Parser
-from ..language.structures import Modeb, Modeh
+from ..language.structures import Example, Modeb, Modeh
 from ..language.terms import Atom, Normal, PlaceMarker
 
 class Model:
@@ -33,35 +33,6 @@ class Model:
         file = open("xhail/output/abduce.lp", "w")
         file.write(self.program)
         file.close()
-    
-    def loadExamples(self, examples):
-        examplesProgram = '%EXAMPLES%\n'
-        for example in examples:
-            examplesProgram += example.createProgram() + '\n'
-        self.program += examplesProgram + '\n'
-        return examplesProgram
-    
-    def loadAbducibles(self, modehs):
-        abduciblesProgram = '%ABDUCIBLES%\n'
-        for modeh in modehs:
-            abduciblesProgram += modeh.createProgram() + '\n'
-        self.program += abduciblesProgram + '\n'
-        return abduciblesProgram
-    
-    def loadNegations(self, modebs):
-        negationProgram = '%NEGATIONS%\n'
-        for modeb in modebs:
-            if modeb.negation == True:
-                negationProgram += modeb.createProgram() + '\n'
-            else:
-                continue
-        self.program += negationProgram
-        return negationProgram + '\n'
-        
-    def loadBackground(self, background):
-        backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
-        self.program += backgroundProgram + '\n'
-        return backgroundProgram + '\n'
 
     def clearProgram(self):
         self.program = ""

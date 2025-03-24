@@ -1,6 +1,6 @@
 from xhail.reasoning.abduction import Abduction
 from xhail.reasoning.deduction import Deduction
-from xhail.reasoning.induction import Induction
+#from xhail.reasoning.induction import Induction
 from xhail.reasoning.model import Model
 from xhail.parser.parser import Parser
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     print("Complete.")
 
     # # ---------- induction phase (3) ---------- #
-    print("Induction...")
-    induction = Induction(model)
-    induction.runPhase()
-    print("Complete.")
+    # print("Induction...")
+    # induction = Induction(model)
+    # induction.runPhase()
+    # print("Complete.")

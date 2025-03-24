@@ -6,6 +6,8 @@ class Induction:
         self.MH = model.MH
         self.MB = model.MB
         self.BG = model.BG
+
+    def 
     
     def runPhase(self):
         clauses = [[1,1], [1,1], [1,1]]

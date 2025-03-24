@@ -15,7 +15,7 @@ class Atom(Term):
 
 # ---------- normal term ---------- #   
 class Normal(Term):
-    def __init__(self, value: str): #constant
+    def __init__(self, value: str):
         self.value = value
 
     def __str__(self):
@@ -76,25 +76,3 @@ class Constraint(Clause):
 
     def __str__(self):
         return f':- {', '.join([str(literal) for literal in self.body])}.'
-
-"""
-# ---------- program??? ---------- #   
-
-Q: is a program only made of clauses?
-
-class Program():
-    def __init__(self, clauses: list[Clause]):
-        self.clauses = clauses
-
-    def isHorn(self):
-        for clause in self.clauses:
-            if clause.isHorn() == False:
-                return False
-        return True
-    
-    def __str__(self):
-        result = ""
-        for clause in self.clauses:
-            result += str(clause) + '.\n'
-        return result
-"""

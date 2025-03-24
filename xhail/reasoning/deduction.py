@@ -1,5 +1,5 @@
 from xhail.language.structures import Modeb, Modeh
-from ..language.terms import Atom, Literal, Normal, PlaceMarker
+from ..language.terms import Atom, Clause, Literal, Normal, PlaceMarker
 import itertools
 
 
@@ -33,7 +33,6 @@ class Deduction:
                 atom.terms += [a_term]
             else:
                 atom.terms += [schema.terms[i]]
-                continue
         return atom, n
     
     # ---------- call clingo to generate solutions ----------- #
@@ -103,10 +102,10 @@ class Deduction:
         body_atoms += negated_bodies
 
         conditions = head_atoms + body_atoms
-        print([str(c) for c in conditions])
+        #print([str(c) for c in conditions])
 
         matches = self.model.getMatches(conditions)
-        print([str(m) for m in matches])
+        #print([str(m) for m in matches])
 
         d = 1
         levels = [] # [level (ie 0, 1, 2) : {fact, priorityTerms, backupTerms}
@@ -129,21 +128,28 @@ class Deduction:
             levels.append(currentLevel)
             d += 1
             
-        
+        clauses = []
         currentLevel = len(levels) - 1
         for solution in levels[currentLevel]: # solution is possible end body literal
             i = currentLevel
-            result = ""
-            while solution[3] != None: # while not head
-                if i == currentLevel:
-                    result += str(solution[0]) # add fact
+            body = []
+            while solution[3] != None: # while not 
+                if solution[0].predicate[:4] == "not_":
+                    predicate = solution[0].predicate[4:]
+                    negation = True
                 else:
-                    result += str(solution[0]) + ", "
+                    negation = False
+                body.append(Literal(Atom(predicate, solution[0].terms), negation))
                 for option in levels[currentLevel - 1]:
                     if option[0] == solution[3]:
                         solution = option
                         i -= 1
                         break
+
             if solution[3] == None:
-                result = str(solution[0]) + " :- " + result + "."
-            print(result + "\n")
+                head = solution[0]
+
+            clause = Clause(head, body)
+            clauses.append(clause)
+            #print(str(clause))
+        self.model.setKernel(clauses)

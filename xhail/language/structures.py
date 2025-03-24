@@ -36,7 +36,7 @@ class Modeh:
     CONSTRAINT_OPERATOR = ':'
     CONSTRAINT_SEPARATOR = '-'
     weight = 1
-    priority = 1
+    priority = 2
     min = 0 #default 0
     max = 1000000 #this just has to be super big by default
 

@@ -46,4 +46,4 @@ class Abduction:
 
         self.model.setProgram(program)
         self.model.call()
-        self.model.writeProgram()
+        self.model.writeProgram("xhail/output/abduce.lp")

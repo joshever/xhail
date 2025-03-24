@@ -20,5 +20,6 @@ not_penguin(A) :- not penguin(A), bird(A).
 
 %ABDUCIBLES%
 0 { abduced_flies(A) : bird(A) } 1000000.
-#minimize{1@1, A: abduced_flies(A), bird(A)}.
+#minimize{1@2, A: abduced_flies(A), bird(A)}.
 flies(A) :- abduced_flies(A), bird(A).
+

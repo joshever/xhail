@@ -1,13 +1,12 @@
 import clingo
 from ..parser.parser import Parser
-from ..language.structures import Example, Modeb, Modeh
 from ..language.terms import Atom, Normal, PlaceMarker
 
 class Model:
     program = ""
     clingo_models = []
     delta = []
-    kernel = {}
+    kernel = [] # clauses
 
     def __init__(self, EX, MH, MB, BG, DEPTH):
         self.EX = EX
@@ -29,8 +28,8 @@ class Model:
         self.clingo_models = clingo_models
         return clingo_models
     
-    def writeProgram(self):
-        file = open("xhail/output/abduce.lp", "w")
+    def writeProgram(self, destination):
+        file = open(destination, "w")
         file.write(self.program)
         file.close()
 
@@ -84,6 +83,8 @@ class Model:
                     result.append(fact.head)
         return result
 
+    def getKernel(self):
+        return self.kernel
 
     # ---------- SETTERS ---------- #
     

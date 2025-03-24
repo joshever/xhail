@@ -3,7 +3,7 @@
 class Term:
     pass
 
-# ---------- atom term ---------- #   
+# ---------- atom term ---------- #
 class Atom(Term):
     def __init__(self, predicate: str, terms: list[Term]):
         self.terms = terms
@@ -12,8 +12,12 @@ class Atom(Term):
     def __str__(self):
         clause_terms = ','.join([str(x) for x in self.terms])
         return f'{self.predicate}({clause_terms})'
+    
+    # I NEED TO ASSIGN SUB TYPES ETC
 
-# ---------- normal term ---------- #   
+    # I NEED TO CREATE GROUNDING / SUB GROUNDING ETC
+
+# ---------- normal term ---------- #
 class Normal(Term):
     def __init__(self, value: str):
         self.value = value
@@ -21,7 +25,7 @@ class Normal(Term):
     def __str__(self):
         return self.value
 
-# ---------- placemarker term ---------- #   
+# ---------- placemarker term ---------- #
 class PlaceMarker(Term):
     def __init__(self, marker: str, type: str):
         self.marker = marker
@@ -30,7 +34,7 @@ class PlaceMarker(Term):
     def __str__(self):
         return self.marker + self.type
 
-# ---------- literal ---------- #   
+# ---------- literal ---------- #
 class Literal:
     def __init__(self, atom: Atom, negation: bool):
         self.atom = atom
@@ -46,7 +50,7 @@ class MiscLiteral:
     def __str__(self):
         return self.misc
 
-# ---------- noraml clause (covers normal clause, fact and constraint) ---------- #   
+# ---------- noraml clause (covers normal clause, fact and constraint) ---------- #
 class Clause:
     def __init__(self, head: Atom, body: list[Literal]):
         self.head = head
@@ -60,8 +64,48 @@ class Clause:
     
     def __str__(self):
         return str(self.head) + ' :- ' + ', '.join([str(literal) for literal in self.body]) + '.'
+    
+    def generalise(self): # returned generalised clause.
+        matching = {} # lowercase to uppercase
+        unique = set()
+        # 1 search tree
+        unique.update(self.findConstants(self.head, unique))
+        for literal in self.body:
+            unique.update(self.findConstants(literal.atom, unique))
+        # map constants to variables
+        for i in range(len(unique)):
+            matching[unique.pop()] = "V" + str(i)
+        # 2 update tree
+        head = self.replaceConstants(self.head, matching)
+        literals = []
+        for literal in self.body:
+            atom = self.replaceConstants(literal.atom, matching)
+            literals.append(Literal(atom, literal.negation))
+        clause = Clause(head, literals)
+        return clause
 
-# ---------- fact clause ---------- #   
+    def findConstants(self, atom, unique):
+        terms = atom.terms # PlaceHolder / Normal / Atom / None
+        for term in terms:
+            if isinstance(term, Normal):
+                unique.add(term.value)
+            else:
+                unique.update(self.findConstants(term, unique))
+        return unique
+    
+    def replaceConstants(self, atom, matching):
+        newAtom = Atom(atom.predicate, [])
+        terms = atom.terms
+        for term in terms:
+            if isinstance(term, Normal):
+                newAtom.terms.append(Normal(matching[term.value]))
+            else:
+                newTerm = self.replaceConstants(self, term, matching)
+                newAtom.terms.append(newTerm)
+        return newAtom
+
+
+# ---------- fact clause ---------- #
 class Fact(Clause):
     def __init__(self, head: Atom):
         self.head = head
@@ -69,7 +113,7 @@ class Fact(Clause):
     def __str__(self):
         return str(self.head) + '.'
 
-# ---------- constraint clause ---------- #   
+# ---------- constraint clause ---------- #
 class Constraint(Clause):
     def __init__(self, body: list[Literal]):
         self.body = body

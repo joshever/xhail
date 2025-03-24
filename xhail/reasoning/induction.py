@@ -52,6 +52,10 @@ class Induction:
         shape = [len(clause.body) for clause in clauses]
         program = "#show use/2.\n" + self.model.getProgram()
         print([str(clause) for clause in clauses])
+        for clause in clauses:
+            for literal in clause.body:
+                print([str(type) for type in literal.atom.getTypes()])
+
 
         """
         # ---------- Constuct Program ---------- #

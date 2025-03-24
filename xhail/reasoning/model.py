@@ -49,6 +49,7 @@ class Model:
                     return False
             elif isinstance(term2, PlaceMarker) and isinstance(term1, Normal):
                 if self.getMatches([Atom(term2.type, [term1])]) == []:
+                    term1.setType(term2.type)
                     return False
             else:
                 continue

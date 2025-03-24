@@ -12,18 +12,33 @@ class Atom(Term):
     def __str__(self):
         clause_terms = ','.join([str(x) for x in self.terms])
         return f'{self.predicate}({clause_terms})'
-    
-    # I NEED TO ASSIGN SUB TYPES ETC
 
-    # I NEED TO CREATE GROUNDING / SUB GROUNDING ETC
+    def getTypes(self):
+        types = []
+        for term in self.terms:
+            if isinstance(term, Normal):
+                types.append(Atom(term.type, [Normal(term.value)]))
+            elif isinstance(term, Atom):
+                types.append(term.getTypes())
+            else: #assume PlaceMarker : what do I do here?
+                continue
+        return types
 
 # ---------- normal term ---------- #
 class Normal(Term):
+    type = ''
+
     def __init__(self, value: str):
         self.value = value
 
     def __str__(self):
         return self.value
+    
+    def getType(self):
+        return self.type
+    
+    def setType(self, type):
+        self.type = type
 
 # ---------- placemarker term ---------- #
 class PlaceMarker(Term):

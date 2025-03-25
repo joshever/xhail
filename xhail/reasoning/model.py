@@ -37,10 +37,10 @@ class Model:
         self.program = ""
 
     # ensures normal values are the same, and any placeholders can be different.
-    def isSubsumed(self, a, m): 
-        if a.predicate != m.predicate:
+    def isSubsumed(self, atom, mode): # 
+        if atom.predicate != mode.predicate:
             return False
-        for term1, term2 in zip(a.terms, m.terms):
+        for term1, term2 in zip(atom.terms, mode.terms):
             if isinstance(term2, Atom):
                if not self.isSubsumed(term1, term2):
                    return False

@@ -118,6 +118,14 @@ class Clause:
                 newTerm = self.replaceConstants(self, term, matching)
                 newAtom.terms.append(newTerm)
         return newAtom
+    
+    def getTypes(self):
+        types = []
+        types.append(self.head.getTypes())
+        for literal in self.body:
+            types.append(literal.atom.getTypes())
+        return types
+
 
 
 # ---------- fact clause ---------- #

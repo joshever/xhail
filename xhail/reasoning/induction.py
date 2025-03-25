@@ -1,3 +1,4 @@
+from xhail.language.terms import Atom, Clause, Literal, Normal, PlaceMarker
 from ..parser.parser import Parser
 
 class Induction:
@@ -43,19 +44,62 @@ class Induction:
         # logic
         for i, c in enumerate(clauses):
             for j, l in enumerate(c):
-                program += f"try({i}, {j}, V1) :- use({i}, {j}), not penguin(V1), bird(V1).\n"
-                program += f"try({i}, {j}, V1) :- not use({i}, {j}), bird(V1).\n"
+                program += f"try({i}, {j}, {vars[literals[i][j]]}) :- use({i}, {j}), not penguin(V1), bird(V1).\n"
+                program += f"try({i}, {j}, {vars}) :- not use({i}, {j}), bird(V1).\n"
+
+    def updateAtomTypes(self, atom, mode): # modeb / modeh terms
+        if atom.predicate != mode.predicate:
+            return (False, None)
+        for term1, term2 in zip(atom.terms, mode.terms):
+            if isinstance(term2, Atom):
+               res = self.updateTypes(term1, term2)
+               if res[0] == False:
+                   return (False, None)
+               else:
+                   term1 = res[1]
+            elif isinstance(term2, Normal):
+                if term1.value != term2.value:
+                    return (False, None)
+            elif isinstance(term2, PlaceMarker) and isinstance(term1, Normal):
+                term1.setType(term2.type)
+            else:
+                continue
+        return (True, atom)
+    
+    def updateClauseTypes(self, clauses):
+        new_clauses = []
+        for clause in clauses:
+            new_head = None
+            new_body = []
+            for modeh in self.MH:
+                valid, head = self.updateAtomTypes(clause.head, modeh.atom)
+                if valid == True:
+                    new_head = head
+                    break
+            for literal in clause.body:
+                for modeb in self.MB:
+                    valid, new_literal = self.updateAtomTypes(literal.atom, modeb.atom)
+                    if valid == True:
+                        new_body.append(Literal(new_literal, literal.negation))
+                        break
+            new_clauses.append(Clause(new_head, new_body))
+        return new_clauses
+    
+    def keepUniqueClauses(self, clauses):
+        result = []
+        visited = set()
+        for clause in clauses:
+            clauseStr = str(clause)
+            if clauseStr not in visited:
+                visited.add(clauseStr)
+                result.append(clause)
+        return result
 
     def runPhase(self):
         # INPUT
-        clauses = [clause.generalise() for clause in self.model.getKernel()] # [clause[0]-clause[len(clauses)-1]]
-        shape = [len(clause.body) for clause in clauses]
-        program = "#show use/2.\n" + self.model.getProgram()
-        print([str(clause) for clause in clauses])
-        for clause in clauses:
-            for literal in clause.body:
-                print([str(type) for type in literal.atom.getTypes()])
-
+        clauses = [clause.generalise() for clause in self.model.getKernel()]
+        clauses = self.keepUniqueClauses(clauses)
+        clauses = self.updateClauseTypes(clauses)
 
         """
         # ---------- Constuct Program ---------- #
@@ -69,19 +113,3 @@ class Induction:
         self.model.writeProgram("xhail/output/induce.lp")
         self.model.call()
         """
-        #clingo_models = self.model.getClingoModels()
-
-
-        """
-        for cm in clingo_models:
-            if str(cm) != "[]":
-                strModel = ""
-                for fact in cm:
-                    strModel += str(fact) + '.\n'
-                simpleParser = Parser()
-                simpleParser.loadString(strModel)
-                facts = simpleParser.parseProgram()
-        for fact in facts:
-            print([int(str(term)) for term in fact.head.terms])
-        """
-        # only include solution in the final code.

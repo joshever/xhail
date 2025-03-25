@@ -6,7 +6,7 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'programCOMMA DOT EXAMPLE_KEY IMPLIES LPAREN MARKER MODEB_KEY MODEH_KEY NOT OPERATOR PREDICATE RPAREN TERMprogram : program clause\n               | clauseclause : example\n              | modeb\n              | modeh\n              | fact\n              | normal_clause\n              | constraint\n    atom : PREDICATE LPAREN terms RPAREN\n    schema : PREDICATE LPAREN schema_terms RPARENschema_terms : MARKER TERM\n                    | MARKER TERM COMMA schema_terms\n                    | schema\n                    | schema COMMA schema_terms\n    example : EXAMPLE_KEY atom DOT\n               | EXAMPLE_KEY NOT atom DOT\n    modeh : MODEH_KEY schema DOTmodeb : MODEB_KEY schema DOT\n             | MODEB_KEY NOT schema DOT\n             terms : TERM\n             | atom\n             | TERM COMMA terms\n             | atom COMMA terms\n    fact : atom DOT\n    constraint : NOT body DOT\n    normal_clause : atom IMPLIES body DOT\n    body : literal COMMA body\n            | literal\n    literal : NOT atom\n               | atom\n               | TERM OPERATOR TERM\n    '
+_lr_signature = 'programCOMMA DOT EXAMPLE_KEY IMPLIES LPAREN MARKER MODEB_KEY MODEH_KEY NOT OPERATOR PREDICATE RPAREN TERMprogram : program clause\n               | clauseclause : example\n              | modeb\n              | modeh\n              | fact\n              | normal_clause\n              | constraint\n    atom : PREDICATE LPAREN terms RPARENschema : PREDICATE LPAREN schema_terms RPARENschema_terms : MARKER TERM\n                    | MARKER TERM COMMA schema_terms\n                    | schema\n                    | schema COMMA schema_terms\n    example : EXAMPLE_KEY atom DOT\n               | EXAMPLE_KEY NOT atom DOT\n    modeh : MODEH_KEY schema DOTmodeb : MODEB_KEY schema DOT\n             | MODEB_KEY NOT schema DOT\n             terms : TERM\n             | atom\n             | TERM COMMA terms\n             | atom COMMA terms\n    fact : atom DOT\n    constraint : NOT body DOT\n    normal_clause : atom IMPLIES body DOT\n    body : literal COMMA body\n            | literal\n    literal : NOT atom\n               | atom\n               | TERM OPERATOR TERM\n    '
     
 _lr_action_items = {'EXAMPLE_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,34,37,40,44,45,48,],[9,9,-2,-3,-4,-5,-6,-7,-8,-1,-24,-15,-25,-18,-17,-16,-26,-19,]),'MODEB_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,34,37,40,44,45,48,],[12,12,-2,-3,-4,-5,-6,-7,-8,-1,-24,-15,-25,-18,-17,-16,-26,-19,]),'MODEH_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,34,37,40,44,45,48,],[13,13,-2,-3,-4,-5,-6,-7,-8,-1,-24,-15,-25,-18,-17,-16,-26,-19,]),'NOT':([0,1,2,3,4,5,6,7,8,9,11,12,15,18,19,30,34,35,37,40,44,45,48,],[11,11,-2,-3,-4,-5,-6,-7,-8,17,20,26,-1,-24,20,-15,-25,20,-18,-17,-16,-26,-19,]),'PREDICATE':([0,1,2,3,4,5,6,7,8,9,11,12,13,15,17,18,19,20,26,29,30,34,35,37,39,40,44,45,48,53,54,57,60,],[14,14,-2,-3,-4,-5,-6,-7,-8,14,14,27,27,-1,14,-24,14,14,27,14,-15,-25,14,-18,27,-17,-16,-26,-19,14,14,27,27,]),'$end':([1,2,3,4,5,6,7,8,15,18,30,34,37,40,44,45,48,],[0,-2,-3,-4,-5,-6,-7,-8,-1,-24,-15,-25,-18,-17,-16,-26,-19,]),'DOT':([10,16,21,22,23,25,28,31,32,33,38,46,47,52,55,],[18,30,34,-28,-30,37,40,44,45,-29,48,-27,-31,-9,-10,]),'IMPLIES':([10,52,],[19,-9,]),'TERM':([11,19,29,35,36,50,53,54,],[24,24,42,24,47,56,42,42,]),'LPAREN':([14,27,],[29,39,]),'COMMA':([22,23,33,42,43,47,51,52,55,56,],[35,-30,-29,53,54,-31,57,-9,-10,60,]),'OPERATOR':([24,],[36,]),'MARKER':([39,57,60,],[50,50,50,]),'RPAREN':([41,42,43,49,51,52,55,56,58,59,61,62,],[52,-20,-21,55,-13,-9,-10,-11,-22,-23,-14,-12,]),}
 
@@ -36,26 +36,26 @@ _lr_productions = [
   ('clause -> normal_clause','clause',1,'p_clause','parser.py',64),
   ('clause -> constraint','clause',1,'p_clause','parser.py',65),
   ('atom -> PREDICATE LPAREN terms RPAREN','atom',4,'p_atom','parser.py',72),
-  ('schema -> PREDICATE LPAREN schema_terms RPAREN','schema',4,'p_schema','parser.py',78),
-  ('schema_terms -> MARKER TERM','schema_terms',2,'p_schema_terms','parser.py',82),
-  ('schema_terms -> MARKER TERM COMMA schema_terms','schema_terms',4,'p_schema_terms','parser.py',83),
-  ('schema_terms -> schema','schema_terms',1,'p_schema_terms','parser.py',84),
-  ('schema_terms -> schema COMMA schema_terms','schema_terms',3,'p_schema_terms','parser.py',85),
-  ('example -> EXAMPLE_KEY atom DOT','example',3,'p_example','parser.py',98),
-  ('example -> EXAMPLE_KEY NOT atom DOT','example',4,'p_example','parser.py',99),
-  ('modeh -> MODEH_KEY schema DOT','modeh',3,'p_modeh','parser.py',108),
-  ('modeb -> MODEB_KEY schema DOT','modeb',3,'p_modeb','parser.py',113),
-  ('modeb -> MODEB_KEY NOT schema DOT','modeb',4,'p_modeb','parser.py',114),
-  ('terms -> TERM','terms',1,'p_terms','parser.py',123),
-  ('terms -> atom','terms',1,'p_terms','parser.py',124),
-  ('terms -> TERM COMMA terms','terms',3,'p_terms','parser.py',125),
-  ('terms -> atom COMMA terms','terms',3,'p_terms','parser.py',126),
-  ('fact -> atom DOT','fact',2,'p_fact','parser.py',139),
-  ('constraint -> NOT body DOT','constraint',3,'p_constraint','parser.py',145),
-  ('normal_clause -> atom IMPLIES body DOT','normal_clause',4,'p_normal_clause','parser.py',151),
-  ('body -> literal COMMA body','body',3,'p_body','parser.py',156),
-  ('body -> literal','body',1,'p_body','parser.py',157),
-  ('literal -> NOT atom','literal',2,'p_literal','parser.py',165),
-  ('literal -> atom','literal',1,'p_literal','parser.py',166),
-  ('literal -> TERM OPERATOR TERM','literal',3,'p_literal','parser.py',167),
+  ('schema -> PREDICATE LPAREN schema_terms RPAREN','schema',4,'p_schema','parser.py',77),
+  ('schema_terms -> MARKER TERM','schema_terms',2,'p_schema_terms','parser.py',81),
+  ('schema_terms -> MARKER TERM COMMA schema_terms','schema_terms',4,'p_schema_terms','parser.py',82),
+  ('schema_terms -> schema','schema_terms',1,'p_schema_terms','parser.py',83),
+  ('schema_terms -> schema COMMA schema_terms','schema_terms',3,'p_schema_terms','parser.py',84),
+  ('example -> EXAMPLE_KEY atom DOT','example',3,'p_example','parser.py',97),
+  ('example -> EXAMPLE_KEY NOT atom DOT','example',4,'p_example','parser.py',98),
+  ('modeh -> MODEH_KEY schema DOT','modeh',3,'p_modeh','parser.py',107),
+  ('modeb -> MODEB_KEY schema DOT','modeb',3,'p_modeb','parser.py',112),
+  ('modeb -> MODEB_KEY NOT schema DOT','modeb',4,'p_modeb','parser.py',113),
+  ('terms -> TERM','terms',1,'p_terms','parser.py',122),
+  ('terms -> atom','terms',1,'p_terms','parser.py',123),
+  ('terms -> TERM COMMA terms','terms',3,'p_terms','parser.py',124),
+  ('terms -> atom COMMA terms','terms',3,'p_terms','parser.py',125),
+  ('fact -> atom DOT','fact',2,'p_fact','parser.py',138),
+  ('constraint -> NOT body DOT','constraint',3,'p_constraint','parser.py',144),
+  ('normal_clause -> atom IMPLIES body DOT','normal_clause',4,'p_normal_clause','parser.py',150),
+  ('body -> literal COMMA body','body',3,'p_body','parser.py',155),
+  ('body -> literal','body',1,'p_body','parser.py',156),
+  ('literal -> NOT atom','literal',2,'p_literal','parser.py',164),
+  ('literal -> atom','literal',1,'p_literal','parser.py',165),
+  ('literal -> TERM OPERATOR TERM','literal',3,'p_literal','parser.py',166),
 ]

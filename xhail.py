@@ -7,7 +7,7 @@ from xhail.parser.parser import Parser
 if __name__ == '__main__':
     # ---------- read input ---------- #
     DEPTH = 3
-    INPUT_FILENAME = 'test.lp'#'tests/deduction.lp'#'test.lp'#
+    INPUT_FILENAME = 'josh.lp'#'test.lp'#'tests/deduction.lp'#'test.lp'#
 
     # ---------- parse data ---------- #
     parser = Parser()

@@ -32,6 +32,7 @@ class Deduction:
                     elif mode == 'body':
                         # check if positive terms fulfilled.
                         positiveTerms = self.getMarkerTerms(fact, schema, '+')
+                        print(fact, allTerms, positiveTerms)
                         # if positive terms in priorty or backup...
                         if positiveTerms.issubset(allTerms):
                             if priorityTerms != None:
@@ -39,7 +40,9 @@ class Deduction:
                                 positiveTerms = positiveTerms.difference(priorityTerms)
                             positiveTerms = positiveTerms.difference(allTerms)
                             priorityTerms = priorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
+                            print(priorityTerms + '\n')
                         else:
+                            print("uh oh")
                             continue         
                     else:
                         continue
@@ -53,8 +56,9 @@ class Deduction:
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
+
         #for match in matches:
-        #    print([t.type for t in match.terms])
+        #    print(match)
 
         d = 1
         levels = []
@@ -76,7 +80,7 @@ class Deduction:
                 continue
             levels.append(currentLevel)
             d += 1
-            
+
         clauses = []
         currentLevel = len(levels) - 1
         for solution in levels[currentLevel]: # solution is possible end body literal

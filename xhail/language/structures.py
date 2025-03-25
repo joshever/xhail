@@ -1,4 +1,4 @@
-from ..language.terms import Atom, Normal
+from ..language.terms import Atom, Normal, PlaceMarker
 # ----- STRUCTURE CLASS DEFINITIONS ------ #
 # ---------- example ----------- #
 class Example:
@@ -56,22 +56,31 @@ class Modeh:
 
     def setMin(self, min):
         self.min = min
+
+    def generalise(self, atom, n=1):
+        terms = atom.terms
+        for idt, term in enumerate(terms):
+            if isinstance(term, PlaceMarker) and term.marker == '+':
+                value = f'V{n}'
+                type = term.type
+                atom.terms[idt] = Normal(value)
+                atom.terms[idt].setType(type)
+                n += 1
+            else:
+                term, n = self.generalise(term, n)
+        return atom, n
     
     def createProgram(self):
-        alphabet = [Normal(chr(i)) for i in range(ord('A'), ord('Z'))]
-        vars = alphabet[:len(self.atom.terms)]
-        vars_string = ', '.join([str(v) for v in vars])
-        newAtom = Atom(self.atom.predicate, vars)
+        generalised_atom, n = self.generalise(self.atom)
+        types = ', '.join(generalised_atom.getTypes())
+        variables = ', '.join([f"V{i}" for i in range(1, n)])
 
         program = []
-        constraint_types = ', '.join([str(Atom(t, vars)) for t in self.types])
-        program.append(str(self.min) + ' { abduced_' + str(newAtom) + ' : '+ constraint_types + ' } ' + str(self.max) + '.')
-        program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}, {vars_string}: abduced_{newAtom}, {constraint_types}' + '}.')
-        clause_types = ', '.join([str(Atom(t, vars)) for t in self.types])
-        program.append(f'{newAtom} :- abduced_{newAtom}, {clause_types}.')
-        #program.append(f'#show abduced_{newAtom.predicate}/{str(len(newAtom.terms))}.')
+        program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + ' : '+ types + ' } ' + str(self.max) + '.')
+        program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}, {variables}: abduced_{generalised_atom}, {types}' + '}.')
+        program.append(f'{generalised_atom} :- abduced_{generalised_atom}, {types}.')
         return '\n'.join(program)
-    
+
     def __str__(self):
         return '#modeh ' + str(self.atom)
     
@@ -103,14 +112,27 @@ class Modeb:
 
     def setMin(self, min):
         self.min = min
+
+    def generalise(self, atom, n=1):
+        terms = atom.terms
+        for idt, term in enumerate(terms):
+            if isinstance(term, PlaceMarker) and term.marker == '+':
+                value = f'V{n}'
+                type = term.type
+                atom.terms[idt] = Normal(value)
+                atom.terms[idt].setType(type)
+                n += 1
+            else:
+                term, n = self.generalise(term, n)
+        return atom, n
     
     def createProgram(self):
-        alphabet = [chr(i) for i in range(ord('A'), ord('Z'))]
-        vars = alphabet[:len(self.atom.terms)]
-        vars_string = ', '.join([v for v in vars])
+        #for all the subterms replace each unique subterm with a general
+        generalised_atom, n = self.generalise(self.atom)
+        types = ', '.join(generalised_atom.getTypes())
 
         if self.negation == True:
-            program = f"not_{self.atom.predicate}({vars_string}) :- not {self.atom.predicate}({vars_string}), {self.atom.terms[0].type}({vars_string})."
+            program = f"{str(Atom(f"not_{generalised_atom.predicate}", generalised_atom.terms))} :- not {generalised_atom}, {types}."
         else:
             program = ""
         return program

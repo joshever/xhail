@@ -1,42 +1,38 @@
 #show use/2.
 %BACKGROUND%
-bird(X) :- penguin(X).
-bird(a).
-bird(b).
-bird(c).
-penguin(d).
+car(car1).
+car(car2).
+car(car3).
+light(a).
+light(b).
+light(c).
+red(a).
+amber(b).
+green(c).
+atlight(car1,a).
+atlight(car2,b).
+atlight(car3,c).
 
 %NEGATIONS%
-not_penguin(A) :- not penguin(A), bird(A).
+not_atlight(V1,V2) :- not atlight(V1,V2), car(V1), light(V2).
+not_red(V1) :- not red(V1), light(V1).
 
 %EXAMPLES%
-#maximize{1@1 : flies(a)}.
-:- not flies(a).
-#maximize{1@1 : flies(b)}.
-:- not flies(b).
-#maximize{1@1 : flies(c)}.
-:- not flies(c).
-#maximize{1@1 : not flies(d)}.
-:- flies(d).
+#maximize{1@1 : drive(car1,a)}.
+:- not drive(car1,a).
+#maximize{1@1 : drive(car2,b)}.
+:- not drive(car2,b).
+#maximize{1@1 : not drive(car3,c)}.
+:- drive(car3,c).
 
 %ABDUCIBLES%
-0 { abduced_flies(A) : bird(A) } 1000000.
-#minimize{1@2, A: abduced_flies(A), bird(A)}.
-flies(A) :- abduced_flies(A), bird(A).
+0 { abduced_drive(V1,V2) : car(V1), light(V2) } 1000000.
+#minimize{1@2, V1, V2: abduced_drive(V1,V2), car(V1), light(V2)}.
+drive(V1,V2) :- abduced_drive(V1,V2), car(V1), light(V2).
 
 
 { use(V1, 0) } :- clause(V1).
 { use(V1, V2) } :- clause(V1), literal(V1, V2).
-clause(0).
-literal(0, 1).
 
-level(0,0) :- use(0,0).
-level(0,1) :- use(0,1).
-:- not level(0,0),level(0,1).
 
-#minimize{ 1@1 : use(0,0) }.
-#minimize{ 1@1 : use(0,1) }.
 
-flies(V0) :- use(0, 0), try(0, 1, V0), bird(V0).
-try(0, 1, V0) :- use(0, 1), not penguin(V0), bird(V0).
-try(0, 1, V0) :- not use(0, 1), bird(V0).

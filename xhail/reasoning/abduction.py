@@ -30,7 +30,7 @@ class Abduction:
             else:
                 continue
         return negationProgram + '\n'
-        
+
     def loadBackground(self, background):
         backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
         return backgroundProgram + '\n'

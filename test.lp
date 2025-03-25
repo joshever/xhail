@@ -1,8 +1,11 @@
 %% PENGUINS.lp
 %%%%%%%%%%%%%%
 
-%#display flies/1.
-%#display penguin/1.
+bird(X) :- penguin(X).
+bird(a).
+bird(b).
+bird(c).
+penguin(d).
 
 #modeh flies(+bird).
 #modeb penguin(+bird).
@@ -12,9 +15,3 @@
 #example flies(b).
 #example flies(c).
 #example not flies(d).
-
-bird(X) :- penguin(X).
-bird(a).
-bird(b).
-bird(c).
-penguin(d).

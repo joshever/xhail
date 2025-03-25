@@ -13,7 +13,6 @@ class Induction:
         program += "{ use(V1, 0) } :- clause(V1).\n"
         program += "{ use(V1, V2) } :- clause(V1), literal(V1, V2).\n"
 
-
         for idc, clause in enumerate(clauses):
             program += f"clause({idc}).\n"
             for idl in range(1, len(clause.body)+1):
@@ -115,6 +114,8 @@ class Induction:
         clauses = self.uniqueObjects(clauses)
         clauses = self.updateClauseTypes(clauses)
 
+        print([str(clause) for clause in clauses])
+
         
         # ---------- Constuct Program ---------- #
         program = self.model.getProgram()
@@ -151,7 +152,3 @@ class Induction:
             new_clause.body = new_body
             print(str(new_clause))
             included_clauses.append(new_clause)
-
-                    
-
-        

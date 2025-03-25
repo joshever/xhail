@@ -69,7 +69,8 @@ def p_clause(p):
 
 # ---------- atom ---------- #
 def p_atom(p):
-    '''atom : PREDICATE LPAREN terms RPAREN'''
+    '''atom : PREDICATE LPAREN terms RPAREN
+    '''
     p[0] = Atom(p[1], p[3])
 
 # ---------- schema ---------- #

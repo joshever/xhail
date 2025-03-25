@@ -118,6 +118,7 @@ class Induction:
         
         # ---------- Constuct Program ---------- #
         program = self.model.getProgram()
+        program = f'#show use/2.\n' + program
         program += self.loadChoice(clauses)
         program += self.loadClauseLevels(clauses)
         program += self.loadMinimize(clauses)
@@ -127,4 +128,30 @@ class Induction:
         self.model.setProgram(program)
         self.model.writeProgram("xhail/output/induction.lp")
         self.model.call()
+
+        clingo_models = self.model.getClingoModels()
+        for clingo_model in clingo_models:
+            if str(clingo_model) != '[]':
+                selectors = {}
+                facts = self.model.parseModel(clingo_model)
+                for fact in facts:
+                    terms = fact.head.terms
+                    if terms[0] in selectors.keys():
+                        selectors[int(terms[0].value)].append(int(terms[1].value))
+                    else:
+                        selectors[int(terms[0].value)] = [int(terms[1].value)]  
+                break
+ 
+        included_clauses = []
+        for head in selectors.keys():
+            new_clause = Clause(clauses[head].head, [])
+            new_body = []
+            for literal in selectors[head]:
+                new_body.append(clauses[head].body[literal])
+            new_clause.body = new_body
+            print(str(new_clause))
+            included_clauses.append(new_clause)
+
+                    
+
         

@@ -22,13 +22,11 @@ if __name__ == '__main__':
     print("Abduction...")
     abduction = Abduction(model)
     abduction.runPhase()
-    print("Complete.")
 
     # ---------- deduction phase (2) ---------- #
     print("Deduction...")
     deduction = Deduction(model)
     deduction.runPhase()
-    print("Complete.")
 
     # ---------- induction phase (3) ---------- #
     print("Induction...")

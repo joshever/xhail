@@ -55,6 +55,17 @@ class Model:
             else:
                 continue
         return True
+    
+    def parseModel(self, model):
+        strModel = ""
+        for m in model:
+            strModel += str(m) + '.\n'
+
+        simpleParser = Parser()
+        simpleParser.loadString(strModel)
+        facts = simpleParser.parseProgram()
+
+        return facts
 
     # ---------- GETTERS ---------- #
 
@@ -70,13 +81,7 @@ class Model:
     
     def getMatches(self, atomConditions):
         model = self.getClingoModels()[0]
-        strModel = ""
-        for m in model:
-            strModel += str(m) + '.\n'
-
-        simpleParser = Parser()
-        simpleParser.loadString(strModel)
-        facts = simpleParser.parseProgram()
+        facts = self.parseModel(model)
 
         result = []
         for fact in facts:

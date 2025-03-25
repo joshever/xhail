@@ -1,3 +1,4 @@
+#show use/2.
 %BACKGROUND%
 bird(X) :- penguin(X).
 bird(a).

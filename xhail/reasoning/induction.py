@@ -8,44 +8,52 @@ class Induction:
         self.MB = model.MB
         self.BG = model.BG
 
-    def loadChoice(self, clauses, shape, program = ""):
-        program += "{ use(V1, 0) } :- clause(V1).\n"
+    def loadChoice(self, clauses): # literal 0 == clause head. literal 1 = first clause literal. !!! clause 0 is first clause
+        program = "{ use(V1, 0) } :- clause(V1).\n"
         program += "{ use(V1, V2) } :- clause(V1), literal(V1, V2).\n"
 
-        for c in range(len(clauses)):
-            program += f"clause({c}).\n"
-            for l in range(1, shape[c]):
-                program += f"literal({c}, {l}).\n"
+
+        for idc, clause in enumerate(clauses):
+            program += f"clause({idc}).\n"
+            for idl in range(1, len(clause.body)+1):
+                program += f"literal({idc}, {idl}).\n"
         return program
     
-    def loadClauseLevels(self, clauses, shape, program = ""):
-        for c in range(len(clauses)):
+    def loadClauseLevels(self, clauses):
+        program = ""
+        for idc, clause in enumerate(clauses):
             # level 0 include not. all levels
             levels = []
-            for l in range(shape[c]):
-                levels.append(f"level({c},{l})")
-                program += f"level({c},{l}) :- use({c},{l}).\n"
+            for idl in range(len(clause.body) + 1):
+                levels.append(f"level({idc},{idl})")
+                program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
             program += ":- not " + ','.join(levels) + ".\n"
         return program
     
-    def loadMinimize(self, clauses, shape, program = ""):
-        for c in range(len(clauses)):
-            for l in range(shape[c]):
-                program += "#minimize{ 1@1 : "+f"use({c},{l})"+" }.\n"
+    def loadMinimize(self, clauses):
+        program = ""
+        for idc, clause in enumerate(clauses):
+            for idl in range(len(clause.body)+1):
+                program += "#minimize{ 1@1 : "+f"use({idc},{idl})"+" }.\n"
         return program
     
-    def loadUseTry(self, clauses, shape, program=""):
+    def loadUseTry(self, clauses):
+        program = ""
+
         for idc, clause in enumerate(clauses):
             program += str(clause.head) + " :- " + f"use({idc}, 0)"
-            for idl in range(1, shape[idc]):
-                program += f",try({idc}, {idl}, {clause.head.terms})"
-            program += "type(V1)"
+            for idl in range(1, len(clause.body)+1):
+                program += f",try({idc}, {idl}, {','.join([term.value for term in clause.head.terms])})"
+            print("hey: ",','.join(clause.getTypes()))
+            program += ','.join(clause.getTypes())
 
         # logic
-        for i, c in enumerate(clauses):
-            for j, l in enumerate(c):
-                program += f"try({i}, {j}, {vars[literals[i][j]]}) :- use({i}, {j}), not penguin(V1), bird(V1).\n"
-                program += f"try({i}, {j}, {vars}) :- not use({i}, {j}), bird(V1).\n"
+        for idc, clause in enumerate(clauses):
+            for idl, literal in enumerate(clause.body):
+                program += f"try({idc}, {idl+1}, {','.join([var.value for var in literal.atom.getVariables()])}) :- use({idc}, {idl+1}), {str(literal)}, {','.join(literal.atom.getTypes())}.\n"
+                program += f"try({idc}, {idl+1}, {','.join([var.value for var in literal.atom.getVariables()])}) :- not use({idc}, {idl+1}), {','.join(literal.atom.getTypes())}.\n"
+        
+        return program
 
     def updateAtomTypes(self, atom, mode): # modeb / modeh terms
         if atom.predicate != mode.predicate:
@@ -101,15 +109,19 @@ class Induction:
         clauses = self.keepUniqueClauses(clauses)
         clauses = self.updateClauseTypes(clauses)
 
-        """
+        for clause in clauses:
+            print(clause.getTypes())
+
+        
         # ---------- Constuct Program ---------- #
-        program += self.loadChoice(clauses, shape)
-        program += self.loadClauseLevels(clauses, shape)
-        program += self.loadMinimize(clauses, shape)
-        program += self.loadUseTry(clauses, shape)
+        program = self.model.getProgram()
+        program += self.loadChoice(clauses)
+        program += self.loadClauseLevels(clauses)
+        program += self.loadMinimize(clauses)
+        program += self.loadUseTry(clauses)
 
 
         self.model.setProgram(program)
         self.model.writeProgram("xhail/output/induce.lp")
         self.model.call()
-        """
+        

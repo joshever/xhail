@@ -13,16 +13,20 @@ class Atom(Term):
         clause_terms = ','.join([str(x) for x in self.terms])
         return f'{self.predicate}({clause_terms})'
 
-    def getTypes(self):
-        types = []
+    def getVariables(self): # return Term (with its type)
+        variables = []
         for term in self.terms:
             if isinstance(term, Normal) and term.getType() != '':
-                types.append(Atom(term.type, [Normal(term.value)]))
+                variables += [term]
             elif isinstance(term, Atom):
-                types.append(term.getTypes())
-            else: #assume PlaceMarker : what do I do here?
+                variables += term.getVariables()
+            else: 
                 continue
-        return types
+        return variables
+    
+    def getTypes(self):
+        variables = self.getVariables()
+        return [str(Atom(var.type, [var.value]) for var in variables)]
 
 # ---------- normal term ---------- #
 class Normal(Term):
@@ -119,13 +123,16 @@ class Clause:
                 newAtom.terms.append(newTerm)
         return newAtom
     
-    def getTypes(self):
-        types = []
-        types.append(self.head.getTypes())
+    def getVariables(self):
+        variables = []
+        variables += self.head.getVariables()
         for literal in self.body:
-            types.append(literal.atom.getTypes())
-        return types
-
+            variables += literal.atom.getVariables()
+        return variables
+    
+    def getTypes(self):
+        variables = self.getVariables()
+        return [str(Atom(var.type, [var.value])) for var in variables]
 
 
 # ---------- fact clause ---------- #

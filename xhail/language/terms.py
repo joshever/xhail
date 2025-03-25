@@ -26,7 +26,7 @@ class Atom(Term):
     
     def getTypes(self):
         variables = self.getVariables()
-        return [str(Atom(var.type, [var.value]) for var in variables)]
+        return [str(Atom(var.type, [var.value])) for var in variables]
 
 # ---------- normal term ---------- #
 class Normal(Term):

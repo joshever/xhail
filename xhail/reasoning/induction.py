@@ -1,5 +1,4 @@
 from xhail.language.terms import Atom, Clause, Literal, Normal, PlaceMarker
-from ..parser.parser import Parser
 
 class Induction:
     def __init__(self, model):
@@ -8,8 +7,10 @@ class Induction:
         self.MB = model.MB
         self.BG = model.BG
 
+    # ---------- Generate and Load Choice statements ---------- #
     def loadChoice(self, clauses): # literal 0 == clause head. literal 1 = first clause literal. !!! clause 0 is first clause
-        program = "{ use(V1, 0) } :- clause(V1).\n"
+        program = "\n"
+        program += "{ use(V1, 0) } :- clause(V1).\n"
         program += "{ use(V1, V2) } :- clause(V1), literal(V1, V2).\n"
 
 
@@ -19,8 +20,9 @@ class Induction:
                 program += f"literal({idc}, {idl}).\n"
         return program
     
+    # ---------- Generate and Load Clause Level statements ---------- #
     def loadClauseLevels(self, clauses):
-        program = ""
+        program = "\n"
         for idc, clause in enumerate(clauses):
             # level 0 include not. all levels
             levels = []
@@ -30,22 +32,23 @@ class Induction:
             program += ":- not " + ','.join(levels) + ".\n"
         return program
     
+    # ---------- Generate and Load Minimize statements ---------- #
     def loadMinimize(self, clauses):
-        program = ""
+        program = "\n"
         for idc, clause in enumerate(clauses):
             for idl in range(len(clause.body)+1):
                 program += "#minimize{ 1@1 : "+f"use({idc},{idl})"+" }.\n"
         return program
     
+    # ---------- Generate and Load Use/Try statements ---------- #
     def loadUseTry(self, clauses):
-        program = ""
+        program = "\n"
 
         for idc, clause in enumerate(clauses):
             program += str(clause.head) + " :- " + f"use({idc}, 0)"
             for idl in range(1, len(clause.body)+1):
-                program += f",try({idc}, {idl}, {','.join([term.value for term in clause.head.terms])})"
-            print("hey: ",','.join(clause.getTypes()))
-            program += ','.join(clause.getTypes())
+                program += f", try({idc}, {idl}, {','.join([term.value for term in clause.head.terms])})"
+            program += ', ' + ', '.join(self.uniqueObjects(clause.getTypes())) + '.\n'
 
         # logic
         for idc, clause in enumerate(clauses):
@@ -55,6 +58,7 @@ class Induction:
         
         return program
 
+    # ---------- Assign Types for Atom ---------- #
     def updateAtomTypes(self, atom, mode): # modeb / modeh terms
         if atom.predicate != mode.predicate:
             return (False, None)
@@ -74,6 +78,7 @@ class Induction:
                 continue
         return (True, atom)
     
+    # ---------- Assing Types for Clause ---------- #
     def updateClauseTypes(self, clauses):
         new_clauses = []
         for clause in clauses:
@@ -93,24 +98,22 @@ class Induction:
             new_clauses.append(Clause(new_head, new_body))
         return new_clauses
     
-    def keepUniqueClauses(self, clauses):
+    # ---------- Remove Duplicates ---------- #
+    def uniqueObjects(self, objects):
         result = []
         visited = set()
-        for clause in clauses:
-            clauseStr = str(clause)
-            if clauseStr not in visited:
-                visited.add(clauseStr)
-                result.append(clause)
+        for object in objects:
+            objectStr = str(object)
+            if objectStr not in visited:
+                visited.add(objectStr)
+                result.append(object)
         return result
 
     def runPhase(self):
-        # INPUT
+        # ---------- Prepare Clauses ---------- #
         clauses = [clause.generalise() for clause in self.model.getKernel()]
-        clauses = self.keepUniqueClauses(clauses)
+        clauses = self.uniqueObjects(clauses)
         clauses = self.updateClauseTypes(clauses)
-
-        for clause in clauses:
-            print(clause.getTypes())
 
         
         # ---------- Constuct Program ---------- #
@@ -120,8 +123,8 @@ class Induction:
         program += self.loadMinimize(clauses)
         program += self.loadUseTry(clauses)
 
-
+        # ---------- Update Model ---------- #
         self.model.setProgram(program)
-        self.model.writeProgram("xhail/output/induce.lp")
+        self.model.writeProgram("xhail/output/induction.lp")
         self.model.call()
         

@@ -1,3 +1,4 @@
+import copy
 from ..language.terms import Atom, Normal, PlaceMarker
 # ----- STRUCTURE CLASS DEFINITIONS ------ #
 # ---------- example ----------- #
@@ -71,7 +72,8 @@ class Modeh:
         return atom, n
     
     def createProgram(self):
-        generalised_atom, n = self.generalise(self.atom)
+        new_atom = copy.deepcopy(self.atom)
+        generalised_atom, n = self.generalise(new_atom)
         types = ', '.join(generalised_atom.getTypes())
         variables = ', '.join([f"V{i}" for i in range(1, n)])
 
@@ -127,14 +129,14 @@ class Modeb:
         return atom, n
     
     def createProgram(self):
-        #for all the subterms replace each unique subterm with a general
-        generalised_atom, n = self.generalise(self.atom)
-        types = ', '.join(generalised_atom.getTypes())
-
         if self.negation == True:
+            new_atom = copy.deepcopy(self.atom)
+            generalised_atom, _ = self.generalise(new_atom)
+            types = ', '.join(generalised_atom.getTypes())
             program = f"{str(Atom(f"not_{generalised_atom.predicate}", generalised_atom.terms))} :- not {generalised_atom}, {types}."
         else:
             program = ""
+
         return program
     
     def __str__(self):

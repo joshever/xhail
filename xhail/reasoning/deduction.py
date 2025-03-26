@@ -32,22 +32,36 @@ class Deduction:
                     elif mode == 'body':
                         # check if positive terms fulfilled.
                         positiveTerms = self.getMarkerTerms(fact, schema, '+')
-                        print(fact, allTerms, positiveTerms)
                         # if positive terms in priorty or backup...
                         if positiveTerms.issubset(allTerms):
-                            if priorityTerms != None:
-                                priorityTerms = priorityTerms.difference(positiveTerms)
-                                positiveTerms = positiveTerms.difference(priorityTerms)
-                            positiveTerms = positiveTerms.difference(allTerms)
-                            priorityTerms = priorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
-                            print(priorityTerms + '\n')
+                            priorityTerms.difference(positiveTerms)
+                            positiveTerms.difference(priorityTerms)
+                            positiveTerms.difference(allTerms)
+                            priorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
+                            allTerms.update(priorityTerms)
                         else:
-                            print("uh oh")
                             continue         
                     else:
                         continue
                     level.append([fact, priorityTerms, allTerms, previous])
         return level
+
+    def findNext(self, atomToFind, levels, idl):
+        if atomToFind == None:
+            return []
+        else:
+            for idc, choice in enumerate(levels[idl]):
+                if str(choice[0]) == str(atomToFind):
+                    chain = self.findNext(choice[3], levels, idl-1)
+                    chain.append(choice[0])
+                    levels[idl].pop(idc)
+                    return chain
+        return ["Mistake!"]
+
+
+
+
+
     
     def runPhase(self):
         head_atoms = [mh.atom for mh in self.MH]
@@ -56,9 +70,6 @@ class Deduction:
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
-
-        #for match in matches:
-        #    print(match)
 
         d = 1
         levels = []
@@ -81,27 +92,15 @@ class Deduction:
             levels.append(currentLevel)
             d += 1
 
-        clauses = []
-        currentLevel = len(levels) - 1
-        for solution in levels[currentLevel]: # solution is possible end body literal
-            i = currentLevel
-            body = []
-            while solution[3] != None: # while not 
-                if solution[0].predicate[:4] == "not_":
-                    predicate = solution[0].predicate[4:]
-                    negation = True
-                else:
-                    negation = False
-                body.append(Literal(Atom(predicate, solution[0].terms), negation))
-                for option in levels[currentLevel - 1]:
-                    if option[0] == solution[3]:
-                        solution = option
-                        i -= 1
-                        break
 
-            if solution[3] == None:
-                head = solution[0]
+        results = []
+        top = len(levels) - 1
+        
+        for idc, choice in enumerate(levels[top]):
+            chain = self.findNext(choice[3], levels, top)
+            print(choice[0])
+            chain.append(choice[0])
+            results.append(chain)
+            print("new chain:")
+            print([str(item) for item in chain])
 
-            clause = Clause(head, body)
-            clauses.append(clause)
-        self.model.setKernel(clauses)

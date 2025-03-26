@@ -29,7 +29,7 @@ if __name__ == '__main__':
     deduction.runPhase()
 
     # ---------- induction phase (3) ---------- #
-    print("Induction...")
-    induction = Induction(model)
-    induction.runPhase()
-    print("Complete.")
+    # print("Induction...")
+    # induction = Induction(model)
+    # induction.runPhase()
+    # print("Complete.")

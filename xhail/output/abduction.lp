@@ -28,3 +28,4 @@ not_red(V1) :- not red(V1), light(V1).
 0 { abduced_drive(V1,V2) : car(V1), light(V2) } 1000000.
 #minimize{1@2, V1, V2: abduced_drive(V1,V2), car(V1), light(V2)}.
 drive(V1,V2) :- abduced_drive(V1,V2), car(V1), light(V2).
+

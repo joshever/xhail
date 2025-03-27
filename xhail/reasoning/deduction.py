@@ -25,7 +25,7 @@ class Deduction:
         level = []
         for schema in schemas:
             for fact in facts:
-                if self.model.isSubsumed(fact, schema):
+                if str(fact) != str(previous) and self.model.isSubsumed(fact, schema):
                     if mode == 'head':
                         priorityTerms = self.getMarkerTerms(fact, schema, '+')
                         allTerms = priorityTerms
@@ -54,7 +54,6 @@ class Deduction:
                 if str(choice[0]) == str(atomToFind):
                     chain = self.findNext(choice[3], levels, idl-1)
                     chain.append(choice[0])
-                    levels[idl].pop(idc)
                     return chain
         return ["Mistake!"]
 
@@ -95,12 +94,13 @@ class Deduction:
 
         results = []
         top = len(levels) - 1
-        
-        for idc, choice in enumerate(levels[top]):
-            chain = self.findNext(choice[3], levels, top)
-            print(choice[0])
-            chain.append(choice[0])
-            results.append(chain)
-            print("new chain:")
-            print([str(item) for item in chain])
 
+        clauses = []
+        for choice in levels[top]:
+            chain = self.findNext(choice[3], levels, top)
+            chain.append(choice[0])
+            clauses.append(Clause(chain[0], [Literal(atom, False) for atom in chain[1:]]))
+
+
+        for clause in clauses:
+            print(str(clause))

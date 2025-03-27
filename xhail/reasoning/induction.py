@@ -28,7 +28,7 @@ class Induction:
             for idl in range(len(clause.body) + 1):
                 levels.append(f"level({idc},{idl})")
                 program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
-            program += ":- not " + ','.join(levels) + ".\n"
+            program += ":- " + ', '.join(levels[1:]) + ", not " + levels[0] + ".\n"
         return program
     
     # ---------- Generate and Load Minimize statements ---------- #
@@ -114,19 +114,18 @@ class Induction:
     def runPhase(self):
         # ---------- Prepare Clauses ---------- #
         clauses = [clause.generalise() for clause in self.model.getKernel()]
-        clauses = self.uniqueObjects(clauses)
         clauses = self.updateClauseTypes(clauses)
+        clauses = self.uniqueObjects(clauses)
 
-        
+        print([str(c) for c in clauses])
 
-        
         # ---------- Constuct Program ---------- #
         program = self.model.getProgram()
         program = f'#show use/2.\n' + program
         program += self.loadChoice(clauses)
-        program += self.loadClauseLevels(clauses)
         program += self.loadMinimize(clauses)
         program += self.loadUseTry(clauses)
+        program += self.loadClauseLevels(clauses)
 
         # ---------- Update Model ---------- #
         self.model.setProgram(program)
@@ -141,18 +140,19 @@ class Induction:
                 facts = self.model.parseModel(clingo_model)
                 for fact in facts:
                     terms = fact.head.terms
-                    if terms[0] in selectors.keys():
+                    if int(terms[0].value) in selectors.keys():
                         selectors[int(terms[0].value)].append(int(terms[1].value))
                     else:
                         selectors[int(terms[0].value)] = [int(terms[1].value)]  
-                break
  
-        included_clauses = []
-        for head in selectors.keys():
-            new_clause = Clause(clauses[head].head, [])
-            new_body = []
-            for literal in selectors[head]:
-                new_body.append(clauses[head].body[literal])
-            new_clause.body = new_body
-            print(str(new_clause))
-            included_clauses.append(new_clause)
+                included_clauses = []
+                for key in selectors.keys():
+                    if 0 in selectors[key]: # head = key
+                        selectors[key].pop(-1)
+                        new_head = clauses[0].head
+                        new_body = []
+                        for literal in selectors[key]:
+                            new_body.append(clauses[key].body[literal])
+                        new_clause = Clause(new_head, new_body)
+                        included_clauses.append(new_clause)
+                print([str(clause) for clause in included_clauses])

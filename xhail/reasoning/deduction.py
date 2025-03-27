@@ -25,25 +25,27 @@ class Deduction:
         level = []
         for schema in schemas:
             for fact in facts:
+                factPriorityTerms = priorityTerms.copy()
+                factAllTerms = allTerms.copy()
                 if str(fact) != str(previous) and self.model.isSubsumed(fact, schema):
                     if mode == 'head':
-                        priorityTerms = self.getMarkerTerms(fact, schema, '+')
-                        allTerms = priorityTerms
+                        factPriorityTerms = self.getMarkerTerms(fact, schema, '+')
+                        factAllTerms = factPriorityTerms
                     elif mode == 'body':
                         # check if positive terms fulfilled.
-                        positiveTerms = self.getMarkerTerms(fact, schema, '+')
+                        factPositiveTerms = self.getMarkerTerms(fact, schema, '+')
                         # if positive terms in priorty or backup...
-                        if positiveTerms.issubset(allTerms):
-                            priorityTerms.difference(positiveTerms)
-                            positiveTerms.difference(priorityTerms)
-                            positiveTerms.difference(allTerms)
-                            priorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
-                            allTerms.update(priorityTerms)
+                        if factPositiveTerms.issubset(factAllTerms):
+                            factPriorityTerms.difference(factPositiveTerms)
+                            factPositiveTerms.difference(factPriorityTerms)
+                            factPositiveTerms.difference(factAllTerms)
+                            factPriorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
+                            factAllTerms.update(factPriorityTerms)
                         else:
                             continue         
                     else:
                         continue
-                    level.append([fact, priorityTerms, allTerms, previous])
+                    level.append([fact, factPriorityTerms, factAllTerms, previous])
         return level
 
     def findNext(self, atomToFind, levels, idl):
@@ -69,7 +71,7 @@ class Deduction:
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
-
+        print([str(m) for m in matches])
         d = 1
         levels = []
         priorityTerms, allTerms = set([]), set([])
@@ -89,6 +91,7 @@ class Deduction:
                 d = self.DEPTH + 1
                 continue
             levels.append(currentLevel)
+
             d += 1
 
 
@@ -101,8 +104,5 @@ class Deduction:
             chain = self.findNext(choice[3], levels, top-1)
             chain.append(choice[0])
             clauses.append(Clause(chain[0], [Literal(Atom(atom.predicate[4:], atom.terms), True) if atom.predicate[:4] == "not_" else Literal(atom, False) for atom in chain[1:]]))
-        
-        for clause in clauses:
-            print(str(clause))
         
         self.model.setKernel(clauses)

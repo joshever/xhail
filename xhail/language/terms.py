@@ -92,7 +92,7 @@ class Clause:
         for literal in self.body:
             unique.update(self.findConstants(literal.atom, unique))
         # map constants to variables
-        for i in range(len(unique)):
+        for i in range(1, len(unique)+1):
             matching[unique.pop()] = "V" + str(i)
         # 2 update tree
         head = self.replaceConstants(self.head, matching)

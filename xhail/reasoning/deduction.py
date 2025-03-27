@@ -94,13 +94,15 @@ class Deduction:
 
         results = []
         top = len(levels) - 1
+            
 
         clauses = []
         for choice in levels[top]:
-            chain = self.findNext(choice[3], levels, top)
+            chain = self.findNext(choice[3], levels, top-1)
             chain.append(choice[0])
-            clauses.append(Clause(chain[0], [Literal(atom, False) for atom in chain[1:]]))
-
-
+            clauses.append(Clause(chain[0], [Literal(Atom(atom.predicate[4:], atom.terms), True) if atom.predicate[:4] == "not_" else Literal(atom, False) for atom in chain[1:]]))
+        
         for clause in clauses:
             print(str(clause))
+        
+        self.model.setKernel(clauses)

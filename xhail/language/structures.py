@@ -116,9 +116,16 @@ class Modeb:
         self.min = min
 
     def generalise(self, atom, n=1):
+        print("hi")
         terms = atom.terms
         for idt, term in enumerate(terms):
             if isinstance(term, PlaceMarker) and term.marker == '+':
+                value = f'V{n}'
+                type = term.type
+                atom.terms[idt] = Normal(value)
+                atom.terms[idt].setType(type)
+                n += 1
+            elif isinstance(term, PlaceMarker):
                 value = f'V{n}'
                 type = term.type
                 atom.terms[idt] = Normal(value)

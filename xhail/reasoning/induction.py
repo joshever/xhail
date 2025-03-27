@@ -36,25 +36,28 @@ class Induction:
         program = "\n"
         for idc, clause in enumerate(clauses):
             for idl in range(len(clause.body)+1):
-                program += "#minimize{ 1@1 : "+f"use({idc},{idl})"+" }.\n"
+                program += "#minimize{ 2@1 : "+f"use({idc},{idl})"+" }.\n"
         return program
     
     # ---------- Generate and Load Use/Try statements ---------- #
     def loadUseTry(self, clauses):
         program = "\n"
 
+        # logic
+        try_heads = {}
         for idc, clause in enumerate(clauses):
-            program += str(clause.head) + " :- " + f"use({idc}, 0)"
-            for idl in range(1, len(clause.body)+1):
-                program += f", try({idc}, {idl}, {','.join([term.value for term in clause.head.terms])})"
+            try_heads[idc] = []
+            for idl, literal in enumerate(clause.body):
+                try_heads[idc].append(f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])})")
+                program += f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])}) :- use({idc}, {idl+1}), {str(literal)}, {', '.join(literal.atom.getTypes())}.\n"
+                program += f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])}) :- not use({idc}, {idl+1}), {', '.join(literal.atom.getTypes())}.\n"
+        
+
+        for idc, clause in enumerate(clauses):
+            program += str(clause.head) + " :- " + f"use({idc}, 0)" + ' , '
+            program += ', '.join(try_head for try_head in try_heads[idc])
             program += ', ' + ', '.join(self.uniqueObjects(clause.getTypes())) + '.\n'
 
-        # logic
-        for idc, clause in enumerate(clauses):
-            for idl, literal in enumerate(clause.body):
-                program += f"try({idc}, {idl+1}, {','.join([var.value for var in literal.atom.getVariables()])}) :- use({idc}, {idl+1}), {str(literal)}, {','.join(literal.atom.getTypes())}.\n"
-                program += f"try({idc}, {idl+1}, {','.join([var.value for var in literal.atom.getVariables()])}) :- not use({idc}, {idl+1}), {','.join(literal.atom.getTypes())}.\n"
-        
         return program
 
     # ---------- Assign Types for Atom ---------- #
@@ -114,7 +117,7 @@ class Induction:
         clauses = self.uniqueObjects(clauses)
         clauses = self.updateClauseTypes(clauses)
 
-        print([str(clause) for clause in clauses])
+        
 
         
         # ---------- Constuct Program ---------- #
@@ -130,6 +133,7 @@ class Induction:
         self.model.writeProgram("xhail/output/induction.lp")
         self.model.call()
 
+        selectors = {}
         clingo_models = self.model.getClingoModels()
         for clingo_model in clingo_models:
             if str(clingo_model) != '[]':

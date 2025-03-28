@@ -6,6 +6,17 @@ class Induction:
         self.MH = model.MH
         self.MB = model.MB
         self.BG = model.BG
+        self.EX = model.EX
+
+    def loadExamples(self, examples):
+        examplesProgram = '%EXAMPLES%\n'
+        for example in examples:
+            examplesProgram += example.createProgram() + '\n'
+        return examplesProgram + '\n'
+    
+    def loadBackground(self, background):
+        backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
+        return backgroundProgram + '\n'
 
     # ---------- Generate and Load Choice statements ---------- #
     def loadChoice(self, clauses): # literal 0 == clause head. literal 1 = first clause literal. !!! clause 0 is first clause
@@ -22,13 +33,13 @@ class Induction:
     # ---------- Generate and Load Clause Level statements ---------- #
     def loadClauseLevels(self, clauses):
         program = "\n"
+        program += ":- level(X, Y), not level(X, 0)."
         for idc, clause in enumerate(clauses):
             # level 0 include not. all levels
             levels = []
             for idl in range(len(clause.body) + 1):
                 levels.append(f"level({idc},{idl})")
                 program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
-            program += ":- " + ', '.join(levels[1:]) + ", not " + levels[0] + ".\n"
         return program
     
     # ---------- Generate and Load Minimize statements ---------- #
@@ -36,7 +47,7 @@ class Induction:
         program = "\n"
         for idc, clause in enumerate(clauses):
             for idl in range(len(clause.body)+1):
-                program += "#minimize{ 2@1 : "+f"use({idc},{idl})"+" }.\n"
+                program += "#minimize{ 1@2 : "+f"use({idc},{idl})"+" }.\n"
         return program
     
     # ---------- Generate and Load Use/Try statements ---------- #
@@ -117,11 +128,10 @@ class Induction:
         clauses = self.updateClauseTypes(clauses)
         clauses = self.uniqueObjects(clauses)
 
-        print([str(c) for c in clauses])
-
         # ---------- Constuct Program ---------- #
-        program = self.model.getProgram()
-        program = f'#show use/2.\n' + program
+        program = f'#show use/2.\n'
+        program += self.loadBackground(self.BG)
+        program += self.loadExamples(self.EX)
         program += self.loadChoice(clauses)
         program += self.loadMinimize(clauses)
         program += self.loadUseTry(clauses)
@@ -130,29 +140,30 @@ class Induction:
         # ---------- Update Model ---------- #
         self.model.setProgram(program)
         self.model.writeProgram("xhail/output/induction.lp")
-        self.model.call()
 
         selectors = {}
-        clingo_models = self.model.getClingoModels()
-        for clingo_model in clingo_models:
-            if str(clingo_model) != '[]':
-                selectors = {}
-                facts = self.model.parseModel(clingo_model)
-                for fact in facts:
-                    terms = fact.head.terms
-                    if int(terms[0].value) in selectors.keys():
-                        selectors[int(terms[0].value)].append(int(terms[1].value))
-                    else:
-                        selectors[int(terms[0].value)] = [int(terms[1].value)]  
+        best_model = self.model.getBestModel()
+        if str(best_model) != '[]':
+            selectors = {}
+            facts = self.model.parseModel(best_model)
+            for fact in facts:
+                terms = fact.head.terms
+                if int(terms[0].value) in selectors.keys():
+                    selectors[int(terms[0].value)].append(int(terms[1].value))
+                else:
+                    selectors[int(terms[0].value)] = [int(terms[1].value)]  
  
-                included_clauses = []
-                for key in selectors.keys():
-                    if 0 in selectors[key]: # head = key
-                        selectors[key].pop(-1)
-                        new_head = clauses[0].head
-                        new_body = []
-                        for literal in selectors[key]:
-                            new_body.append(clauses[key].body[literal])
-                        new_clause = Clause(new_head, new_body)
-                        included_clauses.append(new_clause)
-                print([str(clause) for clause in included_clauses])
+            included_clauses = []
+            for key in selectors.keys():
+                if 0 in selectors[key]: # head = key
+                    selectors[key].pop(-1)
+                    new_head = clauses[0].head
+                    new_body = []
+                    for literal in selectors[key]:
+                        new_body.append(clauses[key].body[literal-1])
+                    new_body = self.uniqueObjects(new_body)
+                    new_clause = Clause(new_head, new_body)
+                    included_clauses.append(new_clause)
+            print([str(clause) for clause in included_clauses])
+        else:
+            print("no solutions")

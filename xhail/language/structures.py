@@ -22,7 +22,7 @@ class Example:
     def createProgram(self):
         program = []
         negation_string = 'not ' if self.negation else ''
-        program.append('#maximize{' + f'{str(self.weight)}@{str(self.priority)} : {negation_string}{self.atom}' + '}.')
+        program.append('%#maximize{' + f'{str(self.weight)}@{str(self.priority)} : {negation_string}{self.atom}' + '}.')
         program.append(f':- {self.atom}.' if self.negation else f':- not {self.atom}.')
         return '\n'.join(program)
     

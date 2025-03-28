@@ -71,7 +71,6 @@ class Deduction:
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
-        print([str(m) for m in matches])
         d = 1
         levels = []
         priorityTerms, allTerms = set([]), set([])

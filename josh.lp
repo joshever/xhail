@@ -17,7 +17,6 @@ atlight(car1, a).
 atlight(car2, b).
 atlight(car3, c).
 atlight(car4, a).
-atlight(car5, a).
 
 #example drive(car2).
 #example drive(car3).
@@ -29,5 +28,3 @@ atlight(car5, a).
 #modeb atlight(+car, -light).
 #modeb not red(+light).
 #modeb emergency(+car).
-
-%drive(+car) :- atlight(+car, -light), not red(+light).

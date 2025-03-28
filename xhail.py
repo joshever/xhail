@@ -6,8 +6,8 @@ from xhail.parser.parser import Parser
 
 if __name__ == '__main__':
     # ---------- read input ---------- #
-    DEPTH = 3
-    INPUT_FILENAME = 'josh.lp'#'test.lp'#'tests/deduction.lp'#'test.lp'#
+    DEPTH = 10
+    INPUT_FILENAME = 'test.lp'#'tests/deduction.lp'#'test.lp'#
 
     # ---------- parse data ---------- #
     parser = Parser()
@@ -19,17 +19,17 @@ if __name__ == '__main__':
     model = Model(EX, MH, MB, BG, DEPTH)
 
     # ---------- abduction phase (1) ---------- #
-    print("Abduction...")
+    # print("Abduction...")
     abduction = Abduction(model)
     abduction.runPhase()
 
     # ---------- deduction phase (2) ---------- #
-    print("Deduction...")
+    # print("Deduction...")
     deduction = Deduction(model)
     deduction.runPhase()
 
     # ---------- induction phase (3) ---------- #
-    print("Induction...")
+    # print("Induction...")
     induction = Induction(model)
     induction.runPhase()
     print("Complete.")

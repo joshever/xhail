@@ -18,7 +18,6 @@ tokens = (
     'DOT',
     'MARKER',
     'OPERATOR',
-    'NUMBER',
     'MAX',
     'MIN',
     'WEIGHT',
@@ -39,7 +38,6 @@ t_IMPLIES = r':-'
 t_DOT = r'\.'
 t_MARKER = r'\+|\-|\$'
 t_OPERATOR = r'(==|!=|<=|>=|<|>)'
-t_NUMBER = r'\d+'
 t_MAX = r':'
 t_MIN = r'-'
 t_WEIGHT = r'='
@@ -105,8 +103,8 @@ def p_schema_terms(p):
 
 
 def p_min_max_bias(p):
-    '''min_max_bias : MAX NUMBER MIN NUMBER
-                    | MAX NUMBER
+    '''min_max_bias : MAX TERM MIN TERM
+                    | MAX TERM
     '''
     if len(p) == 3:
         p[0] = {'max': p[2]}
@@ -114,24 +112,25 @@ def p_min_max_bias(p):
         p[0] = {'min': p[2], 'max': p[4]}
 
 def p_priority_bias(p):
-    '''priority_bias : PRIORITY NUMBER'''
+    '''priority_bias : PRIORITY TERM'''
     p[0] = {'priority': p[2]}
 
 def p_weight_bias(p):
-    '''weight_bias : WEIGHT NUMBER'''
+    '''weight_bias : WEIGHT TERM'''
     p[0] = {'weight': p[2]}
 
 def p_bias(p):
     '''bias : min_max_bias weight_bias priority_bias
-            | min_max_bias weight_bias
             | min_max_bias priority_bias
+            | min_max_bias weight_bias
             | weight_bias priority_bias
-            | wieght_bias
+            | weight_bias
             | priority_bias
     '''
 
-    values = {'min': None, 'max': None, 'priority': None, 'weight': None}
-    for i in range(p[1:]):
+    values = {}
+    for i in range(1, len(p[1:])):
+        print(p)
         if 'min' in p[i].keys():
             values['min'] = p[i]['min']
         if 'max' in p[i].keys():
@@ -140,17 +139,41 @@ def p_bias(p):
             values['priority'] = p[i]['priority']
         if 'weight' in p[i].keys():
             values['weight'] = p[i]['weight']
+    print("bias", values)
     p[0] = values
         
 # ---------- example ---------- #
 def p_example(p):
-    '''example : EXAMPLE_KEY atom example_bias DOT
-               | EXAMPLE_KEY NOT atom example_bias DOT
+    '''example : EXAMPLE_KEY atom DOT
+               | EXAMPLE_KEY NOT atom DOT
+               | EXAMPLE_KEY atom bias DOT
+               | EXAMPLE_KEY NOT atom bias DOT
     '''
-    if len(p) == 5:
+    if len(p) == 4: # just atom
+        print("just atom")
         p[0] = Example(p[2], negation=False)
-    else:
+
+    elif len(p) == 6: # negated and biased
+        new_example = Example(p[3], negation=True)
+        if 'weight' in p[4].keys():
+            new_example.setWeight(p[4]['weight'])
+        if 'priority' in p[4].keys():
+            new_example.setPriority(p[4]['priority'])
+        p[0] = new_example
+        print("negated and biased")
+
+    elif len(p) == 5 and isinstance(p[3], Atom):
         p[0] = Example(p[3], negation=True)
+        print("negated atom")
+    else:
+        print("just biased")
+        new_example = Example(p[2], negation=False)
+        if 'weight' in p[3].keys():
+            new_example.setWeight(p[3]['weight'])
+        if 'priority' in p[3].keys():
+            new_example.setPriority(p[3]['priority'])
+        p[0] = new_example
+        
 
 # ---------- modeh ---------- #
 def p_modeh(p):

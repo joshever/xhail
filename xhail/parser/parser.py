@@ -18,6 +18,11 @@ tokens = (
     'DOT',
     'MARKER',
     'OPERATOR',
+    'NUMBER',
+    'MAX',
+    'MIN',
+    'WEIGHT',
+    'PRIORITY',
 )
 
 # ---------- define tokens ----------- #
@@ -34,6 +39,11 @@ t_IMPLIES = r':-'
 t_DOT = r'\.'
 t_MARKER = r'\+|\-|\$'
 t_OPERATOR = r'(==|!=|<=|>=|<|>)'
+t_NUMBER = r'\d+'
+t_MAX = r':'
+t_MIN = r'-'
+t_WEIGHT = r'='
+t_PRIORITY = r'@'
 t_ignore = ' \t\n'
 
 # ---------- special tokens ----------- #
@@ -69,7 +79,8 @@ def p_clause(p):
 
 # ---------- atom ---------- #
 def p_atom(p):
-    '''atom : PREDICATE LPAREN terms RPAREN'''
+    '''atom : PREDICATE LPAREN terms RPAREN
+    '''
     p[0] = Atom(p[1], p[3])
 
 # ---------- schema ---------- #
@@ -91,13 +102,52 @@ def p_schema_terms(p):
         p[0] = [p[1]]
     else:
         p[0] = [p[1]] + p[3]
+
+
+def p_min_max_bias(p):
+    '''min_max_bias : MAX NUMBER MIN NUMBER
+                    | MAX NUMBER
+    '''
+    if len(p) == 3:
+        p[0] = {'max': p[2]}
+    else:
+        p[0] = {'min': p[2], 'max': p[4]}
+
+def p_priority_bias(p):
+    '''priority_bias : PRIORITY NUMBER'''
+    p[0] = {'priority': p[2]}
+
+def p_weight_bias(p):
+    '''weight_bias : WEIGHT NUMBER'''
+    p[0] = {'weight': p[2]}
+
+def p_bias(p):
+    '''bias : min_max_bias weight_bias priority_bias
+            | min_max_bias weight_bias
+            | min_max_bias priority_bias
+            | weight_bias priority_bias
+            | wieght_bias
+            | priority_bias
+    '''
+
+    values = {'min': None, 'max': None, 'priority': None, 'weight': None}
+    for i in range(p[1:]):
+        if 'min' in p[i].keys():
+            values['min'] = p[i]['min']
+        if 'max' in p[i].keys():
+            values['max'] = p[i]['max']
+        if 'priority' in p[i].keys():
+            values['priority'] = p[i]['priority']
+        if 'weight' in p[i].keys():
+            values['weight'] = p[i]['weight']
+    p[0] = values
         
 # ---------- example ---------- #
 def p_example(p):
-    '''example : EXAMPLE_KEY atom DOT
-               | EXAMPLE_KEY NOT atom DOT
+    '''example : EXAMPLE_KEY atom example_bias DOT
+               | EXAMPLE_KEY NOT atom example_bias DOT
     '''
-    if len(p) == 4:
+    if len(p) == 5:
         p[0] = Example(p[2], negation=False)
     else:
         p[0] = Example(p[3], negation=True)

@@ -7,7 +7,7 @@ bird(b).
 bird(c).
 penguin(d).
 
-#modeh flies(+bird).
+#modeh flies(+bird) {w=5, p=2}.
 #modeb penguin(+bird).
 #modeb not penguin(+bird).
 

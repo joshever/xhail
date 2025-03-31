@@ -10,7 +10,7 @@ penguin(d). %type bird
 penguin(c).
 bird(X) :- penguin(X).
 
-#modeh flies(+bird, #food).
+#modeh flies(+bird, $food).
 #modeb penguin(+bird).
 #modeb not penguin(+bird).
 

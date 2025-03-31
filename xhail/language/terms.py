@@ -82,7 +82,7 @@ class Clause:
         return True
     
     def __str__(self):
-        return str(self.head) + ' :- ' + ', '.join([str(literal) for literal in self.body]) + '.'
+        return str(self.head) + (' :- ' + ', '.join([str(literal) for literal in self.body]) if self.body != [] else '') + '.'
     
     def generalise(self): # returned generalised clause.
         matching = {} # lowercase to uppercase
@@ -108,7 +108,8 @@ class Clause:
         terms = atom.terms # PlaceHolder / Normal / Atom / None
         for term in terms:
             if isinstance(term, Normal):
-                unique.add(term.value)
+                if term.type != 'constant':
+                    unique.add(term.value)
             else:
                 unique.update(self.findConstants(term, unique))
         return unique
@@ -118,7 +119,10 @@ class Clause:
         terms = atom.terms
         for term in terms:
             if isinstance(term, Normal):
-                newAtom.terms.append(Normal(matching[term.value]))
+                if term.type != 'constant':
+                    newAtom.terms.append(Normal(matching[term.value]))
+                else:
+                    newAtom.terms.append(Normal(term.value))
             else:
                 newTerm = self.replaceConstants(self, term, matching)
                 newAtom.terms.append(newTerm)

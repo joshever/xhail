@@ -22,7 +22,8 @@ class Induction:
     def loadChoice(self, clauses): # literal 0 == clause head. literal 1 = first clause literal. !!! clause 0 is first clause
         program = "\n"
         program += "{ use(V1, 0) } :- clause(V1).\n"
-        program += "{ use(V1, V2) } :- clause(V1), literal(V1, V2).\n"
+        if self.model.DEPTH != 0:
+            program += "{ use(V1, V2) } :- clause(V1), literal(V1, V2).\n"
 
         for idc, clause in enumerate(clauses):
             program += f"clause({idc}).\n"
@@ -33,13 +34,14 @@ class Induction:
     # ---------- Generate and Load Clause Level statements ---------- #
     def loadClauseLevels(self, clauses):
         program = "\n"
-        program += ":- level(X, Y), not level(X, 0)."
-        for idc, clause in enumerate(clauses):
-            # level 0 include not. all levels
-            levels = []
-            for idl in range(len(clause.body) + 1):
-                levels.append(f"level({idc},{idl})")
-                program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
+        if self.model.DEPTH != 0:
+            program += ":- level(X, Y), not level(X, 0).\n"
+            for idc, clause in enumerate(clauses):
+                # level 0 include not. all levels
+                levels = []
+                for idl in range(len(clause.body) + 1):
+                    levels.append(f"level({idc},{idl})")
+                    program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
         return program
     
     # ---------- Generate and Load Minimize statements ---------- #
@@ -65,9 +67,10 @@ class Induction:
         
 
         for idc, clause in enumerate(clauses):
-            program += str(clause.head) + " :- " + f"use({idc}, 0)" + ' , '
-            program += ', '.join(try_head for try_head in try_heads[idc])
-            program += ', ' + ', '.join(self.uniqueObjects(clause.getTypes())) + '.\n'
+            program += str(clause.head) + " :- " + f"use({idc}, 0)" + ', '
+            if try_heads[idc] != []:
+                program += ', '.join(try_head for try_head in try_heads[idc]) + ', '
+            program += ', '.join(self.uniqueObjects(clause.getTypes())) + '.\n'
 
         return program
 
@@ -156,14 +159,17 @@ class Induction:
             included_clauses = []
             for key in selectors.keys():
                 if 0 in selectors[key]: # head = key
-                    selectors[key].pop(-1)
-                    new_head = clauses[0].head
+                    selectors[key].remove(0)
+                    new_head = clauses[key].head
                     new_body = []
                     for literal in selectors[key]:
                         new_body.append(clauses[key].body[literal-1])
                     new_body = self.uniqueObjects(new_body)
                     new_clause = Clause(new_head, new_body)
                     included_clauses.append(new_clause)
-            print([str(clause) for clause in included_clauses])
         else:
             print("no solutions")
+            return
+        
+        final_clauses = self.uniqueObjects(included_clauses)
+        self.model.setHypothesis(final_clauses)

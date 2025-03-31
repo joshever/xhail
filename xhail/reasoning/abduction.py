@@ -47,3 +47,4 @@ class Abduction:
         self.model.setProgram(program)
         self.model.call()
         self.model.writeProgram("xhail/output/abduction.lp")
+        self.model.setDelta()

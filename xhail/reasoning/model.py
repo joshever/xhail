@@ -7,7 +7,8 @@ class Model:
     clingo_models = []
     best_model = None
     delta = []
-    kernel = [] # clauses
+    kernel = []
+    hypothesis = []
 
     def __init__(self, EX, MH, MB, BG, DEPTH):
         self.EX = EX
@@ -65,22 +66,26 @@ class Model:
     # ensures normal values are the same, and any placeholders can be different.
     def isSubsumed(self, atom, mode): # 
         if atom.predicate != mode.predicate:
-            return False
+            return (False, None)
         for term1, term2 in zip(atom.terms, mode.terms):
             if isinstance(term2, Atom):
-               if not self.isSubsumed(term1, term2):
-                   return False
+               res, term1 = self.isSubsumed(term1, term2)
+               if not res:
+                   return (False, None)
             elif isinstance(term2, Normal):
                 if term1.value != term2.value:
-                    return False
+                    return (False, None)
             elif isinstance(term2, PlaceMarker) and isinstance(term1, Normal):
                 if self.getMatches([Atom(term2.type, [term1])]) == []:
-                    return False
+                    return (False, None)
+                elif term2.marker == '$':
+                      term1.type = 'constant'
+                      continue
                 else:
                     continue
             else:
                 continue
-        return True
+        return (True, atom)
     
     def parseModel(self, model):
         strModel = ""
@@ -101,23 +106,27 @@ class Model:
     def getClingoModels(self):
         return self.clingo_models
     
-    def getDelta(self):
-        self.delta = self.getAtoms(self.MH)
+    def setDelta(self):
+        self.delta = self.getMatches([mh.atom for mh in self.MH])
         return self.delta
     
     def getMatches(self, atomConditions):
-        model = self.getClingoModels()[0]
+        model = self.getBestModel()
         facts = self.parseModel(model)
 
         result = []
         for fact in facts:
             for mh in atomConditions:
-                if self.isSubsumed(fact.head, mh):
+                res, _ = self.isSubsumed(fact.head, mh)
+                if res:
                     result.append(fact.head)
         return result
 
     def getKernel(self):
         return self.kernel
+    
+    def getHypothesis(self):
+        return self.hypothesis
 
     # ---------- SETTERS ---------- #
     
@@ -132,5 +141,11 @@ class Model:
     
     def getBackground(self):
         return self.BG
+    
+    def setHypothesis(self, hypothesis):
+        self.hypothesis = hypothesis
+    
+    def getDelta(self):
+        return self.delta
     
     

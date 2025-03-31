@@ -27,25 +27,27 @@ class Deduction:
             for fact in facts:
                 factPriorityTerms = priorityTerms.copy()
                 factAllTerms = allTerms.copy()
-                if str(fact) != str(previous) and self.model.isSubsumed(fact, schema):
-                    if mode == 'head':
-                        factPriorityTerms = self.getMarkerTerms(fact, schema, '+')
-                        factAllTerms = factPriorityTerms
-                    elif mode == 'body':
-                        # check if positive terms fulfilled.
-                        factPositiveTerms = self.getMarkerTerms(fact, schema, '+')
-                        # if positive terms in priorty or backup...
-                        if factPositiveTerms.issubset(factAllTerms):
-                            factPriorityTerms.difference(factPositiveTerms)
-                            factPositiveTerms.difference(factPriorityTerms)
-                            factPositiveTerms.difference(factAllTerms)
-                            factPriorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
-                            factAllTerms.update(factPriorityTerms)
+                if str(fact) != str(previous):
+                    res, fact = self.model.isSubsumed(fact, schema)
+                    if res:
+                        if mode == 'head':
+                            factPriorityTerms = self.getMarkerTerms(fact, schema, '+')
+                            factAllTerms = factPriorityTerms
+                        elif mode == 'body':
+                            # check if positive terms fulfilled.
+                            factPositiveTerms = self.getMarkerTerms(fact, schema, '+')
+                            # if positive terms in priorty or backup...
+                            if factPositiveTerms.issubset(factAllTerms):
+                                factPriorityTerms.difference(factPositiveTerms)
+                                factPositiveTerms.difference(factPriorityTerms)
+                                factPositiveTerms.difference(factAllTerms)
+                                factPriorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
+                                factAllTerms.update(factPriorityTerms)
+                            else:
+                                continue         
                         else:
-                            continue         
-                    else:
-                        continue
-                    level.append([fact, factPriorityTerms, factAllTerms, previous])
+                            continue
+                        level.append([fact, factPriorityTerms, factAllTerms, previous])
         return level
 
     def findNext(self, atomToFind, levels, idl):

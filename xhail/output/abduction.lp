@@ -1,25 +1,27 @@
 %BACKGROUND%
-bird(X) :- penguin(X).
 bird(a).
 bird(b).
-bird(c).
+food(chocolate).
+food(vegetables).
 penguin(d).
+penguin(c).
+bird(X) :- penguin(X).
 
 %NEGATIONS%
 not_penguin(V1) :- not penguin(V1), bird(V1).
 
 %EXAMPLES%
-%#maximize{5@1 : flies(a)}.
-:- not flies(a).
-%#maximize{1@1 : flies(b)}.
-:- not flies(b).
-%#maximize{1@1 : flies(c)}.
-:- not flies(c).
-%#maximize{1@1 : not flies(d)}.
-:- flies(d).
+%#maximize{1@1 : flies(a,chocolate)}.
+:- not flies(a,chocolate).
+%#maximize{1@1 : flies(b,vegetables)}.
+:- not flies(b,vegetables).
+%#maximize{1@1 : flies(c,vegetables)}.
+:- not flies(c,vegetables).
+%#maximize{1@1 : not flies(d,chocolate)}.
+:- flies(d,chocolate).
 
 %ABDUCIBLES%
-1 { abduced_flies(V1) : bird(V1) } 10.
-#minimize{4@2, V1: abduced_flies(V1), bird(V1)}.
-flies(V1) :- abduced_flies(V1), bird(V1).
+0 { abduced_flies(V1,V2) : bird(V1), food(V2) } 1000000.
+#minimize{1@2, V1, V2: abduced_flies(V1,V2), bird(V1), food(V2)}.
+flies(V1,V2) :- abduced_flies(V1,V2), bird(V1), food(V2).
 

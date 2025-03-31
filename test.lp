@@ -1,17 +1,23 @@
 %% PENGUINS.lp
 %%%%%%%%%%%%%%
 
-bird(X) :- penguin(X).
 bird(a).
 bird(b).
-bird(c).
-penguin(d).
+food(chocolate). %fluid
+food(vegetables). %fluid
 
-#modeh flies(+bird) :1~10 =4 @2.
-#modeb penguin(+bird) :2 =5 @2.
-#modeb not penguin(+bird) :2.
+penguin(d). %type bird
+penguin(c).
+bird(X) :- penguin(X).
 
-#example flies(a) =5 @3.
-#example flies(b).
-#example flies(c).
-#example not flies(d).
+#modeh flies(+bird, #food).
+#modeb penguin(+bird).
+#modeb not penguin(+bird).
+
+#example flies(a, chocolate).
+#example flies(b, vegetables).
+#example flies(c, vegetables).
+#example not flies(d, chocolate).
+
+%flies(+bird, chocolate) :- not penguin(+bird).
+%flies(+bird, vegetables).

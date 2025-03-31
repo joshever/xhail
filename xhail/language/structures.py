@@ -92,7 +92,7 @@ class Modeb:
     WEIGHT_OPERATOR = '='
     PRIORITY_OPERATOR = '@'
     CONSTRAINT_OPERATOR = ':'
-    CONSTRAINT_SEPARATOR = '-'
+    CONSTRAINT_SEPARATOR = '~'
     weight = 1
     priority = 1
     min = 0 #default 0

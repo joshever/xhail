@@ -18,8 +18,8 @@ tokens = (
     'DOT',
     'MARKER',
     'OPERATOR',
-    'MAX',
     'MIN',
+    'MAX',
     'WEIGHT',
     'PRIORITY',
 )
@@ -38,8 +38,8 @@ t_IMPLIES = r':-'
 t_DOT = r'\.'
 t_MARKER = r'\+|\-|\$'
 t_OPERATOR = r'(==|!=|<=|>=|<|>)'
+t_MIN = r'\~'
 t_MAX = r':'
-t_MIN = r'-'
 t_WEIGHT = r'='
 t_PRIORITY = r'@'
 t_ignore = ' \t\n'
@@ -101,7 +101,6 @@ def p_schema_terms(p):
     else:
         p[0] = [p[1]] + p[3]
 
-
 def p_min_max_bias(p):
     '''min_max_bias : MAX TERM MIN TERM
                     | MAX TERM
@@ -126,11 +125,11 @@ def p_bias(p):
             | weight_bias priority_bias
             | weight_bias
             | priority_bias
+            | min_max_bias
     '''
 
     values = {}
     for i in range(1, len(p[1:])):
-        print(p)
         if 'min' in p[i].keys():
             values['min'] = p[i]['min']
         if 'max' in p[i].keys():
@@ -139,7 +138,6 @@ def p_bias(p):
             values['priority'] = p[i]['priority']
         if 'weight' in p[i].keys():
             values['weight'] = p[i]['weight']
-    print("bias", values)
     p[0] = values
         
 # ---------- example ---------- #
@@ -150,7 +148,6 @@ def p_example(p):
                | EXAMPLE_KEY NOT atom bias DOT
     '''
     if len(p) == 4: # just atom
-        print("just atom")
         p[0] = Example(p[2], negation=False)
 
     elif len(p) == 6: # negated and biased
@@ -160,13 +157,10 @@ def p_example(p):
         if 'priority' in p[4].keys():
             new_example.setPriority(p[4]['priority'])
         p[0] = new_example
-        print("negated and biased")
 
     elif len(p) == 5 and isinstance(p[3], Atom):
         p[0] = Example(p[3], negation=True)
-        print("negated atom")
     else:
-        print("just biased")
         new_example = Example(p[2], negation=False)
         if 'weight' in p[3].keys():
             new_example.setWeight(p[3]['weight'])
@@ -177,18 +171,53 @@ def p_example(p):
 
 # ---------- modeh ---------- #
 def p_modeh(p):
-    '''modeh : MODEH_KEY schema DOT'''
-    p[0] = Modeh(p[2], '*')
+    '''modeh : MODEH_KEY schema DOT
+             | MODEH_KEY schema bias DOT
+    '''
+    if len(p) == 4:
+        p[0] = Modeh(p[2], '*')
+    else:
+        modeh = Modeh(p[2], '*')
+        if 'min' in p[3].keys():
+            modeh.setMin(p[3]['min'])
+        if 'max' in p[3].keys():
+            modeh.setMax(p[3]['max'])
+        if 'weight' in p[3].keys():
+            modeh.setWeight(p[3]['weight'])
+        if 'priority' in p[3].keys():
+            modeh.setPriority(p[3]['priority'])
+        p[0] = modeh
 
 # ---------- modeb ---------- #
 def p_modeb(p):
     '''modeb : MODEB_KEY schema DOT
              | MODEB_KEY NOT schema DOT
+             | MODEB_KEY schema bias DOT
+             | MODEB_KEY NOT schema bias DOT
              '''
     if len(p) == 4:
         p[0] = Modeb(p[2], '*', False)
-    else:
+    elif len(p) == 6:
+        modeb = Modeb(p[3], '*', True)
+        if 'max' in p[4].keys():
+            modeb.setMax(p[4]['max'])
+        if 'weight' in p[4].keys():
+            modeb.setWeight(p[4]['weight'])
+        if 'priority' in p[4].keys():
+            modeb.setPriority(p[4]['priority'])
+        p[0] = modeb
+    elif len(p) == 5 and isinstance(p[3], Atom):
         p[0] = Modeb(p[3], '*', True)
+    else:
+        modeb = Modeb(p[2], '*', False)
+        if 'max' in p[3].keys():
+            modeb.setMax(p[3]['max'])
+        if 'weight' in p[3].keys():
+            modeb.setWeight(p[3]['weight'])
+        if 'priority' in p[3].keys():
+            modeb.setPriority(p[3]['priority'])
+        p[0] = modeb
+        
 
 # ---------- terms ---------- #
 def p_terms(p):

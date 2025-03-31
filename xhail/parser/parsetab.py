@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'programCOMMA DOT EXAMPLE_KEY IMPLIES LPAREN MARKER MAX MIN MODEB_KEY MODEH_KEY NOT OPERATOR PREDICATE PRIORITY RPAREN TERM WEIGHTprogram : program clause\n               | clauseclause : example\n              | modeb\n              | modeh\n              | fact\n              | normal_clause\n              | constraint\n    atom : PREDICATE LPAREN terms RPAREN\n    schema : PREDICATE LPAREN schema_terms RPARENschema_terms : MARKER TERM\n                    | MARKER TERM COMMA schema_terms\n                    | schema\n                    | schema COMMA schema_terms\n    min_max_bias : MAX TERM MIN TERM\n                    | MAX TERM\n    priority_bias : PRIORITY TERMweight_bias : WEIGHT TERMbias : min_max_bias weight_bias priority_bias\n            | min_max_bias priority_bias\n            | min_max_bias weight_bias\n            | weight_bias priority_bias\n            | weight_bias\n            | priority_bias\n    example : EXAMPLE_KEY atom DOT\n               | EXAMPLE_KEY NOT atom DOT\n               | EXAMPLE_KEY atom bias DOT\n               | EXAMPLE_KEY NOT atom bias DOT\n    modeh : MODEH_KEY schema DOTmodeb : MODEB_KEY schema DOT\n             | MODEB_KEY NOT schema DOT\n             terms : TERM\n             | atom\n             | TERM COMMA terms\n             | atom COMMA terms\n    fact : atom DOT\n    constraint : NOT body DOT\n    normal_clause : atom IMPLIES body DOT\n    body : literal COMMA body\n            | literal\n    literal : NOT atom\n               | atom\n               | TERM OPERATOR TERM\n    '
+_lr_signature = 'programCOMMA DOT EXAMPLE_KEY IMPLIES LPAREN MARKER MAX MIN MODEB_KEY MODEH_KEY NOT OPERATOR PREDICATE PRIORITY RPAREN TERM WEIGHTprogram : program clause\n               | clauseclause : example\n              | modeb\n              | modeh\n              | fact\n              | normal_clause\n              | constraint\n    atom : PREDICATE LPAREN terms RPAREN\n    schema : PREDICATE LPAREN schema_terms RPARENschema_terms : MARKER TERM\n                    | MARKER TERM COMMA schema_terms\n                    | schema\n                    | schema COMMA schema_terms\n    min_max_bias : MAX TERM MIN TERM\n                    | MAX TERM\n    priority_bias : PRIORITY TERMweight_bias : WEIGHT TERMbias : min_max_bias weight_bias priority_bias\n            | min_max_bias priority_bias\n            | min_max_bias weight_bias\n            | weight_bias priority_bias\n            | weight_bias\n            | priority_bias\n            | min_max_bias\n    example : EXAMPLE_KEY atom DOT\n               | EXAMPLE_KEY NOT atom DOT\n               | EXAMPLE_KEY atom bias DOT\n               | EXAMPLE_KEY NOT atom bias DOT\n    modeh : MODEH_KEY schema DOT\n             | MODEH_KEY schema bias DOT\n    modeb : MODEB_KEY schema DOT\n             | MODEB_KEY NOT schema DOT\n             | MODEB_KEY schema bias DOT\n             | MODEB_KEY NOT schema bias DOT\n             terms : TERM\n             | atom\n             | TERM COMMA terms\n             | atom COMMA terms\n    fact : atom DOT\n    constraint : NOT body DOT\n    normal_clause : atom IMPLIES body DOT\n    body : literal COMMA body\n            | literal\n    literal : NOT atom\n               | atom\n               | TERM OPERATOR TERM\n    '
     
-_lr_action_items = {'EXAMPLE_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,41,44,47,51,58,60,63,72,],[9,9,-2,-3,-4,-5,-6,-7,-8,-1,-36,-25,-37,-30,-29,-27,-26,-38,-31,-28,]),'MODEB_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,41,44,47,51,58,60,63,72,],[12,12,-2,-3,-4,-5,-6,-7,-8,-1,-36,-25,-37,-30,-29,-27,-26,-38,-31,-28,]),'MODEH_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,41,44,47,51,58,60,63,72,],[13,13,-2,-3,-4,-5,-6,-7,-8,-1,-36,-25,-37,-30,-29,-27,-26,-38,-31,-28,]),'NOT':([0,1,2,3,4,5,6,7,8,9,11,12,15,18,19,30,41,42,44,47,51,58,60,63,72,],[11,11,-2,-3,-4,-5,-6,-7,-8,17,20,26,-1,-36,20,-25,-37,20,-30,-29,-27,-26,-38,-31,-28,]),'PREDICATE':([0,1,2,3,4,5,6,7,8,9,11,12,13,15,17,18,19,20,26,29,30,41,42,44,46,47,51,58,60,63,68,69,72,75,79,],[14,14,-2,-3,-4,-5,-6,-7,-8,14,14,27,27,-1,14,-36,14,14,27,14,-25,-37,14,-30,27,-29,-27,-26,-38,-31,14,14,-28,27,27,]),'$end':([1,2,3,4,5,6,7,8,15,18,30,41,44,47,51,58,60,63,72,],[0,-2,-3,-4,-5,-6,-7,-8,-1,-36,-25,-37,-30,-29,-27,-26,-38,-31,-28,]),'DOT':([10,16,21,22,23,25,28,31,33,34,38,39,40,45,52,53,54,56,57,59,61,62,67,70,73,],[18,30,41,-40,-42,44,47,51,-23,-24,58,60,-41,63,-21,-20,-22,-18,-17,72,-39,-43,-9,-19,-10,]),'IMPLIES':([10,67,],[19,-9,]),'TERM':([11,19,29,35,36,37,42,43,65,68,69,71,],[24,24,49,55,56,57,24,62,74,49,49,78,]),'LPAREN':([14,27,],[29,46,]),'MAX':([16,38,67,],[35,35,-9,]),'WEIGHT':([16,32,38,55,67,78,],[36,36,36,-16,-9,-15,]),'PRIORITY':([16,32,33,38,52,55,56,67,78,],[37,37,37,37,37,-16,-18,-9,-15,]),'COMMA':([22,23,40,49,50,62,66,67,73,74,],[42,-42,-41,68,69,-43,75,-9,-10,79,]),'OPERATOR':([24,],[43,]),'MARKER':([46,75,79,],[65,65,65,]),'RPAREN':([48,49,50,64,66,67,73,74,76,77,80,81,],[67,-32,-33,73,-13,-9,-10,-11,-34,-35,-14,-12,]),'MIN':([55,],[71,]),}
+_lr_action_items = {'EXAMPLE_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,41,44,48,53,60,62,65,66,71,77,78,],[9,9,-2,-3,-4,-5,-6,-7,-8,-1,-40,-26,-41,-32,-30,-28,-27,-42,-34,-33,-31,-29,-35,]),'MODEB_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,41,44,48,53,60,62,65,66,71,77,78,],[12,12,-2,-3,-4,-5,-6,-7,-8,-1,-40,-26,-41,-32,-30,-28,-27,-42,-34,-33,-31,-29,-35,]),'MODEH_KEY':([0,1,2,3,4,5,6,7,8,15,18,30,41,44,48,53,60,62,65,66,71,77,78,],[13,13,-2,-3,-4,-5,-6,-7,-8,-1,-40,-26,-41,-32,-30,-28,-27,-42,-34,-33,-31,-29,-35,]),'NOT':([0,1,2,3,4,5,6,7,8,9,11,12,15,18,19,30,41,42,44,48,53,60,62,65,66,71,77,78,],[11,11,-2,-3,-4,-5,-6,-7,-8,17,20,26,-1,-40,20,-26,-41,20,-32,-30,-28,-27,-42,-34,-33,-31,-29,-35,]),'PREDICATE':([0,1,2,3,4,5,6,7,8,9,11,12,13,15,17,18,19,20,26,29,30,41,42,44,47,48,53,60,62,65,66,71,73,74,77,78,81,85,],[14,14,-2,-3,-4,-5,-6,-7,-8,14,14,27,27,-1,14,-40,14,14,27,14,-26,-41,14,-32,27,-30,-28,-27,-42,-34,-33,-31,14,14,-29,-35,27,27,]),'$end':([1,2,3,4,5,6,7,8,15,18,30,41,44,48,53,60,62,65,66,71,77,78,],[0,-2,-3,-4,-5,-6,-7,-8,-1,-40,-26,-41,-32,-30,-28,-27,-42,-34,-33,-31,-29,-35,]),'DOT':([10,16,21,22,23,25,28,31,32,33,34,38,39,40,45,46,49,54,55,56,57,58,59,61,63,64,67,72,75,79,84,],[18,30,41,-44,-46,44,48,53,-25,-23,-24,60,62,-45,65,66,71,-21,-20,-22,-16,-18,-17,77,-43,-47,78,-9,-19,-10,-15,]),'IMPLIES':([10,72,],[19,-9,]),'TERM':([11,19,29,35,36,37,42,43,69,73,74,76,],[24,24,51,57,58,59,24,64,80,51,51,84,]),'LPAREN':([14,27,],[29,47,]),'MAX':([16,25,28,38,46,72,79,],[35,35,35,35,35,-9,-10,]),'WEIGHT':([16,25,28,32,38,46,57,72,79,84,],[36,36,36,36,36,36,-16,-9,-10,-15,]),'PRIORITY':([16,25,28,32,33,38,46,54,57,58,72,79,84,],[37,37,37,37,37,37,37,37,-16,-18,-9,-10,-15,]),'COMMA':([22,23,40,51,52,64,70,72,79,80,],[42,-46,-45,73,74,-47,81,-9,-10,85,]),'OPERATOR':([24,],[43,]),'MARKER':([47,81,85,],[69,69,69,]),'RPAREN':([50,51,52,68,70,72,79,80,82,83,86,87,],[72,-36,-37,79,-13,-9,-10,-11,-38,-39,-14,-12,]),'MIN':([57,],[76,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'program':([0,],[1,]),'clause':([0,1,],[2,15,]),'example':([0,1,],[3,3,]),'modeb':([0,1,],[4,4,]),'modeh':([0,1,],[5,5,]),'fact':([0,1,],[6,6,]),'normal_clause':([0,1,],[7,7,]),'constraint':([0,1,],[8,8,]),'atom':([0,1,9,11,17,19,20,29,42,68,69,],[10,10,16,23,38,23,40,50,23,50,50,]),'body':([11,19,42,],[21,39,61,]),'literal':([11,19,42,],[22,22,22,]),'schema':([12,13,26,46,75,79,],[25,28,45,66,66,66,]),'bias':([16,38,],[31,59,]),'min_max_bias':([16,38,],[32,32,]),'weight_bias':([16,32,38,],[33,52,33,]),'priority_bias':([16,32,33,38,52,],[34,53,54,34,70,]),'terms':([29,68,69,],[48,76,77,]),'schema_terms':([46,75,79,],[64,80,81,]),}
+_lr_goto_items = {'program':([0,],[1,]),'clause':([0,1,],[2,15,]),'example':([0,1,],[3,3,]),'modeb':([0,1,],[4,4,]),'modeh':([0,1,],[5,5,]),'fact':([0,1,],[6,6,]),'normal_clause':([0,1,],[7,7,]),'constraint':([0,1,],[8,8,]),'atom':([0,1,9,11,17,19,20,29,42,73,74,],[10,10,16,23,38,23,40,52,23,52,52,]),'body':([11,19,42,],[21,39,63,]),'literal':([11,19,42,],[22,22,22,]),'schema':([12,13,26,47,81,85,],[25,28,46,70,70,70,]),'bias':([16,25,28,38,46,],[31,45,49,61,67,]),'min_max_bias':([16,25,28,38,46,],[32,32,32,32,32,]),'weight_bias':([16,25,28,32,38,46,],[33,33,33,54,33,33,]),'priority_bias':([16,25,28,32,33,38,46,54,],[34,34,34,55,56,34,34,75,]),'terms':([29,73,74,],[50,82,83,]),'schema_terms':([47,81,85,],[68,86,87,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -41,33 +41,37 @@ _lr_productions = [
   ('schema_terms -> MARKER TERM COMMA schema_terms','schema_terms',4,'p_schema_terms','parser.py',91),
   ('schema_terms -> schema','schema_terms',1,'p_schema_terms','parser.py',92),
   ('schema_terms -> schema COMMA schema_terms','schema_terms',3,'p_schema_terms','parser.py',93),
-  ('min_max_bias -> MAX TERM MIN TERM','min_max_bias',4,'p_min_max_bias','parser.py',106),
-  ('min_max_bias -> MAX TERM','min_max_bias',2,'p_min_max_bias','parser.py',107),
-  ('priority_bias -> PRIORITY TERM','priority_bias',2,'p_priority_bias','parser.py',115),
-  ('weight_bias -> WEIGHT TERM','weight_bias',2,'p_weight_bias','parser.py',119),
-  ('bias -> min_max_bias weight_bias priority_bias','bias',3,'p_bias','parser.py',123),
-  ('bias -> min_max_bias priority_bias','bias',2,'p_bias','parser.py',124),
-  ('bias -> min_max_bias weight_bias','bias',2,'p_bias','parser.py',125),
-  ('bias -> weight_bias priority_bias','bias',2,'p_bias','parser.py',126),
-  ('bias -> weight_bias','bias',1,'p_bias','parser.py',127),
-  ('bias -> priority_bias','bias',1,'p_bias','parser.py',128),
-  ('example -> EXAMPLE_KEY atom DOT','example',3,'p_example','parser.py',147),
-  ('example -> EXAMPLE_KEY NOT atom DOT','example',4,'p_example','parser.py',148),
-  ('example -> EXAMPLE_KEY atom bias DOT','example',4,'p_example','parser.py',149),
-  ('example -> EXAMPLE_KEY NOT atom bias DOT','example',5,'p_example','parser.py',150),
-  ('modeh -> MODEH_KEY schema DOT','modeh',3,'p_modeh','parser.py',180),
-  ('modeb -> MODEB_KEY schema DOT','modeb',3,'p_modeb','parser.py',185),
-  ('modeb -> MODEB_KEY NOT schema DOT','modeb',4,'p_modeb','parser.py',186),
-  ('terms -> TERM','terms',1,'p_terms','parser.py',195),
-  ('terms -> atom','terms',1,'p_terms','parser.py',196),
-  ('terms -> TERM COMMA terms','terms',3,'p_terms','parser.py',197),
-  ('terms -> atom COMMA terms','terms',3,'p_terms','parser.py',198),
-  ('fact -> atom DOT','fact',2,'p_fact','parser.py',211),
-  ('constraint -> NOT body DOT','constraint',3,'p_constraint','parser.py',217),
-  ('normal_clause -> atom IMPLIES body DOT','normal_clause',4,'p_normal_clause','parser.py',223),
-  ('body -> literal COMMA body','body',3,'p_body','parser.py',228),
-  ('body -> literal','body',1,'p_body','parser.py',229),
-  ('literal -> NOT atom','literal',2,'p_literal','parser.py',237),
-  ('literal -> atom','literal',1,'p_literal','parser.py',238),
-  ('literal -> TERM OPERATOR TERM','literal',3,'p_literal','parser.py',239),
+  ('min_max_bias -> MAX TERM MIN TERM','min_max_bias',4,'p_min_max_bias','parser.py',105),
+  ('min_max_bias -> MAX TERM','min_max_bias',2,'p_min_max_bias','parser.py',106),
+  ('priority_bias -> PRIORITY TERM','priority_bias',2,'p_priority_bias','parser.py',117),
+  ('weight_bias -> WEIGHT TERM','weight_bias',2,'p_weight_bias','parser.py',121),
+  ('bias -> min_max_bias weight_bias priority_bias','bias',3,'p_bias','parser.py',125),
+  ('bias -> min_max_bias priority_bias','bias',2,'p_bias','parser.py',126),
+  ('bias -> min_max_bias weight_bias','bias',2,'p_bias','parser.py',127),
+  ('bias -> weight_bias priority_bias','bias',2,'p_bias','parser.py',128),
+  ('bias -> weight_bias','bias',1,'p_bias','parser.py',129),
+  ('bias -> priority_bias','bias',1,'p_bias','parser.py',130),
+  ('bias -> min_max_bias','bias',1,'p_bias','parser.py',131),
+  ('example -> EXAMPLE_KEY atom DOT','example',3,'p_example','parser.py',148),
+  ('example -> EXAMPLE_KEY NOT atom DOT','example',4,'p_example','parser.py',149),
+  ('example -> EXAMPLE_KEY atom bias DOT','example',4,'p_example','parser.py',150),
+  ('example -> EXAMPLE_KEY NOT atom bias DOT','example',5,'p_example','parser.py',151),
+  ('modeh -> MODEH_KEY schema DOT','modeh',3,'p_modeh','parser.py',177),
+  ('modeh -> MODEH_KEY schema bias DOT','modeh',4,'p_modeh','parser.py',178),
+  ('modeb -> MODEB_KEY schema DOT','modeb',3,'p_modeb','parser.py',196),
+  ('modeb -> MODEB_KEY NOT schema DOT','modeb',4,'p_modeb','parser.py',197),
+  ('modeb -> MODEB_KEY schema bias DOT','modeb',4,'p_modeb','parser.py',198),
+  ('modeb -> MODEB_KEY NOT schema bias DOT','modeb',5,'p_modeb','parser.py',199),
+  ('terms -> TERM','terms',1,'p_terms','parser.py',227),
+  ('terms -> atom','terms',1,'p_terms','parser.py',228),
+  ('terms -> TERM COMMA terms','terms',3,'p_terms','parser.py',229),
+  ('terms -> atom COMMA terms','terms',3,'p_terms','parser.py',230),
+  ('fact -> atom DOT','fact',2,'p_fact','parser.py',243),
+  ('constraint -> NOT body DOT','constraint',3,'p_constraint','parser.py',249),
+  ('normal_clause -> atom IMPLIES body DOT','normal_clause',4,'p_normal_clause','parser.py',255),
+  ('body -> literal COMMA body','body',3,'p_body','parser.py',260),
+  ('body -> literal','body',1,'p_body','parser.py',261),
+  ('literal -> NOT atom','literal',2,'p_literal','parser.py',269),
+  ('literal -> atom','literal',1,'p_literal','parser.py',270),
+  ('literal -> TERM OPERATOR TERM','literal',3,'p_literal','parser.py',271),
 ]

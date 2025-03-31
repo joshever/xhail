@@ -39,7 +39,7 @@ class Model:
         def on_model(clingo_model):
             model_symbols = clingo_model.symbols(shown=True)
             model_cost = clingo_model.cost
-            print(model_symbols, model_cost)
+            #print(model_symbols, model_cost)
             clingo_models.append([model_symbols, model_cost])
         
         control.solve(on_model=on_model)

@@ -17,19 +17,19 @@ if __name__ == '__main__':
 
     # create empty clingo Model
     model = Model(EX, MH, MB, BG, DEPTH)
-    print([str(e.atom) for e in EX])
+
     # ---------- abduction phase (1) ---------- #
-    print("Abduction...")
+    #print("Abduction...")
     abduction = Abduction(model)
     abduction.runPhase()
 
     # ---------- deduction phase (2) ---------- #
-    print("Deduction...")
+    #print("Deduction...")
     deduction = Deduction(model)
     deduction.runPhase()
 
     # ---------- induction phase (3) ---------- #
-    print("Induction...")
+    #print("Induction...")
     induction = Induction(model)
     induction.runPhase()
     print("Complete.")

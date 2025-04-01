@@ -44,7 +44,6 @@ class Modeh:
     def __init__(self, atom: Atom, n: str): #these will be placeholder atoms
         self.atom = atom
         self.n = n
-        self.types = [term.type for term in atom.terms]
 
     def setWeight(self, weight):
         self.weight = weight
@@ -74,6 +73,7 @@ class Modeh:
     def createProgram(self):
         new_atom = copy.deepcopy(self.atom)
         generalised_atom, n = self.generalise(new_atom)
+        print(str(generalised_atom))
         types = ', '.join(generalised_atom.getTypes())
         variables = ', '.join([f"V{i}" for i in range(1, n)])
 

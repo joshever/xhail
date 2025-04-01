@@ -124,7 +124,7 @@ class Clause:
                 else:
                     newAtom.terms.append(Normal(term.value))
             else:
-                newTerm = self.replaceConstants(self, term, matching)
+                newTerm = self.replaceConstants(term, matching)
                 newAtom.terms.append(newTerm)
         return newAtom
     

@@ -80,7 +80,7 @@ class Induction:
             return (False, None)
         for term1, term2 in zip(atom.terms, mode.terms):
             if isinstance(term2, Atom):
-               res = self.updateTypes(term1, term2)
+               res = self.updateAtomTypes(term1, term2)
                if res[0] == False:
                    return (False, None)
                else:
@@ -147,6 +147,7 @@ class Induction:
         selectors = {}
         best_model = self.model.getBestModel()
         if str(best_model) != '[]':
+            print("hi")
             selectors = {}
             facts = self.model.parseModel(best_model)
             for fact in facts:
@@ -167,6 +168,7 @@ class Induction:
                     new_body = self.uniqueObjects(new_body)
                     new_clause = Clause(new_head, new_body)
                     included_clauses.append(new_clause)
+                    print(str(new_clause))
         else:
             print("no solutions")
             return

@@ -1,15 +1,17 @@
-from xhail.language.structures import Modeb, Modeh
-from ..language.terms import Atom, Clause, Literal, Normal, PlaceMarker
+from ..language.terms import Atom, Clause, Literal, PlaceMarker
+
+# -------------------------------------- #
+# ---------- DEDUCTION CLASS ----------- #
+# -------------------------------------- #
 
 class Deduction:
     def __init__(self, model):
         self.MH = model.MH
         self.MB = model.MB
-        self.BG = model.BG
         self.DEPTH = model.DEPTH
         self.model = model
 
-    # ---------- get marker terms given specific marker (+/-) ---------- #
+    # ----- get marker terms given specific marker (+/-) ----- #
     def getMarkerTerms(self, atom, mode, marker):
         n = set()
         for term1, term2 in zip(atom.terms, mode.terms):

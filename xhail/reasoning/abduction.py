@@ -1,7 +1,9 @@
-# ----- ABDUCTION PHASE (1) ------- #
-# ---------- abductor ----------- #
+# -------------------------------------- #
+# ---------- ABDUCTION CLASS ----------- #
+# -------------------------------------- #
+
 class Abduction:
-    # ---------- examples, modehs, background, model required ----------- #
+    # ----- examples, modehs, background, model required ------ #
     def __init__(self, model):
         self.EX = model.EX
         self.MH = model.MH
@@ -9,7 +11,7 @@ class Abduction:
         self.BG = model.BG
         self.model = model
 
-    # ---------- methods for constructing program ---------- #
+    # ----- methods for constructing program ----- #
     def loadExamples(self, examples):
         examplesProgram = '%EXAMPLES%\n'
         for example in examples:
@@ -35,7 +37,7 @@ class Abduction:
         backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
         return backgroundProgram + '\n'
 
-    # ---------- run the abductive phase ---------- #
+    # ----- run the abductive phase ----- #
     def runPhase(self):
         program = self.model.getProgram()
 

@@ -1,9 +1,14 @@
-# ----- CLASS DEFINITIONS FOR HOLDING XHAIL DATA ----- #
-# ---------- term (covers atom, placemarker, and normal) ---------- #
+# --------------------------------- #
+# ---------- TERM CLASS ----------- #
+# --------------------------------- #
+
 class Term:
     pass
 
-# ---------- atom term ---------- #
+# -------------------------------------- #
+# ---------- ATOM TERM CLASS ----------- #
+# -------------------------------------- #
+
 class Atom(Term):
     def __init__(self, predicate: str, terms: list[Term]):
         self.terms = terms
@@ -28,7 +33,10 @@ class Atom(Term):
         variables = self.getVariables()
         return [str(Atom(var.type, [var.value])) for var in variables]
 
-# ---------- normal term ---------- #
+# ---------------------------------------- #
+# ---------- NORMAL TERM CLASS ----------- #
+# ---------------------------------------- #
+
 class Normal(Term):
     type = ''
 
@@ -44,7 +52,10 @@ class Normal(Term):
     def setType(self, type):
         self.type = type
 
-# ---------- placemarker term ---------- #
+# --------------------------------------------- #
+# ---------- PLACEMARKER TERM CLASS ----------- #
+# --------------------------------------------- #
+
 class PlaceMarker(Term):
     def __init__(self, marker: str, type: str):
         self.marker = marker
@@ -53,7 +64,10 @@ class PlaceMarker(Term):
     def __str__(self):
         return self.marker + self.type
 
-# ---------- literal ---------- #
+# ------------------------------------ #
+# ---------- LITERAL CLASS ----------- #
+# ------------------------------------ #
+
 class Literal:
     def __init__(self, atom: Atom, negation: bool):
         self.atom = atom
@@ -62,6 +76,10 @@ class Literal:
     def __str__(self):
         return ('not ' if self.negation else '') + str(self.atom)
     
+# ----------------------------------------- #
+# ---------- MISC LITERAL CLASS ----------- #
+# ----------------------------------------- #
+
 class MiscLiteral:
     def __init__(self, misc: str):
         self.misc = misc
@@ -69,7 +87,10 @@ class MiscLiteral:
     def __str__(self):
         return self.misc
 
-# ---------- noraml clause (covers normal clause, fact and constraint) ---------- #
+# ----------------------------------- #
+# ---------- CLAUSE CLASS ----------- #
+# ----------------------------------- #
+
 class Clause:
     def __init__(self, head: Atom, body: list[Literal]):
         self.head = head
@@ -139,8 +160,10 @@ class Clause:
         variables = self.getVariables()
         return [str(Atom(var.type, [var.value])) for var in variables]
 
+# --------------------------------- #
+# ---------- FACT CLASS ----------- #
+# --------------------------------- #
 
-# ---------- fact clause ---------- #
 class Fact(Clause):
     def __init__(self, head: Atom):
         self.head = head
@@ -148,7 +171,10 @@ class Fact(Clause):
     def __str__(self):
         return str(self.head) + '.'
 
-# ---------- constraint clause ---------- #
+# --------------------------------------- #
+# ---------- CONSTRAINT CLASS ----------- #
+# --------------------------------------- #
+
 class Constraint(Clause):
     def __init__(self, body: list[Literal]):
         self.body = body

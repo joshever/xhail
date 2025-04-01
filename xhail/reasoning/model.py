@@ -31,8 +31,7 @@ class Model:
         return clingo_models
     
     def getBestModel(self):
-        control = clingo.Control()#["--opt-mode=opt"])
-        #control.configuration.solve.models = 0
+        control = clingo.Control()
         control.add("base", [], self.program)
         control.ground([("base", [])])
         clingo_models = []
@@ -40,16 +39,11 @@ class Model:
         def on_model(clingo_model):
             model_symbols = clingo_model.symbols(shown=True)
             model_cost = clingo_model.cost
-            #print(model_symbols, model_cost)
             clingo_models.append([model_symbols, model_cost])
         
         control.solve(on_model=on_model)
-        #result = handle.get()  # Wait for the solving process to finish
-        #if not clingo_models:
-        #    return None
         if clingo_models == []:
             return '[]'
-        # Select the best model based on lexicographical order of the cost vector
         best_model = min(clingo_models, key=lambda m: [int(c) for c in m[1]])
         self.best_model = best_model
         return best_model[0]
@@ -63,7 +57,6 @@ class Model:
     def clearProgram(self):
         self.program = ""
 
-    # ensures normal values are the same, and any placeholders can be different.
     def isSubsumed(self, atom, mode): # 
         if atom.predicate != mode.predicate:
             return (False, None)

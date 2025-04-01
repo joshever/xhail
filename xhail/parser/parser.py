@@ -3,7 +3,10 @@ import ply.yacc as yacc
 from ..language.structures import Modeb, Example, Modeh
 from ..language.terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
 
-# ---------- prepare tokens ----------- #
+# ----------------------------------- #
+# ---------- DEFINE LEXER ----------- #
+# ----------------------------------- #
+
 tokens = (
     'NOT',
     'EXAMPLE_KEY',
@@ -24,7 +27,7 @@ tokens = (
     'PRIORITY',
 )
 
-# ---------- define tokens ----------- #
+# Define Tokens
 t_NOT = r'(?<!\S)not(?!\S)'
 t_EXAMPLE_KEY = r'\#example'
 t_MODEH_KEY = r'\#modeh'
@@ -44,7 +47,7 @@ t_WEIGHT = r'='
 t_PRIORITY = r'@'
 t_ignore = ' \t\n'
 
-# ---------- special tokens ----------- #
+# ----- Special Tokens ----- #
 def t_error(t):
     print(f"Illegal character '{t.value[0]}'")
     t.lexer.skip(1)
@@ -55,7 +58,11 @@ def t_ignore_COMMENT(t):
 
 lexer = lex.lex()
 
-# ---------- program and clauses ---------- #
+# ----------------------------------------- #
+# ---------- PARSER EXPRESSIONS ----------- #
+# ----------------------------------------- #
+
+# ----- program definition ----- #
 def p_program(p):
     '''program : program clause
                | clause'''
@@ -64,6 +71,7 @@ def p_program(p):
     else:
         p[0] = p[1] + [p[2]]
 
+# ----- clause definition ----- #
 def p_clause(p):
     '''clause : example
               | modeb
@@ -74,18 +82,18 @@ def p_clause(p):
     '''
     p[0] = p[1]
 
-
-# ---------- atom ---------- #
+# ----- atom definition ----- #
 def p_atom(p):
     '''atom : PREDICATE LPAREN terms RPAREN
     '''
     p[0] = Atom(p[1], p[3])
 
-# ---------- schema ---------- #
+# ----- schema definition ----- #
 def p_schema(p):
     '''schema : PREDICATE LPAREN schema_terms RPAREN'''
     p[0] = Atom(p[1], p[3])
 
+# ----- schema terms definition ----- #
 def p_schema_terms(p):
     '''schema_terms : MARKER TERM
                     | MARKER TERM COMMA schema_terms
@@ -101,6 +109,7 @@ def p_schema_terms(p):
     else:
         p[0] = [p[1]] + p[3]
 
+# ----- min max constraints definition ----- #
 def p_min_max_bias(p):
     '''min_max_bias : MAX TERM MIN TERM
                     | MAX TERM
@@ -110,14 +119,17 @@ def p_min_max_bias(p):
     else:
         p[0] = {'min': p[2], 'max': p[4]}
 
+# ----- priority bias definition ----- #
 def p_priority_bias(p):
     '''priority_bias : PRIORITY TERM'''
     p[0] = {'priority': p[2]}
 
+# ----- weight bias definition ----- #
 def p_weight_bias(p):
     '''weight_bias : WEIGHT TERM'''
     p[0] = {'weight': p[2]}
 
+# ----- bias definition ----- #
 def p_bias(p):
     '''bias : min_max_bias weight_bias priority_bias
             | min_max_bias priority_bias
@@ -127,7 +139,6 @@ def p_bias(p):
             | priority_bias
             | min_max_bias
     '''
-
     values = {}
     for i in range(1, len(p[1:])):
         if 'min' in p[i].keys():
@@ -140,7 +151,7 @@ def p_bias(p):
             values['weight'] = p[i]['weight']
     p[0] = values
         
-# ---------- example ---------- #
+# ----- example definition ----- #
 def p_example(p):
     '''example : EXAMPLE_KEY atom DOT
                | EXAMPLE_KEY NOT atom DOT
@@ -166,10 +177,9 @@ def p_example(p):
             new_example.setWeight(p[3]['weight'])
         if 'priority' in p[3].keys():
             new_example.setPriority(p[3]['priority'])
-        p[0] = new_example
-        
+        p[0] = new_example    
 
-# ---------- modeh ---------- #
+# ----- modeh definition ----- #
 def p_modeh(p):
     '''modeh : MODEH_KEY schema DOT
              | MODEH_KEY schema bias DOT
@@ -188,7 +198,7 @@ def p_modeh(p):
             modeh.setPriority(p[3]['priority'])
         p[0] = modeh
 
-# ---------- modeb ---------- #
+# ----- modeb definition ----- #
 def p_modeb(p):
     '''modeb : MODEB_KEY schema DOT
              | MODEB_KEY NOT schema DOT
@@ -218,8 +228,7 @@ def p_modeb(p):
             modeb.setPriority(p[3]['priority'])
         p[0] = modeb
         
-
-# ---------- terms ---------- #
+# ----- terms definition ----- #
 def p_terms(p):
     '''terms : TERM
              | atom
@@ -235,24 +244,25 @@ def p_terms(p):
     else:
         p[0] = [p[1]] + p[3]
 
-# ---------- fact ---------- #
+# ----- fact definition ----- #
 def p_fact(p):
     '''fact : atom DOT
     '''
     p[0] = Fact(p[1])
 
-# ---------- contraint ---------- #
+# ----- constraint definition ----- #
 def p_constraint(p):
     '''constraint : NOT body DOT
     '''
     p[0] = Constraint(p[2], True)
 
-# ---------- normal_clause ---------- #
+# ----- normal clause definition ----- #
 def p_normal_clause(p):
     '''normal_clause : atom IMPLIES body DOT
     '''
     p[0] = Clause(p[1], p[3])
 
+# ----- body definition ----- #
 def p_body(p):
     '''body : literal COMMA body
             | literal
@@ -262,6 +272,7 @@ def p_body(p):
     else:
         p[0] = p[1] + p[3]
 
+# ----- literal definition ----- #
 def p_literal(p):
     '''literal : NOT atom
                | atom
@@ -272,12 +283,16 @@ def p_literal(p):
     else:
         p[0] = [Literal(p[2], True)]
 
-# ---------- error ---------- #
+# ----- error definition ----- #
 def p_error(p):
     if p:
         print(f"Syntax error at '{p.value}' on line {p.lineno}")
     else:
         print("Syntax error at EOF")
+
+# ----------------------------------- #
+# ---------- PARSER CLASS ----------- #
+# ----------------------------------- #
 
 class Parser:
     data = ""
@@ -286,7 +301,7 @@ class Parser:
     def __init__(self):
         return
 
-    # ---------- string -> Example | Modeh | Modeb | Background ---------- #
+    # ----- string -> Example | Modeh | Modeb | Background ----- #
     def separate(self):
         examples = []
         modehs = []
@@ -303,19 +318,20 @@ class Parser:
                 background.append(item)
         return examples, modehs, modebs, background
 
-    # ---------- default parse mode ----------- #
+    # ----- default parse mode ----- #
     def parseProgram(self):
         parser = yacc.yacc(debug=True, start='program')
         self.parsedData = parser.parse(self.data)
         return self.parsedData
 
-    # ---------- debug parse mode ----------- #
+    # ----- debug parse mode ----- #
     def tokenByToken(self):
         lexer = lex.lex()
         lexer.input(self.data)
         for token in lexer:
             print(f"Token type: {token.type}, Token value: {token.value}")
 
+    # ----- load file given filename ----- #
     def loadFile(self, filename):
         path = f'{filename}'
         file = open(path, 'r', encoding="utf-8")
@@ -323,6 +339,7 @@ class Parser:
         file.close()
         return self.data
     
+    # ----- load given string ----- #
     def loadString(self, str):
         self.data = str
 

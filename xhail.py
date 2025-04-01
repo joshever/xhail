@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.parseProgram()
     EX, MH, MB, BG = parser.separate()
 
-    # create empty clingo Model
+    # create empty context Model
     model = Model(EX, MH, MB, BG, DEPTH)
 
     # ---------- abduction phase (1) ---------- #

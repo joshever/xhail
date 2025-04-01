@@ -1,5 +1,9 @@
 from xhail.language.terms import Atom, Clause, Literal, Normal, PlaceMarker
 
+# -------------------------------------- #
+# ---------- INDUCTION CLASS ----------- #
+# -------------------------------------- #
+
 class Induction:
     def __init__(self, model):
         self.model = model
@@ -18,7 +22,7 @@ class Induction:
         backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
         return backgroundProgram + '\n'
 
-    # ---------- Generate and Load Choice statements ---------- #
+    # ----- Generate and Load Choice statements ----- #
     def loadChoice(self, clauses): # literal 0 == clause head. literal 1 = first clause literal. !!! clause 0 is first clause
         program = "\n"
         program += "{ use(V1, 0) } :- clause(V1).\n"
@@ -31,7 +35,7 @@ class Induction:
                 program += f"literal({idc}, {idl}).\n"
         return program
     
-    # ---------- Generate and Load Clause Level statements ---------- #
+    # ----- Generate and Load Clause Level statements ----- #
     def loadClauseLevels(self, clauses):
         program = "\n"
         if self.model.DEPTH != 0:
@@ -44,7 +48,7 @@ class Induction:
                     program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
         return program
     
-    # ---------- Generate and Load Minimize statements ---------- #
+    # ----- Generate and Load Minimize statements ----- #
     def loadMinimize(self, clauses):
         program = "\n"
         for idc, clause in enumerate(clauses):
@@ -52,7 +56,7 @@ class Induction:
                 program += "#minimize{ 1@2 : "+f"use({idc},{idl})"+" }.\n"
         return program
     
-    # ---------- Generate and Load Use/Try statements ---------- #
+    # ----- Generate and Load Use/Try statements ----- #
     def loadUseTry(self, clauses):
         program = "\n"
 
@@ -74,7 +78,7 @@ class Induction:
 
         return program
 
-    # ---------- Assign Types for Atom ---------- #
+    # ----- Assign Types for Atom ----- #
     def updateAtomTypes(self, atom, mode): # modeb / modeh terms
         if atom.predicate != mode.predicate:
             return (False, None)
@@ -94,7 +98,7 @@ class Induction:
                 continue
         return (True, atom)
     
-    # ---------- Assing Types for Clause ---------- #
+    # ----- Assing Types for Clause ----- #
     def updateClauseTypes(self, clauses):
         new_clauses = []
         for clause in clauses:
@@ -114,7 +118,7 @@ class Induction:
             new_clauses.append(Clause(new_head, new_body))
         return new_clauses
     
-    # ---------- Remove Duplicates ---------- #
+    # ----- Remove Duplicates ----- #
     def uniqueObjects(self, objects):
         result = []
         visited = set()
@@ -126,12 +130,12 @@ class Induction:
         return result
 
     def runPhase(self):
-        # ---------- Prepare Clauses ---------- #
+        # ----- Prepare Clauses ----- #
         clauses = [clause.generalise() for clause in self.model.getKernel()]
         clauses = self.updateClauseTypes(clauses)
         clauses = self.uniqueObjects(clauses)
 
-        # ---------- Constuct Program ---------- #
+        # ----- Constuct Program ----- #
         program = f'#show use/2.\n'
         program += self.loadBackground(self.BG)
         program += self.loadExamples(self.EX)
@@ -140,7 +144,7 @@ class Induction:
         program += self.loadUseTry(clauses)
         program += self.loadClauseLevels(clauses)
 
-        # ---------- Update Model ---------- #
+        # ----- Update Model ----- #
         self.model.setProgram(program)
         self.model.writeProgram("xhail/output/induction.lp")
 

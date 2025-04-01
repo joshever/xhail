@@ -1,7 +1,10 @@
 import copy
 from ..language.terms import Atom, Normal, PlaceMarker
-# ----- STRUCTURE CLASS DEFINITIONS ------ #
-# ---------- example ----------- #
+
+# ----------------------------------- #
+# ---------- EXAMPLE CLASS ---------- #
+# ----------------------------------- #
+
 class Example:
     KEY_WORD = '#example'
     WEIGHT_OPERATOR = '='
@@ -29,7 +32,10 @@ class Example:
     def __str__(self):
         return '#example '+ ('not ' if self.negation else '') + str(self.atom)
 
-# ---------- modeh ----------- #
+# ---------------------------------- #
+# ---------- MODEH CLASS ----------- #
+# ---------------------------------- #
+
 class Modeh:
     KEY_WORD = '#modeh'
     WEIGHT_OPERATOR = '='
@@ -38,10 +44,10 @@ class Modeh:
     CONSTRAINT_SEPARATOR = '-'
     weight = 1
     priority = 2
-    min = 0 #default 0
-    max = 1000000 #this just has to be super big by default
+    min = 0
+    max = 1000000
 
-    def __init__(self, atom: Atom, n: str): #these will be placeholder atoms
+    def __init__(self, atom: Atom, n: str):
         self.atom = atom
         self.n = n
 
@@ -86,7 +92,10 @@ class Modeh:
     def __str__(self):
         return '#modeh ' + str(self.atom)
     
-# ---------- modeb ----------- #
+# ---------------------------------- #
+# ---------- MODEB CLASS ----------- #
+# ---------------------------------- #
+
 class Modeb:
     KEY_WORD = '#modeb'
     WEIGHT_OPERATOR = '='
@@ -95,10 +104,10 @@ class Modeb:
     CONSTRAINT_SEPARATOR = '~'
     weight = 1
     priority = 1
-    min = 0 #default 0
-    max = 1000000 #this just has to be super big by default
+    min = 0
+    max = 1000000
 
-    def __init__(self, atom: Atom, n: str, negation=False): #these will be placeholder atoms
+    def __init__(self, atom: Atom, n: str, negation=False):
         self.atom = atom
         self.n = n
         self.negation = negation

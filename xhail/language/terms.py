@@ -26,7 +26,7 @@ class Atom(Term):
     def getVariables(self): # return Term (with its type)
         variables = []
         for term in self.terms:
-            if isinstance(term, Normal) and term.getType() != '':
+            if isinstance(term, Normal) and term.getType() != '' and term.getType() != 'constant':
                 variables += [term]
             elif isinstance(term, Atom):
                 variables += term.getVariables()
@@ -37,6 +37,9 @@ class Atom(Term):
     def getTypes(self):
         variables = self.getVariables()
         return [str(Atom(var.type, [var.value])) for var in variables]
+    
+    def getArity(self):
+        return len(self.terms)
 
 # ---------------------------------------- #
 # ---------- NORMAL TERM CLASS ----------- #

@@ -68,6 +68,10 @@ class Model:
             elif isinstance(term2, Normal):
                 if term1.value != term2.value:
                     return (False, None)
+                else:
+                    if term2.type == 'constant':
+                        term1.type = 'constant'
+                        continue
             elif isinstance(term2, PlaceMarker) and isinstance(term1, Atom):
                 if self.getMatches([Atom(term2.type, [term1])]) == []:
                     return (False, None)

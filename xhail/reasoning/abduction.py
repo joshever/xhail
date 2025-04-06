@@ -54,7 +54,6 @@ class Abduction:
         program += self.loadNegations(self.MB)
         program += self.loadExamples(self.EX)
         program += self.loadAbducibles(self.MH)
-        print(program)
 
         self.model.setProgram(program)
         self.model.getBestModel()

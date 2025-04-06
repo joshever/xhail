@@ -40,7 +40,7 @@ t_PREDICATE = r'(?!not\b)([a-z][a-zA-Z_0-9]*)(?=\()'
 #t_TERM = r'(?!not\b)[a-zA-Z_][a-zA-Z_0-9]*|[0-9]+'
 t_UPPER = r'(?!not\b)\b[A-Z][a-zA-Z0-9_]*\b'
 t_LOWER = r'(?!not\b)\b[a-z][a-zA-Z0-9_]*\b'
-t_NUMBER = r'\d'
+t_NUMBER = r'\d+'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_COMMA = r','
@@ -120,20 +120,32 @@ def p_schema_terms(p):
                     | MARKER term COMMA schema_terms
                     | schema
                     | schema COMMA schema_terms
+                    | term
+                    | term COMMA schema_terms
     '''
     if len(p) == 3:
         p[0] = [PlaceMarker(marker=p[1], type=p[2])]
     elif len(p) == 5:
         p[0] = [PlaceMarker(marker=p[1], type=p[2])] + p[4]
     elif len(p) == 2:
-        p[0] = [p[1]]
+        if isinstance(p[1], Atom):
+            p[0] = [p[1]]
+        else:
+            term = Normal(p[1])
+            term.setType('constant')
+            p[0] = [term]
     else:
-        p[0] = [p[1]] + p[3]
+        if isinstance(p[1], Atom):
+            p[0] = [p[1]] + p[3]
+        else:
+            term = Normal(p[1])
+            term.setType('constant')
+            p[0] = [term] + p[3]
 
 # ----- min max constraints definition ----- #
 def p_min_max_bias(p):
-    '''min_max_bias : MAX term MIN term
-                    | MAX term
+    '''min_max_bias : MAX NUMBER MIN NUMBER
+                    | MAX NUMBER
     '''
     if len(p) == 3:
         p[0] = {'max': p[2]}
@@ -142,12 +154,12 @@ def p_min_max_bias(p):
 
 # ----- priority bias definition ----- #
 def p_priority_bias(p):
-    '''priority_bias : PRIORITY term'''
+    '''priority_bias : PRIORITY NUMBER'''
     p[0] = {'priority': p[2]}
 
 # ----- weight bias definition ----- #
 def p_weight_bias(p):
-    '''weight_bias : WEIGHT term'''
+    '''weight_bias : WEIGHT NUMBER'''
     p[0] = {'weight': p[2]}
 
 # ----- bias definition ----- #
@@ -161,7 +173,7 @@ def p_bias(p):
             | min_max_bias
     '''
     values = {}
-    for i in range(1, len(p[1:])):
+    for i in range(1, len(p)):
         if 'min' in p[i].keys():
             values['min'] = p[i]['min']
         if 'max' in p[i].keys():

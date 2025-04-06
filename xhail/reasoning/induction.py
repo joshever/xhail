@@ -71,7 +71,7 @@ class Induction:
         
 
         for idc, clause in enumerate(clauses):
-            program += str(clause.head) + " :- " + f"use({idc}, 0)" + (', ' if clause.head.arity != 0 else '')
+            program += str(clause.head) + " :- " + f"use({idc}, 0)" + (', ' if clause.head.getArity() != 0 else '')
             if try_heads[idc] != []:
                 program += ', '.join(try_head for try_head in try_heads[idc]) + ', '
             program += ', '.join(self.uniqueObjects(clause.getTypes())) + '.\n'

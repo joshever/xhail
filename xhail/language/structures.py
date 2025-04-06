@@ -42,20 +42,26 @@ class Modeh:
     PRIORITY_OPERATOR = '@'
     CONSTRAINT_OPERATOR = ':'
     CONSTRAINT_SEPARATOR = '-'
-    weight = 1
-    priority = 2
-    min = 0
-    max = 1000000
 
     def __init__(self, atom: Atom, n: str):
         self.atom = atom
         self.n = n
+        self.weight = 1
+        self.priority = 1
+        self.min = 0
+        self.max = 1000000
 
     def setWeight(self, weight):
         self.weight = weight
 
     def setPriority(self, priority):
         self.priority = priority
+
+    def getWeight(self):
+        return self.weight
+
+    def getPriority(self):
+        return self.priority
 
     def setMax(self, max):
         self.max = max
@@ -78,19 +84,23 @@ class Modeh:
                 atom.terms[idt] = Normal(value)
                 atom.terms[idt].setType(type)
                 n += 1
+            elif isinstance(term, Normal) and term.getType() == 'constant':
+                continue
             else:
                 term, n = self.generalise(term, n)
         return atom, n
     
     def createProgram(self):
         new_atom = copy.deepcopy(self.atom)
+        print("before", new_atom)
         generalised_atom, n = self.generalise(new_atom)
+        print("hi", generalised_atom)
         types = ', '.join(generalised_atom.getTypes())
         variables = ', '.join([f"V{i}" for i in range(1, n)])
 
         program = []
         program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + f'{(':' + types) if self.atom.arity != 0 else ''} ' + '} ' + str(self.max) + '.')
-        program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}{(',' + variables) if self.atom.arity != 0 else ''}: abduced_{generalised_atom}' + f'{(',' + types) if self.atom.arity != 0 else ''}' + '}.')
+        program.append('#minimize{' + f'{str(self.getWeight())}@{str(self.getPriority())}{(',' + variables) if self.atom.arity != 0 else ''}: abduced_{generalised_atom}' + f'{(',' + types) if self.atom.arity != 0 else ''}' + '}.')
         program.append(f'{generalised_atom} :- abduced_{generalised_atom}{(',' + types) if self.atom.arity != 0 else ''}.')
         return '\n'.join(program)
 

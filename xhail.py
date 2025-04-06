@@ -7,12 +7,13 @@ from xhail.parser.parser import Parser
 if __name__ == '__main__':
     # ---------- read input ---------- #
     DEPTH = 2
-    INPUT_FILENAME = 'tests/josh.lp'#'example1.lp'#'tests/deduction.lp'#'test.lp'#
+    INPUT_FILENAME = 'tests/opt.lp'#'example1.lp'#'tests/deduction.lp'#'test.lp'#
 
     # ---------- parse data ---------- #
     parser = Parser()
     parser.loadFile(INPUT_FILENAME)
     parser.parseProgram()
+    #parser.tokenByToken()
     EX, MH, MB, BG = parser.separate()
 
     """
@@ -28,8 +29,8 @@ if __name__ == '__main__':
     
     for bg in BG:
         print(str(bg))
+    
     """
-
     # create empty context Model
     model = Model(EX, MH, MB, BG, DEPTH)
     # IF HYPOTHESIS == [] -> REPEAT UNTIL MODEH MIN == MODEH MAX OR ABDUCTION UNSATISFIED.

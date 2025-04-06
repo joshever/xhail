@@ -26,7 +26,7 @@ class Induction:
     def loadChoice(self, clauses):
         program = "\n"
         program += "{ use(V1, 0) } :- clause(V1).\n"
-        if self.model.DEPTH != 0:
+        if self.model.DEPTH != 0 and sum((1 if clause.body != [] else 0) for clause in clauses) > 0:
             program += "{ use(V1, V2) } :- clause(V1), literal(V1, V2).\n"
 
         for idc, clause in enumerate(clauses):
@@ -38,7 +38,7 @@ class Induction:
     # ----- Generate and Load Clause Level statements ----- #
     def loadClauseLevels(self, clauses):
         program = "\n"
-        if self.model.DEPTH != 0:
+        if self.model.DEPTH != 0 and sum((1 if clause.body != [] else 0) for clause in clauses) > 0:
             program += ":- level(X, Y), not level(X, 0).\n"
             for idc, clause in enumerate(clauses):
                 # level 0 include not. all levels
@@ -71,7 +71,7 @@ class Induction:
         
 
         for idc, clause in enumerate(clauses):
-            program += str(clause.head) + " :- " + f"use({idc}, 0)" + ', '
+            program += str(clause.head) + " :- " + f"use({idc}, 0)" + (', ' if clause.head.arity != 0 else '')
             if try_heads[idc] != []:
                 program += ', '.join(try_head for try_head in try_heads[idc]) + ', '
             program += ', '.join(self.uniqueObjects(clause.getTypes())) + '.\n'
@@ -134,8 +134,6 @@ class Induction:
         clauses = [clause.generalise() for clause in self.model.getKernel()]
         clauses = self.updateClauseTypes(clauses)
         clauses = self.uniqueObjects(clauses)
-
-        print([str(c) for c in clauses])
 
         # ----- Constuct Program ----- #
         program = f'#show use/2.\n'

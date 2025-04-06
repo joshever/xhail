@@ -1,27 +1,37 @@
 %BACKGROUND%
-bird(a).
-bird(b).
-food(chocolate).
-food(vegetables).
-penguin(d).
-penguin(c).
-bird(X) :- penguin(X).
+car(car1).
+car(car2).
+car(car3).
+car(car4).
+car(car5).
+light(a).
+light(b).
+light(c).
+red(a).
+emergency(car4).
+emergency(car5).
+atlight(car1,a).
+atlight(car2,b).
+atlight(car3,c).
+atlight(car4,a).
 
 %NEGATIONS%
-not_penguin(V1) :- not penguin(V1), bird(V1).
+not_red(V1) :- not red(V1), light(V1).
 
 %EXAMPLES%
-%#maximize{1@1 : flies(a,eat(chocolate))}.
-:- not flies(a,eat(chocolate)).
-%#maximize{1@1 : flies(b,eat(vegetables))}.
-:- not flies(b,eat(vegetables)).
-%#maximize{1@1 : flies(c,eat(vegetables))}.
-:- not flies(c,eat(vegetables)).
-%#maximize{1@1 : not flies(d,eat(chocolate))}.
-:- flies(d,eat(chocolate)).
+%#maximize{1@1 : drive(car2)}.
+:- not drive(car2).
+%#maximize{1@1 : drive(car3)}.
+:- not drive(car3).
+%#maximize{1@1 : not drive(car1)}.
+:- drive(car1).
+%#maximize{1@1 : drive(car4)}.
+:- not drive(car4).
+%#maximize{1@1 : drive(car5)}.
+:- not drive(car5).
 
 %ABDUCIBLES%
-2 { abduced_flies(V1,eat(V2)) : bird(V1), food(V2) } 1000000.
-#minimize{1@2, V1, V2: abduced_flies(V1,eat(V2)), bird(V1), food(V2)}.
-flies(V1,eat(V2)) :- abduced_flies(V1,eat(V2)), bird(V1), food(V2).
+0 { abduced_drive(V1):car(V1) } 1000000.
+#minimize{1@2,V1: abduced_drive(V1),car(V1)}.
+drive(V1) :- abduced_drive(V1),car(V1).
 

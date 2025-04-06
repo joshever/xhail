@@ -19,6 +19,7 @@ class Atom(Term):
         self.arity = len(self.terms)
     
     def __str__(self):
+        self.arity = len(self.terms)
         clause_terms = ','.join([str(x) for x in self.terms])
         return f'{self.predicate}{'(' + clause_terms + ')' if self.arity != 0 else ''}'
 

@@ -44,7 +44,7 @@ class Modeh:
     CONSTRAINT_SEPARATOR = '-'
     weight = 1
     priority = 2
-    min = 2
+    min = 0
     max = 1000000
 
     def __init__(self, atom: Atom, n: str):
@@ -89,9 +89,9 @@ class Modeh:
         variables = ', '.join([f"V{i}" for i in range(1, n)])
 
         program = []
-        program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + ' : '+ types + ' } ' + str(self.max) + '.')
-        program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}, {variables}: abduced_{generalised_atom}, {types}' + '}.')
-        program.append(f'{generalised_atom} :- abduced_{generalised_atom}, {types}.')
+        program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + f'{(':' + types) if self.atom.arity != 0 else ''} ' + '} ' + str(self.max) + '.')
+        program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}{(',' + variables) if self.atom.arity != 0 else ''}: abduced_{generalised_atom}' + f'{(',' + types) if self.atom.arity != 0 else ''}' + '}.')
+        program.append(f'{generalised_atom} :- abduced_{generalised_atom}{(',' + types) if self.atom.arity != 0 else ''}.')
         return '\n'.join(program)
 
     def __str__(self):

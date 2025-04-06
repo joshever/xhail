@@ -36,7 +36,6 @@ class Deduction:
                             factPriorityTerms = self.getMarkerTerms(fact, schema, '+')
                             factAllTerms = factPriorityTerms
                         elif mode == 'body':
-                            print(fact, schema)
                             # check if positive terms fulfilled.
                             factPositiveTerms = self.getMarkerTerms(fact, schema, '+')
                             # if positive terms in priorty or backup...
@@ -72,7 +71,6 @@ class Deduction:
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
-        print([str(m) for m in matches] , '\n')
         d = 1
         levels = []
         priorityTerms, allTerms = set([]), set([])
@@ -103,7 +101,5 @@ class Deduction:
         for choice in levels[top]:
             chain = self.findNext(choice[3], levels, top-1)
             chain.append(choice[0])
-            print("chain", [str(c) for c in chain])
             clauses.append(Clause(chain[0], [Literal(Atom(atom.predicate[4:], atom.terms), True) if atom.predicate[:4] == "not_" else Literal(atom, False) for atom in chain[1:]]))
-        print([str(c) for c in clauses])
         self.model.setKernel(clauses)

@@ -21,7 +21,7 @@ not_penguin(V1) :- not penguin(V1), bird(V1).
 :- flies(d,eat(chocolate)).
 
 %ABDUCIBLES%
-0 { abduced_flies(V1,eat(V2)) : bird(V1), food(V2) } 1000000.
+2 { abduced_flies(V1,eat(V2)) : bird(V1), food(V2) } 1000000.
 #minimize{1@2, V1, V2: abduced_flies(V1,eat(V2)), bird(V1), food(V2)}.
 flies(V1,eat(V2)) :- abduced_flies(V1,eat(V2)), bird(V1), food(V2).
 

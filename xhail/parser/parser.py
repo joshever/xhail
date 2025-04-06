@@ -1,7 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
 from ..language.structures import Modeb, Example, Modeh
-from ..language.terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
+from ..language.terms import Atom, Clause, Constraint, Fact, Literal, MiscLiteral, Normal, PlaceMarker
 
 # ----------------------------------- #
 # ---------- DEFINE LEXER ----------- #
@@ -13,7 +13,10 @@ tokens = (
     'MODEB_KEY',
     'MODEH_KEY',
     'PREDICATE',
-    'TERM',
+    #'term',
+    'UPPER',
+    'LOWER',
+    'NUMBER',
     'LPAREN',
     'RPAREN',
     'COMMA',
@@ -32,8 +35,12 @@ t_NOT = r'(?<!\S)not(?!\S)'
 t_EXAMPLE_KEY = r'\#example'
 t_MODEH_KEY = r'\#modeh'
 t_MODEB_KEY = r'\#modeb'
-t_PREDICATE = r'(?!not\b)([a-zA-Z_][a-zA-Z_0-9]*)(?=\()'
-t_TERM = r'(?!not\b)[a-zA-Z_][a-zA-Z_0-9]*|[0-9]+'
+t_PREDICATE = r'(?!not\b)([a-z][a-zA-Z_0-9]*)(?=\()'
+#t_ZERO_PREDICATE = r'(?!not\b)([a-z][a-zA-Z_0-9]*)'
+#t_TERM = r'(?!not\b)[a-zA-Z_][a-zA-Z_0-9]*|[0-9]+'
+t_UPPER = r'(?!not\b)\b[A-Z][a-zA-Z0-9_]*\b'
+t_LOWER = r'(?!not\b)\b[a-z][a-zA-Z0-9_]*\b'
+t_NUMBER = r'\d'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_COMMA = r','
@@ -61,6 +68,19 @@ lexer = lex.lex()
 # ----------------------------------------- #
 # ---------- PARSER EXPRESSIONS ----------- #
 # ----------------------------------------- #
+
+# ----- base text ----- #
+
+def p_term(p):
+    '''term : LOWER
+            | NUMBER
+            | UPPER
+    '''
+    p[0] = p[1]
+
+def p_zero_predicate(p):
+    '''zero_predicate : LOWER'''
+    p[0] = Atom(p[1], [])
 
 # ----- program definition ----- #
 def p_program(p):
@@ -90,13 +110,14 @@ def p_atom(p):
 
 # ----- schema definition ----- #
 def p_schema(p):
-    '''schema : PREDICATE LPAREN schema_terms RPAREN'''
+    '''schema : PREDICATE LPAREN schema_terms RPAREN
+    '''
     p[0] = Atom(p[1], p[3])
 
 # ----- schema terms definition ----- #
 def p_schema_terms(p):
-    '''schema_terms : MARKER TERM
-                    | MARKER TERM COMMA schema_terms
+    '''schema_terms : MARKER term
+                    | MARKER term COMMA schema_terms
                     | schema
                     | schema COMMA schema_terms
     '''
@@ -111,8 +132,8 @@ def p_schema_terms(p):
 
 # ----- min max constraints definition ----- #
 def p_min_max_bias(p):
-    '''min_max_bias : MAX TERM MIN TERM
-                    | MAX TERM
+    '''min_max_bias : MAX term MIN term
+                    | MAX term
     '''
     if len(p) == 3:
         p[0] = {'max': p[2]}
@@ -121,12 +142,12 @@ def p_min_max_bias(p):
 
 # ----- priority bias definition ----- #
 def p_priority_bias(p):
-    '''priority_bias : PRIORITY TERM'''
+    '''priority_bias : PRIORITY term'''
     p[0] = {'priority': p[2]}
 
 # ----- weight bias definition ----- #
 def p_weight_bias(p):
-    '''weight_bias : WEIGHT TERM'''
+    '''weight_bias : WEIGHT term'''
     p[0] = {'weight': p[2]}
 
 # ----- bias definition ----- #
@@ -157,10 +178,13 @@ def p_example(p):
                | EXAMPLE_KEY NOT atom DOT
                | EXAMPLE_KEY atom bias DOT
                | EXAMPLE_KEY NOT atom bias DOT
+               | EXAMPLE_KEY zero_predicate DOT
+               | EXAMPLE_KEY NOT zero_predicate DOT
+               | EXAMPLE_KEY zero_predicate bias DOT
+               | EXAMPLE_KEY NOT zero_predicate bias DOT
     '''
     if len(p) == 4: # just atom
         p[0] = Example(p[2], negation=False)
-
     elif len(p) == 6: # negated and biased
         new_example = Example(p[3], negation=True)
         if 'weight' in p[4].keys():
@@ -183,6 +207,8 @@ def p_example(p):
 def p_modeh(p):
     '''modeh : MODEH_KEY schema DOT
              | MODEH_KEY schema bias DOT
+             | MODEH_KEY zero_predicate DOT
+             | MODEH_KEY zero_predicate bias DOT
     '''
     if len(p) == 4:
         p[0] = Modeh(p[2], '*')
@@ -204,6 +230,10 @@ def p_modeb(p):
              | MODEB_KEY NOT schema DOT
              | MODEB_KEY schema bias DOT
              | MODEB_KEY NOT schema bias DOT
+             | MODEB_KEY zero_predicate DOT
+             | MODEB_KEY NOT zero_predicate DOT
+             | MODEB_KEY zero_predicate bias DOT
+             | MODEB_KEY NOT zero_predicate bias DOT
              '''
     if len(p) == 4:
         p[0] = Modeb(p[2], '*', False)
@@ -230,9 +260,9 @@ def p_modeb(p):
         
 # ----- terms definition ----- #
 def p_terms(p):
-    '''terms : TERM
+    '''terms : term
              | atom
-             | TERM COMMA terms
+             | term COMMA terms
              | atom COMMA terms
     '''
     if len(p) == 2 and not isinstance(p[1], Atom):
@@ -247,18 +277,20 @@ def p_terms(p):
 # ----- fact definition ----- #
 def p_fact(p):
     '''fact : atom DOT
+            | zero_predicate DOT
     '''
     p[0] = Fact(p[1])
 
 # ----- constraint definition ----- #
 def p_constraint(p):
-    '''constraint : NOT body DOT
+    '''constraint : IMPLIES body DOT
     '''
-    p[0] = Constraint(p[2], True)
+    p[0] = Constraint(p[2])
 
 # ----- normal clause definition ----- #
 def p_normal_clause(p):
     '''normal_clause : atom IMPLIES body DOT
+                     | zero_predicate IMPLIES body DOT
     '''
     p[0] = Clause(p[1], p[3])
 
@@ -276,10 +308,19 @@ def p_body(p):
 def p_literal(p):
     '''literal : NOT atom
                | atom
-               | TERM OPERATOR TERM
+               | term OPERATOR term
+               | NOT term OPERATOR term
+               | NOT zero_predicate
+               | zero_predicate
     '''
     if len(p) == 2:
         p[0] = [Literal(p[1], False)]
+    elif len(p) == 4:
+        val = p[1] + p[2] + p[3]
+        p[0] = [MiscLiteral(val, False)]
+    elif len(p) == 5:
+        val = p[2] + p[3] + p[4]
+        p[0] = [MiscLiteral(val, True)]
     else:
         p[0] = [Literal(p[2], True)]
 

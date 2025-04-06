@@ -10,13 +10,17 @@ class Term:
 # -------------------------------------- #
 
 class Atom(Term):
+    type = ''
+    arity = -1
+
     def __init__(self, predicate: str, terms: list[Term]):
         self.terms = terms
         self.predicate = predicate
+        self.arity = len(self.terms)
     
     def __str__(self):
         clause_terms = ','.join([str(x) for x in self.terms])
-        return f'{self.predicate}({clause_terms})'
+        return f'{self.predicate}{'(' + clause_terms + ')' if self.arity != 0 else ''}'
 
     def getVariables(self): # return Term (with its type)
         variables = []
@@ -81,11 +85,12 @@ class Literal:
 # ----------------------------------------- #
 
 class MiscLiteral:
-    def __init__(self, misc: str):
+    def __init__(self, misc: str, negation: bool):
         self.misc = misc
+        self.negation = negation
     
     def __str__(self):
-        return self.misc
+        return ('not ' if self.negation else '') + self.misc
 
 # ----------------------------------- #
 # ---------- CLAUSE CLASS ----------- #
@@ -131,6 +136,9 @@ class Clause:
             if isinstance(term, Normal):
                 if term.type != 'constant':
                     unique.add(term.value)
+            elif isinstance(term, Atom):
+                if term.type == 'constant':
+                    continue
             else:
                 unique.update(self.findConstants(term, unique))
         return unique
@@ -144,6 +152,8 @@ class Clause:
                     newAtom.terms.append(Normal(matching[term.value]))
                 else:
                     newAtom.terms.append(Normal(term.value))
+            elif isinstance(term, Atom) and term.type == 'constant':
+                newAtom.terms.append(term)
             else:
                 newTerm = self.replaceConstants(term, matching)
                 newAtom.terms.append(newTerm)

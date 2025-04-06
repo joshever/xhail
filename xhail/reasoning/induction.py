@@ -23,7 +23,7 @@ class Induction:
         return backgroundProgram + '\n'
 
     # ----- Generate and Load Choice statements ----- #
-    def loadChoice(self, clauses): # literal 0 == clause head. literal 1 = first clause literal. !!! clause 0 is first clause
+    def loadChoice(self, clauses):
         program = "\n"
         program += "{ use(V1, 0) } :- clause(V1).\n"
         if self.model.DEPTH != 0:
@@ -135,6 +135,8 @@ class Induction:
         clauses = self.updateClauseTypes(clauses)
         clauses = self.uniqueObjects(clauses)
 
+        print([str(c) for c in clauses])
+
         # ----- Constuct Program ----- #
         program = f'#show use/2.\n'
         program += self.loadBackground(self.BG)
@@ -151,7 +153,6 @@ class Induction:
         selectors = {}
         best_model = self.model.getBestModel()
         if str(best_model) != '[]':
-            print("hi")
             selectors = {}
             facts = self.model.parseModel(best_model)
             for fact in facts:
@@ -172,7 +173,6 @@ class Induction:
                     new_body = self.uniqueObjects(new_body)
                     new_clause = Clause(new_head, new_body)
                     included_clauses.append(new_clause)
-                    print(str(new_clause))
         else:
             print("no solutions")
             return

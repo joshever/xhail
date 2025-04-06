@@ -11,6 +11,15 @@ class Abduction:
         self.BG = model.BG
         self.model = model
 
+    def incrementMax(self):
+        valid = False
+        for mh in self.MH:
+            if mh.getMin() < mh.getMax():
+                mh.setMin(mh.getMin() + 1)
+                valid = True
+        return valid
+        
+
     # ----- methods for constructing program ----- #
     def loadExamples(self, examples):
         examplesProgram = '%EXAMPLES%\n'
@@ -39,7 +48,7 @@ class Abduction:
 
     # ----- run the abductive phase ----- #
     def runPhase(self):
-        program = self.model.getProgram()
+        program = ""
 
         program += self.loadBackground(self.BG)
         program += self.loadNegations(self.MB)
@@ -47,6 +56,6 @@ class Abduction:
         program += self.loadAbducibles(self.MH)
 
         self.model.setProgram(program)
-        self.model.call()
+        self.model.getBestModel()
         self.model.writeProgram("xhail/output/abduction.lp")
         self.model.setDelta()

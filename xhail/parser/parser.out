@@ -3,129 +3,166 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 Grammar
 
 Rule 0     S' -> program
-Rule 1     program -> program clause
-Rule 2     program -> clause
-Rule 3     clause -> example
-Rule 4     clause -> modeb
-Rule 5     clause -> modeh
-Rule 6     clause -> fact
-Rule 7     clause -> normal_clause
-Rule 8     clause -> constraint
-Rule 9     atom -> PREDICATE LPAREN terms RPAREN
-Rule 10    schema -> PREDICATE LPAREN schema_terms RPAREN
-Rule 11    schema_terms -> MARKER TERM
-Rule 12    schema_terms -> MARKER TERM COMMA schema_terms
-Rule 13    schema_terms -> schema
-Rule 14    schema_terms -> schema COMMA schema_terms
-Rule 15    min_max_bias -> MAX TERM MIN TERM
-Rule 16    min_max_bias -> MAX TERM
-Rule 17    priority_bias -> PRIORITY TERM
-Rule 18    weight_bias -> WEIGHT TERM
-Rule 19    bias -> min_max_bias weight_bias priority_bias
-Rule 20    bias -> min_max_bias priority_bias
-Rule 21    bias -> min_max_bias weight_bias
-Rule 22    bias -> weight_bias priority_bias
-Rule 23    bias -> weight_bias
-Rule 24    bias -> priority_bias
-Rule 25    bias -> min_max_bias
-Rule 26    example -> EXAMPLE_KEY atom DOT
-Rule 27    example -> EXAMPLE_KEY NOT atom DOT
-Rule 28    example -> EXAMPLE_KEY atom bias DOT
-Rule 29    example -> EXAMPLE_KEY NOT atom bias DOT
-Rule 30    modeh -> MODEH_KEY schema DOT
-Rule 31    modeh -> MODEH_KEY schema bias DOT
-Rule 32    modeb -> MODEB_KEY schema DOT
-Rule 33    modeb -> MODEB_KEY NOT schema DOT
-Rule 34    modeb -> MODEB_KEY schema bias DOT
-Rule 35    modeb -> MODEB_KEY NOT schema bias DOT
-Rule 36    terms -> TERM
-Rule 37    terms -> atom
-Rule 38    terms -> TERM COMMA terms
-Rule 39    terms -> atom COMMA terms
-Rule 40    fact -> atom DOT
-Rule 41    constraint -> NOT body DOT
-Rule 42    normal_clause -> atom IMPLIES body DOT
-Rule 43    body -> literal COMMA body
-Rule 44    body -> literal
-Rule 45    literal -> NOT atom
-Rule 46    literal -> atom
-Rule 47    literal -> TERM OPERATOR TERM
+Rule 1     term -> LOWER
+Rule 2     term -> NUMBER
+Rule 3     term -> UPPER
+Rule 4     zero_predicate -> LOWER
+Rule 5     program -> program clause
+Rule 6     program -> clause
+Rule 7     clause -> example
+Rule 8     clause -> modeb
+Rule 9     clause -> modeh
+Rule 10    clause -> fact
+Rule 11    clause -> normal_clause
+Rule 12    clause -> constraint
+Rule 13    atom -> PREDICATE LPAREN terms RPAREN
+Rule 14    schema -> PREDICATE LPAREN schema_terms RPAREN
+Rule 15    schema_terms -> MARKER term
+Rule 16    schema_terms -> MARKER term COMMA schema_terms
+Rule 17    schema_terms -> schema
+Rule 18    schema_terms -> schema COMMA schema_terms
+Rule 19    min_max_bias -> MAX term MIN term
+Rule 20    min_max_bias -> MAX term
+Rule 21    priority_bias -> PRIORITY term
+Rule 22    weight_bias -> WEIGHT term
+Rule 23    bias -> min_max_bias weight_bias priority_bias
+Rule 24    bias -> min_max_bias priority_bias
+Rule 25    bias -> min_max_bias weight_bias
+Rule 26    bias -> weight_bias priority_bias
+Rule 27    bias -> weight_bias
+Rule 28    bias -> priority_bias
+Rule 29    bias -> min_max_bias
+Rule 30    example -> EXAMPLE_KEY atom DOT
+Rule 31    example -> EXAMPLE_KEY NOT atom DOT
+Rule 32    example -> EXAMPLE_KEY atom bias DOT
+Rule 33    example -> EXAMPLE_KEY NOT atom bias DOT
+Rule 34    example -> EXAMPLE_KEY zero_predicate DOT
+Rule 35    example -> EXAMPLE_KEY NOT zero_predicate DOT
+Rule 36    example -> EXAMPLE_KEY zero_predicate bias DOT
+Rule 37    example -> EXAMPLE_KEY NOT zero_predicate bias DOT
+Rule 38    modeh -> MODEH_KEY schema DOT
+Rule 39    modeh -> MODEH_KEY schema bias DOT
+Rule 40    modeh -> MODEH_KEY zero_predicate DOT
+Rule 41    modeh -> MODEH_KEY zero_predicate bias DOT
+Rule 42    modeb -> MODEB_KEY schema DOT
+Rule 43    modeb -> MODEB_KEY NOT schema DOT
+Rule 44    modeb -> MODEB_KEY schema bias DOT
+Rule 45    modeb -> MODEB_KEY NOT schema bias DOT
+Rule 46    modeb -> MODEB_KEY zero_predicate DOT
+Rule 47    modeb -> MODEB_KEY NOT zero_predicate DOT
+Rule 48    modeb -> MODEB_KEY zero_predicate bias DOT
+Rule 49    modeb -> MODEB_KEY NOT zero_predicate bias DOT
+Rule 50    terms -> term
+Rule 51    terms -> atom
+Rule 52    terms -> term COMMA terms
+Rule 53    terms -> atom COMMA terms
+Rule 54    fact -> atom DOT
+Rule 55    fact -> zero_predicate DOT
+Rule 56    constraint -> IMPLIES body DOT
+Rule 57    normal_clause -> atom IMPLIES body DOT
+Rule 58    normal_clause -> zero_predicate IMPLIES body DOT
+Rule 59    body -> literal COMMA body
+Rule 60    body -> literal
+Rule 61    literal -> NOT atom
+Rule 62    literal -> atom
+Rule 63    literal -> term OPERATOR term
+Rule 64    literal -> NOT term OPERATOR term
+Rule 65    literal -> NOT zero_predicate
+Rule 66    literal -> zero_predicate
 
 Terminals, with rules where they appear
 
-COMMA                : 12 14 38 39 43
-DOT                  : 26 27 28 29 30 31 32 33 34 35 40 41 42
-EXAMPLE_KEY          : 26 27 28 29
-IMPLIES              : 42
-LPAREN               : 9 10
-MARKER               : 11 12
-MAX                  : 15 16
-MIN                  : 15
-MODEB_KEY            : 32 33 34 35
-MODEH_KEY            : 30 31
-NOT                  : 27 29 33 35 41 45
-OPERATOR             : 47
-PREDICATE            : 9 10
-PRIORITY             : 17
-RPAREN               : 9 10
-TERM                 : 11 12 15 15 16 17 18 36 38 47 47
-WEIGHT               : 18
+COMMA                : 16 18 52 53 59
+DOT                  : 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 54 55 56 57 58
+EXAMPLE_KEY          : 30 31 32 33 34 35 36 37
+IMPLIES              : 56 57 58
+LOWER                : 1 4
+LPAREN               : 13 14
+MARKER               : 15 16
+MAX                  : 19 20
+MIN                  : 19
+MODEB_KEY            : 42 43 44 45 46 47 48 49
+MODEH_KEY            : 38 39 40 41
+NOT                  : 31 33 35 37 43 45 47 49 61 64 65
+NUMBER               : 2
+OPERATOR             : 63 64
+PREDICATE            : 13 14
+PRIORITY             : 21
+RPAREN               : 13 14
+UPPER                : 3
+WEIGHT               : 22
 error                : 
 
 Nonterminals, with rules where they appear
 
-atom                 : 26 27 28 29 37 39 40 42 45 46
-bias                 : 28 29 31 34 35
-body                 : 41 42 43
-clause               : 1 2
-constraint           : 8
-example              : 3
-fact                 : 6
-literal              : 43 44
-min_max_bias         : 19 20 21 25
-modeb                : 4
-modeh                : 5
-normal_clause        : 7
-priority_bias        : 19 20 22 24
-program              : 1 0
-schema               : 13 14 30 31 32 33 34 35
-schema_terms         : 10 12 14
-terms                : 9 38 39
-weight_bias          : 19 21 22 23
+atom                 : 30 31 32 33 51 53 54 57 61 62
+bias                 : 32 33 36 37 39 41 44 45 48 49
+body                 : 56 57 58 59
+clause               : 5 6
+constraint           : 12
+example              : 7
+fact                 : 10
+literal              : 59 60
+min_max_bias         : 23 24 25 29
+modeb                : 8
+modeh                : 9
+normal_clause        : 11
+priority_bias        : 23 24 26 28
+program              : 5 0
+schema               : 17 18 38 39 42 43 44 45
+schema_terms         : 14 16 18
+term                 : 15 16 19 19 20 21 22 50 52 63 63 64 64
+terms                : 13 52 53
+weight_bias          : 23 25 26 27
+zero_predicate       : 34 35 36 37 40 41 46 47 48 49 55 58 65 66
 
 Parsing method: LALR
 
 state 0
 
     (0) S' -> . program
-    (1) program -> . program clause
-    (2) program -> . clause
-    (3) clause -> . example
-    (4) clause -> . modeb
-    (5) clause -> . modeh
-    (6) clause -> . fact
-    (7) clause -> . normal_clause
-    (8) clause -> . constraint
-    (26) example -> . EXAMPLE_KEY atom DOT
-    (27) example -> . EXAMPLE_KEY NOT atom DOT
-    (28) example -> . EXAMPLE_KEY atom bias DOT
-    (29) example -> . EXAMPLE_KEY NOT atom bias DOT
-    (32) modeb -> . MODEB_KEY schema DOT
-    (33) modeb -> . MODEB_KEY NOT schema DOT
-    (34) modeb -> . MODEB_KEY schema bias DOT
-    (35) modeb -> . MODEB_KEY NOT schema bias DOT
-    (30) modeh -> . MODEH_KEY schema DOT
-    (31) modeh -> . MODEH_KEY schema bias DOT
-    (40) fact -> . atom DOT
-    (42) normal_clause -> . atom IMPLIES body DOT
-    (41) constraint -> . NOT body DOT
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (5) program -> . program clause
+    (6) program -> . clause
+    (7) clause -> . example
+    (8) clause -> . modeb
+    (9) clause -> . modeh
+    (10) clause -> . fact
+    (11) clause -> . normal_clause
+    (12) clause -> . constraint
+    (30) example -> . EXAMPLE_KEY atom DOT
+    (31) example -> . EXAMPLE_KEY NOT atom DOT
+    (32) example -> . EXAMPLE_KEY atom bias DOT
+    (33) example -> . EXAMPLE_KEY NOT atom bias DOT
+    (34) example -> . EXAMPLE_KEY zero_predicate DOT
+    (35) example -> . EXAMPLE_KEY NOT zero_predicate DOT
+    (36) example -> . EXAMPLE_KEY zero_predicate bias DOT
+    (37) example -> . EXAMPLE_KEY NOT zero_predicate bias DOT
+    (42) modeb -> . MODEB_KEY schema DOT
+    (43) modeb -> . MODEB_KEY NOT schema DOT
+    (44) modeb -> . MODEB_KEY schema bias DOT
+    (45) modeb -> . MODEB_KEY NOT schema bias DOT
+    (46) modeb -> . MODEB_KEY zero_predicate DOT
+    (47) modeb -> . MODEB_KEY NOT zero_predicate DOT
+    (48) modeb -> . MODEB_KEY zero_predicate bias DOT
+    (49) modeb -> . MODEB_KEY NOT zero_predicate bias DOT
+    (38) modeh -> . MODEH_KEY schema DOT
+    (39) modeh -> . MODEH_KEY schema bias DOT
+    (40) modeh -> . MODEH_KEY zero_predicate DOT
+    (41) modeh -> . MODEH_KEY zero_predicate bias DOT
+    (54) fact -> . atom DOT
+    (55) fact -> . zero_predicate DOT
+    (57) normal_clause -> . atom IMPLIES body DOT
+    (58) normal_clause -> . zero_predicate IMPLIES body DOT
+    (56) constraint -> . IMPLIES body DOT
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (4) zero_predicate -> . LOWER
 
     EXAMPLE_KEY     shift and go to state 9
     MODEB_KEY       shift and go to state 12
     MODEH_KEY       shift and go to state 13
-    NOT             shift and go to state 11
-    PREDICATE       shift and go to state 14
+    IMPLIES         shift and go to state 14
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 16
 
     program                        shift and go to state 1
     clause                         shift and go to state 2
@@ -136,39 +173,54 @@ state 0
     normal_clause                  shift and go to state 7
     constraint                     shift and go to state 8
     atom                           shift and go to state 10
+    zero_predicate                 shift and go to state 11
 
 state 1
 
     (0) S' -> program .
-    (1) program -> program . clause
-    (3) clause -> . example
-    (4) clause -> . modeb
-    (5) clause -> . modeh
-    (6) clause -> . fact
-    (7) clause -> . normal_clause
-    (8) clause -> . constraint
-    (26) example -> . EXAMPLE_KEY atom DOT
-    (27) example -> . EXAMPLE_KEY NOT atom DOT
-    (28) example -> . EXAMPLE_KEY atom bias DOT
-    (29) example -> . EXAMPLE_KEY NOT atom bias DOT
-    (32) modeb -> . MODEB_KEY schema DOT
-    (33) modeb -> . MODEB_KEY NOT schema DOT
-    (34) modeb -> . MODEB_KEY schema bias DOT
-    (35) modeb -> . MODEB_KEY NOT schema bias DOT
-    (30) modeh -> . MODEH_KEY schema DOT
-    (31) modeh -> . MODEH_KEY schema bias DOT
-    (40) fact -> . atom DOT
-    (42) normal_clause -> . atom IMPLIES body DOT
-    (41) constraint -> . NOT body DOT
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (5) program -> program . clause
+    (7) clause -> . example
+    (8) clause -> . modeb
+    (9) clause -> . modeh
+    (10) clause -> . fact
+    (11) clause -> . normal_clause
+    (12) clause -> . constraint
+    (30) example -> . EXAMPLE_KEY atom DOT
+    (31) example -> . EXAMPLE_KEY NOT atom DOT
+    (32) example -> . EXAMPLE_KEY atom bias DOT
+    (33) example -> . EXAMPLE_KEY NOT atom bias DOT
+    (34) example -> . EXAMPLE_KEY zero_predicate DOT
+    (35) example -> . EXAMPLE_KEY NOT zero_predicate DOT
+    (36) example -> . EXAMPLE_KEY zero_predicate bias DOT
+    (37) example -> . EXAMPLE_KEY NOT zero_predicate bias DOT
+    (42) modeb -> . MODEB_KEY schema DOT
+    (43) modeb -> . MODEB_KEY NOT schema DOT
+    (44) modeb -> . MODEB_KEY schema bias DOT
+    (45) modeb -> . MODEB_KEY NOT schema bias DOT
+    (46) modeb -> . MODEB_KEY zero_predicate DOT
+    (47) modeb -> . MODEB_KEY NOT zero_predicate DOT
+    (48) modeb -> . MODEB_KEY zero_predicate bias DOT
+    (49) modeb -> . MODEB_KEY NOT zero_predicate bias DOT
+    (38) modeh -> . MODEH_KEY schema DOT
+    (39) modeh -> . MODEH_KEY schema bias DOT
+    (40) modeh -> . MODEH_KEY zero_predicate DOT
+    (41) modeh -> . MODEH_KEY zero_predicate bias DOT
+    (54) fact -> . atom DOT
+    (55) fact -> . zero_predicate DOT
+    (57) normal_clause -> . atom IMPLIES body DOT
+    (58) normal_clause -> . zero_predicate IMPLIES body DOT
+    (56) constraint -> . IMPLIES body DOT
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (4) zero_predicate -> . LOWER
 
     EXAMPLE_KEY     shift and go to state 9
     MODEB_KEY       shift and go to state 12
     MODEH_KEY       shift and go to state 13
-    NOT             shift and go to state 11
-    PREDICATE       shift and go to state 14
+    IMPLIES         shift and go to state 14
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 16
 
-    clause                         shift and go to state 15
+    clause                         shift and go to state 17
     example                        shift and go to state 3
     modeb                          shift and go to state 4
     modeh                          shift and go to state 5
@@ -176,961 +228,1579 @@ state 1
     normal_clause                  shift and go to state 7
     constraint                     shift and go to state 8
     atom                           shift and go to state 10
+    zero_predicate                 shift and go to state 11
 
 state 2
 
-    (2) program -> clause .
+    (6) program -> clause .
 
-    EXAMPLE_KEY     reduce using rule 2 (program -> clause .)
-    MODEB_KEY       reduce using rule 2 (program -> clause .)
-    MODEH_KEY       reduce using rule 2 (program -> clause .)
-    NOT             reduce using rule 2 (program -> clause .)
-    PREDICATE       reduce using rule 2 (program -> clause .)
-    $end            reduce using rule 2 (program -> clause .)
+    EXAMPLE_KEY     reduce using rule 6 (program -> clause .)
+    MODEB_KEY       reduce using rule 6 (program -> clause .)
+    MODEH_KEY       reduce using rule 6 (program -> clause .)
+    IMPLIES         reduce using rule 6 (program -> clause .)
+    PREDICATE       reduce using rule 6 (program -> clause .)
+    LOWER           reduce using rule 6 (program -> clause .)
+    $end            reduce using rule 6 (program -> clause .)
 
 
 state 3
 
-    (3) clause -> example .
+    (7) clause -> example .
 
-    EXAMPLE_KEY     reduce using rule 3 (clause -> example .)
-    MODEB_KEY       reduce using rule 3 (clause -> example .)
-    MODEH_KEY       reduce using rule 3 (clause -> example .)
-    NOT             reduce using rule 3 (clause -> example .)
-    PREDICATE       reduce using rule 3 (clause -> example .)
-    $end            reduce using rule 3 (clause -> example .)
+    EXAMPLE_KEY     reduce using rule 7 (clause -> example .)
+    MODEB_KEY       reduce using rule 7 (clause -> example .)
+    MODEH_KEY       reduce using rule 7 (clause -> example .)
+    IMPLIES         reduce using rule 7 (clause -> example .)
+    PREDICATE       reduce using rule 7 (clause -> example .)
+    LOWER           reduce using rule 7 (clause -> example .)
+    $end            reduce using rule 7 (clause -> example .)
 
 
 state 4
 
-    (4) clause -> modeb .
+    (8) clause -> modeb .
 
-    EXAMPLE_KEY     reduce using rule 4 (clause -> modeb .)
-    MODEB_KEY       reduce using rule 4 (clause -> modeb .)
-    MODEH_KEY       reduce using rule 4 (clause -> modeb .)
-    NOT             reduce using rule 4 (clause -> modeb .)
-    PREDICATE       reduce using rule 4 (clause -> modeb .)
-    $end            reduce using rule 4 (clause -> modeb .)
+    EXAMPLE_KEY     reduce using rule 8 (clause -> modeb .)
+    MODEB_KEY       reduce using rule 8 (clause -> modeb .)
+    MODEH_KEY       reduce using rule 8 (clause -> modeb .)
+    IMPLIES         reduce using rule 8 (clause -> modeb .)
+    PREDICATE       reduce using rule 8 (clause -> modeb .)
+    LOWER           reduce using rule 8 (clause -> modeb .)
+    $end            reduce using rule 8 (clause -> modeb .)
 
 
 state 5
 
-    (5) clause -> modeh .
+    (9) clause -> modeh .
 
-    EXAMPLE_KEY     reduce using rule 5 (clause -> modeh .)
-    MODEB_KEY       reduce using rule 5 (clause -> modeh .)
-    MODEH_KEY       reduce using rule 5 (clause -> modeh .)
-    NOT             reduce using rule 5 (clause -> modeh .)
-    PREDICATE       reduce using rule 5 (clause -> modeh .)
-    $end            reduce using rule 5 (clause -> modeh .)
+    EXAMPLE_KEY     reduce using rule 9 (clause -> modeh .)
+    MODEB_KEY       reduce using rule 9 (clause -> modeh .)
+    MODEH_KEY       reduce using rule 9 (clause -> modeh .)
+    IMPLIES         reduce using rule 9 (clause -> modeh .)
+    PREDICATE       reduce using rule 9 (clause -> modeh .)
+    LOWER           reduce using rule 9 (clause -> modeh .)
+    $end            reduce using rule 9 (clause -> modeh .)
 
 
 state 6
 
-    (6) clause -> fact .
+    (10) clause -> fact .
 
-    EXAMPLE_KEY     reduce using rule 6 (clause -> fact .)
-    MODEB_KEY       reduce using rule 6 (clause -> fact .)
-    MODEH_KEY       reduce using rule 6 (clause -> fact .)
-    NOT             reduce using rule 6 (clause -> fact .)
-    PREDICATE       reduce using rule 6 (clause -> fact .)
-    $end            reduce using rule 6 (clause -> fact .)
+    EXAMPLE_KEY     reduce using rule 10 (clause -> fact .)
+    MODEB_KEY       reduce using rule 10 (clause -> fact .)
+    MODEH_KEY       reduce using rule 10 (clause -> fact .)
+    IMPLIES         reduce using rule 10 (clause -> fact .)
+    PREDICATE       reduce using rule 10 (clause -> fact .)
+    LOWER           reduce using rule 10 (clause -> fact .)
+    $end            reduce using rule 10 (clause -> fact .)
 
 
 state 7
 
-    (7) clause -> normal_clause .
+    (11) clause -> normal_clause .
 
-    EXAMPLE_KEY     reduce using rule 7 (clause -> normal_clause .)
-    MODEB_KEY       reduce using rule 7 (clause -> normal_clause .)
-    MODEH_KEY       reduce using rule 7 (clause -> normal_clause .)
-    NOT             reduce using rule 7 (clause -> normal_clause .)
-    PREDICATE       reduce using rule 7 (clause -> normal_clause .)
-    $end            reduce using rule 7 (clause -> normal_clause .)
+    EXAMPLE_KEY     reduce using rule 11 (clause -> normal_clause .)
+    MODEB_KEY       reduce using rule 11 (clause -> normal_clause .)
+    MODEH_KEY       reduce using rule 11 (clause -> normal_clause .)
+    IMPLIES         reduce using rule 11 (clause -> normal_clause .)
+    PREDICATE       reduce using rule 11 (clause -> normal_clause .)
+    LOWER           reduce using rule 11 (clause -> normal_clause .)
+    $end            reduce using rule 11 (clause -> normal_clause .)
 
 
 state 8
 
-    (8) clause -> constraint .
+    (12) clause -> constraint .
 
-    EXAMPLE_KEY     reduce using rule 8 (clause -> constraint .)
-    MODEB_KEY       reduce using rule 8 (clause -> constraint .)
-    MODEH_KEY       reduce using rule 8 (clause -> constraint .)
-    NOT             reduce using rule 8 (clause -> constraint .)
-    PREDICATE       reduce using rule 8 (clause -> constraint .)
-    $end            reduce using rule 8 (clause -> constraint .)
+    EXAMPLE_KEY     reduce using rule 12 (clause -> constraint .)
+    MODEB_KEY       reduce using rule 12 (clause -> constraint .)
+    MODEH_KEY       reduce using rule 12 (clause -> constraint .)
+    IMPLIES         reduce using rule 12 (clause -> constraint .)
+    PREDICATE       reduce using rule 12 (clause -> constraint .)
+    LOWER           reduce using rule 12 (clause -> constraint .)
+    $end            reduce using rule 12 (clause -> constraint .)
 
 
 state 9
 
-    (26) example -> EXAMPLE_KEY . atom DOT
-    (27) example -> EXAMPLE_KEY . NOT atom DOT
-    (28) example -> EXAMPLE_KEY . atom bias DOT
-    (29) example -> EXAMPLE_KEY . NOT atom bias DOT
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (30) example -> EXAMPLE_KEY . atom DOT
+    (31) example -> EXAMPLE_KEY . NOT atom DOT
+    (32) example -> EXAMPLE_KEY . atom bias DOT
+    (33) example -> EXAMPLE_KEY . NOT atom bias DOT
+    (34) example -> EXAMPLE_KEY . zero_predicate DOT
+    (35) example -> EXAMPLE_KEY . NOT zero_predicate DOT
+    (36) example -> EXAMPLE_KEY . zero_predicate bias DOT
+    (37) example -> EXAMPLE_KEY . NOT zero_predicate bias DOT
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (4) zero_predicate -> . LOWER
 
-    NOT             shift and go to state 17
-    PREDICATE       shift and go to state 14
+    NOT             shift and go to state 19
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 16
 
-    atom                           shift and go to state 16
+    atom                           shift and go to state 18
+    zero_predicate                 shift and go to state 20
 
 state 10
 
-    (40) fact -> atom . DOT
-    (42) normal_clause -> atom . IMPLIES body DOT
+    (54) fact -> atom . DOT
+    (57) normal_clause -> atom . IMPLIES body DOT
 
-    DOT             shift and go to state 18
-    IMPLIES         shift and go to state 19
+    DOT             shift and go to state 21
+    IMPLIES         shift and go to state 22
 
 
 state 11
 
-    (41) constraint -> NOT . body DOT
-    (43) body -> . literal COMMA body
-    (44) body -> . literal
-    (45) literal -> . NOT atom
-    (46) literal -> . atom
-    (47) literal -> . TERM OPERATOR TERM
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (55) fact -> zero_predicate . DOT
+    (58) normal_clause -> zero_predicate . IMPLIES body DOT
 
-    NOT             shift and go to state 20
-    TERM            shift and go to state 24
-    PREDICATE       shift and go to state 14
+    DOT             shift and go to state 23
+    IMPLIES         shift and go to state 24
 
-    body                           shift and go to state 21
-    literal                        shift and go to state 22
-    atom                           shift and go to state 23
 
 state 12
 
-    (32) modeb -> MODEB_KEY . schema DOT
-    (33) modeb -> MODEB_KEY . NOT schema DOT
-    (34) modeb -> MODEB_KEY . schema bias DOT
-    (35) modeb -> MODEB_KEY . NOT schema bias DOT
-    (10) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (42) modeb -> MODEB_KEY . schema DOT
+    (43) modeb -> MODEB_KEY . NOT schema DOT
+    (44) modeb -> MODEB_KEY . schema bias DOT
+    (45) modeb -> MODEB_KEY . NOT schema bias DOT
+    (46) modeb -> MODEB_KEY . zero_predicate DOT
+    (47) modeb -> MODEB_KEY . NOT zero_predicate DOT
+    (48) modeb -> MODEB_KEY . zero_predicate bias DOT
+    (49) modeb -> MODEB_KEY . NOT zero_predicate bias DOT
+    (14) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (4) zero_predicate -> . LOWER
 
     NOT             shift and go to state 26
-    PREDICATE       shift and go to state 27
+    PREDICATE       shift and go to state 28
+    LOWER           shift and go to state 16
 
     schema                         shift and go to state 25
+    zero_predicate                 shift and go to state 27
 
 state 13
 
-    (30) modeh -> MODEH_KEY . schema DOT
-    (31) modeh -> MODEH_KEY . schema bias DOT
-    (10) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (38) modeh -> MODEH_KEY . schema DOT
+    (39) modeh -> MODEH_KEY . schema bias DOT
+    (40) modeh -> MODEH_KEY . zero_predicate DOT
+    (41) modeh -> MODEH_KEY . zero_predicate bias DOT
+    (14) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (4) zero_predicate -> . LOWER
 
-    PREDICATE       shift and go to state 27
+    PREDICATE       shift and go to state 28
+    LOWER           shift and go to state 16
 
-    schema                         shift and go to state 28
+    schema                         shift and go to state 29
+    zero_predicate                 shift and go to state 30
 
 state 14
 
-    (9) atom -> PREDICATE . LPAREN terms RPAREN
+    (56) constraint -> IMPLIES . body DOT
+    (59) body -> . literal COMMA body
+    (60) body -> . literal
+    (61) literal -> . NOT atom
+    (62) literal -> . atom
+    (63) literal -> . term OPERATOR term
+    (64) literal -> . NOT term OPERATOR term
+    (65) literal -> . NOT zero_predicate
+    (66) literal -> . zero_predicate
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+    (4) zero_predicate -> . LOWER
 
-    LPAREN          shift and go to state 29
+    NOT             shift and go to state 33
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 37
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
+    body                           shift and go to state 31
+    literal                        shift and go to state 32
+    atom                           shift and go to state 34
+    term                           shift and go to state 35
+    zero_predicate                 shift and go to state 36
 
 state 15
 
-    (1) program -> program clause .
+    (13) atom -> PREDICATE . LPAREN terms RPAREN
 
-    EXAMPLE_KEY     reduce using rule 1 (program -> program clause .)
-    MODEB_KEY       reduce using rule 1 (program -> program clause .)
-    MODEH_KEY       reduce using rule 1 (program -> program clause .)
-    NOT             reduce using rule 1 (program -> program clause .)
-    PREDICATE       reduce using rule 1 (program -> program clause .)
-    $end            reduce using rule 1 (program -> program clause .)
+    LPAREN          shift and go to state 40
 
 
 state 16
 
-    (26) example -> EXAMPLE_KEY atom . DOT
-    (28) example -> EXAMPLE_KEY atom . bias DOT
-    (19) bias -> . min_max_bias weight_bias priority_bias
-    (20) bias -> . min_max_bias priority_bias
-    (21) bias -> . min_max_bias weight_bias
-    (22) bias -> . weight_bias priority_bias
-    (23) bias -> . weight_bias
-    (24) bias -> . priority_bias
-    (25) bias -> . min_max_bias
-    (15) min_max_bias -> . MAX TERM MIN TERM
-    (16) min_max_bias -> . MAX TERM
-    (18) weight_bias -> . WEIGHT TERM
-    (17) priority_bias -> . PRIORITY TERM
+    (4) zero_predicate -> LOWER .
 
-    DOT             shift and go to state 30
-    MAX             shift and go to state 35
-    WEIGHT          shift and go to state 36
-    PRIORITY        shift and go to state 37
+    DOT             reduce using rule 4 (zero_predicate -> LOWER .)
+    IMPLIES         reduce using rule 4 (zero_predicate -> LOWER .)
+    MAX             reduce using rule 4 (zero_predicate -> LOWER .)
+    WEIGHT          reduce using rule 4 (zero_predicate -> LOWER .)
+    PRIORITY        reduce using rule 4 (zero_predicate -> LOWER .)
 
-    bias                           shift and go to state 31
-    min_max_bias                   shift and go to state 32
-    weight_bias                    shift and go to state 33
-    priority_bias                  shift and go to state 34
 
 state 17
 
-    (27) example -> EXAMPLE_KEY NOT . atom DOT
-    (29) example -> EXAMPLE_KEY NOT . atom bias DOT
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (5) program -> program clause .
 
-    PREDICATE       shift and go to state 14
+    EXAMPLE_KEY     reduce using rule 5 (program -> program clause .)
+    MODEB_KEY       reduce using rule 5 (program -> program clause .)
+    MODEH_KEY       reduce using rule 5 (program -> program clause .)
+    IMPLIES         reduce using rule 5 (program -> program clause .)
+    PREDICATE       reduce using rule 5 (program -> program clause .)
+    LOWER           reduce using rule 5 (program -> program clause .)
+    $end            reduce using rule 5 (program -> program clause .)
 
-    atom                           shift and go to state 38
 
 state 18
 
-    (40) fact -> atom DOT .
+    (30) example -> EXAMPLE_KEY atom . DOT
+    (32) example -> EXAMPLE_KEY atom . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    EXAMPLE_KEY     reduce using rule 40 (fact -> atom DOT .)
-    MODEB_KEY       reduce using rule 40 (fact -> atom DOT .)
-    MODEH_KEY       reduce using rule 40 (fact -> atom DOT .)
-    NOT             reduce using rule 40 (fact -> atom DOT .)
-    PREDICATE       reduce using rule 40 (fact -> atom DOT .)
-    $end            reduce using rule 40 (fact -> atom DOT .)
+    DOT             shift and go to state 41
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
+    bias                           shift and go to state 42
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 19
 
-    (42) normal_clause -> atom IMPLIES . body DOT
-    (43) body -> . literal COMMA body
-    (44) body -> . literal
-    (45) literal -> . NOT atom
-    (46) literal -> . atom
-    (47) literal -> . TERM OPERATOR TERM
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (31) example -> EXAMPLE_KEY NOT . atom DOT
+    (33) example -> EXAMPLE_KEY NOT . atom bias DOT
+    (35) example -> EXAMPLE_KEY NOT . zero_predicate DOT
+    (37) example -> EXAMPLE_KEY NOT . zero_predicate bias DOT
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (4) zero_predicate -> . LOWER
 
-    NOT             shift and go to state 20
-    TERM            shift and go to state 24
-    PREDICATE       shift and go to state 14
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 16
 
-    atom                           shift and go to state 23
-    body                           shift and go to state 39
-    literal                        shift and go to state 22
+    atom                           shift and go to state 49
+    zero_predicate                 shift and go to state 50
 
 state 20
 
-    (45) literal -> NOT . atom
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (34) example -> EXAMPLE_KEY zero_predicate . DOT
+    (36) example -> EXAMPLE_KEY zero_predicate . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    PREDICATE       shift and go to state 14
+    DOT             shift and go to state 51
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
-    atom                           shift and go to state 40
+    bias                           shift and go to state 52
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 21
 
-    (41) constraint -> NOT body . DOT
+    (54) fact -> atom DOT .
 
-    DOT             shift and go to state 41
+    EXAMPLE_KEY     reduce using rule 54 (fact -> atom DOT .)
+    MODEB_KEY       reduce using rule 54 (fact -> atom DOT .)
+    MODEH_KEY       reduce using rule 54 (fact -> atom DOT .)
+    IMPLIES         reduce using rule 54 (fact -> atom DOT .)
+    PREDICATE       reduce using rule 54 (fact -> atom DOT .)
+    LOWER           reduce using rule 54 (fact -> atom DOT .)
+    $end            reduce using rule 54 (fact -> atom DOT .)
 
 
 state 22
 
-    (43) body -> literal . COMMA body
-    (44) body -> literal .
+    (57) normal_clause -> atom IMPLIES . body DOT
+    (59) body -> . literal COMMA body
+    (60) body -> . literal
+    (61) literal -> . NOT atom
+    (62) literal -> . atom
+    (63) literal -> . term OPERATOR term
+    (64) literal -> . NOT term OPERATOR term
+    (65) literal -> . NOT zero_predicate
+    (66) literal -> . zero_predicate
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+    (4) zero_predicate -> . LOWER
 
-    COMMA           shift and go to state 42
-    DOT             reduce using rule 44 (body -> literal .)
+    NOT             shift and go to state 33
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 37
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
+    atom                           shift and go to state 34
+    body                           shift and go to state 53
+    literal                        shift and go to state 32
+    term                           shift and go to state 35
+    zero_predicate                 shift and go to state 36
 
 state 23
 
-    (46) literal -> atom .
+    (55) fact -> zero_predicate DOT .
 
-    COMMA           reduce using rule 46 (literal -> atom .)
-    DOT             reduce using rule 46 (literal -> atom .)
+    EXAMPLE_KEY     reduce using rule 55 (fact -> zero_predicate DOT .)
+    MODEB_KEY       reduce using rule 55 (fact -> zero_predicate DOT .)
+    MODEH_KEY       reduce using rule 55 (fact -> zero_predicate DOT .)
+    IMPLIES         reduce using rule 55 (fact -> zero_predicate DOT .)
+    PREDICATE       reduce using rule 55 (fact -> zero_predicate DOT .)
+    LOWER           reduce using rule 55 (fact -> zero_predicate DOT .)
+    $end            reduce using rule 55 (fact -> zero_predicate DOT .)
 
 
 state 24
 
-    (47) literal -> TERM . OPERATOR TERM
+    (58) normal_clause -> zero_predicate IMPLIES . body DOT
+    (59) body -> . literal COMMA body
+    (60) body -> . literal
+    (61) literal -> . NOT atom
+    (62) literal -> . atom
+    (63) literal -> . term OPERATOR term
+    (64) literal -> . NOT term OPERATOR term
+    (65) literal -> . NOT zero_predicate
+    (66) literal -> . zero_predicate
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+    (4) zero_predicate -> . LOWER
 
-    OPERATOR        shift and go to state 43
+    NOT             shift and go to state 33
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 37
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
+    zero_predicate                 shift and go to state 36
+    body                           shift and go to state 54
+    literal                        shift and go to state 32
+    atom                           shift and go to state 34
+    term                           shift and go to state 35
 
 state 25
 
-    (32) modeb -> MODEB_KEY schema . DOT
-    (34) modeb -> MODEB_KEY schema . bias DOT
-    (19) bias -> . min_max_bias weight_bias priority_bias
-    (20) bias -> . min_max_bias priority_bias
-    (21) bias -> . min_max_bias weight_bias
-    (22) bias -> . weight_bias priority_bias
-    (23) bias -> . weight_bias
-    (24) bias -> . priority_bias
-    (25) bias -> . min_max_bias
-    (15) min_max_bias -> . MAX TERM MIN TERM
-    (16) min_max_bias -> . MAX TERM
-    (18) weight_bias -> . WEIGHT TERM
-    (17) priority_bias -> . PRIORITY TERM
+    (42) modeb -> MODEB_KEY schema . DOT
+    (44) modeb -> MODEB_KEY schema . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    DOT             shift and go to state 44
-    MAX             shift and go to state 35
-    WEIGHT          shift and go to state 36
-    PRIORITY        shift and go to state 37
+    DOT             shift and go to state 55
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
-    bias                           shift and go to state 45
-    min_max_bias                   shift and go to state 32
-    weight_bias                    shift and go to state 33
-    priority_bias                  shift and go to state 34
+    bias                           shift and go to state 56
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 26
 
-    (33) modeb -> MODEB_KEY NOT . schema DOT
-    (35) modeb -> MODEB_KEY NOT . schema bias DOT
-    (10) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (43) modeb -> MODEB_KEY NOT . schema DOT
+    (45) modeb -> MODEB_KEY NOT . schema bias DOT
+    (47) modeb -> MODEB_KEY NOT . zero_predicate DOT
+    (49) modeb -> MODEB_KEY NOT . zero_predicate bias DOT
+    (14) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (4) zero_predicate -> . LOWER
 
-    PREDICATE       shift and go to state 27
+    PREDICATE       shift and go to state 28
+    LOWER           shift and go to state 16
 
-    schema                         shift and go to state 46
+    schema                         shift and go to state 57
+    zero_predicate                 shift and go to state 58
 
 state 27
 
-    (10) schema -> PREDICATE . LPAREN schema_terms RPAREN
+    (46) modeb -> MODEB_KEY zero_predicate . DOT
+    (48) modeb -> MODEB_KEY zero_predicate . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    LPAREN          shift and go to state 47
+    DOT             shift and go to state 59
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
+    bias                           shift and go to state 60
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 28
 
-    (30) modeh -> MODEH_KEY schema . DOT
-    (31) modeh -> MODEH_KEY schema . bias DOT
-    (19) bias -> . min_max_bias weight_bias priority_bias
-    (20) bias -> . min_max_bias priority_bias
-    (21) bias -> . min_max_bias weight_bias
-    (22) bias -> . weight_bias priority_bias
-    (23) bias -> . weight_bias
-    (24) bias -> . priority_bias
-    (25) bias -> . min_max_bias
-    (15) min_max_bias -> . MAX TERM MIN TERM
-    (16) min_max_bias -> . MAX TERM
-    (18) weight_bias -> . WEIGHT TERM
-    (17) priority_bias -> . PRIORITY TERM
+    (14) schema -> PREDICATE . LPAREN schema_terms RPAREN
 
-    DOT             shift and go to state 48
-    MAX             shift and go to state 35
-    WEIGHT          shift and go to state 36
-    PRIORITY        shift and go to state 37
+    LPAREN          shift and go to state 61
 
-    bias                           shift and go to state 49
-    min_max_bias                   shift and go to state 32
-    weight_bias                    shift and go to state 33
-    priority_bias                  shift and go to state 34
 
 state 29
 
-    (9) atom -> PREDICATE LPAREN . terms RPAREN
-    (36) terms -> . TERM
-    (37) terms -> . atom
-    (38) terms -> . TERM COMMA terms
-    (39) terms -> . atom COMMA terms
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (38) modeh -> MODEH_KEY schema . DOT
+    (39) modeh -> MODEH_KEY schema . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    TERM            shift and go to state 51
-    PREDICATE       shift and go to state 14
+    DOT             shift and go to state 62
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
-    terms                          shift and go to state 50
-    atom                           shift and go to state 52
+    bias                           shift and go to state 63
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 30
 
-    (26) example -> EXAMPLE_KEY atom DOT .
+    (40) modeh -> MODEH_KEY zero_predicate . DOT
+    (41) modeh -> MODEH_KEY zero_predicate . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    EXAMPLE_KEY     reduce using rule 26 (example -> EXAMPLE_KEY atom DOT .)
-    MODEB_KEY       reduce using rule 26 (example -> EXAMPLE_KEY atom DOT .)
-    MODEH_KEY       reduce using rule 26 (example -> EXAMPLE_KEY atom DOT .)
-    NOT             reduce using rule 26 (example -> EXAMPLE_KEY atom DOT .)
-    PREDICATE       reduce using rule 26 (example -> EXAMPLE_KEY atom DOT .)
-    $end            reduce using rule 26 (example -> EXAMPLE_KEY atom DOT .)
+    DOT             shift and go to state 64
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
+    bias                           shift and go to state 65
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 31
 
-    (28) example -> EXAMPLE_KEY atom bias . DOT
+    (56) constraint -> IMPLIES body . DOT
 
-    DOT             shift and go to state 53
+    DOT             shift and go to state 66
 
 
 state 32
 
-    (19) bias -> min_max_bias . weight_bias priority_bias
-    (20) bias -> min_max_bias . priority_bias
-    (21) bias -> min_max_bias . weight_bias
-    (25) bias -> min_max_bias .
-    (18) weight_bias -> . WEIGHT TERM
-    (17) priority_bias -> . PRIORITY TERM
+    (59) body -> literal . COMMA body
+    (60) body -> literal .
 
-    DOT             reduce using rule 25 (bias -> min_max_bias .)
-    WEIGHT          shift and go to state 36
-    PRIORITY        shift and go to state 37
+    COMMA           shift and go to state 67
+    DOT             reduce using rule 60 (body -> literal .)
 
-    weight_bias                    shift and go to state 54
-    priority_bias                  shift and go to state 55
 
 state 33
 
-    (22) bias -> weight_bias . priority_bias
-    (23) bias -> weight_bias .
-    (17) priority_bias -> . PRIORITY TERM
+    (61) literal -> NOT . atom
+    (64) literal -> NOT . term OPERATOR term
+    (65) literal -> NOT . zero_predicate
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+    (4) zero_predicate -> . LOWER
 
-    DOT             reduce using rule 23 (bias -> weight_bias .)
-    PRIORITY        shift and go to state 37
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 37
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
-    priority_bias                  shift and go to state 56
+    atom                           shift and go to state 68
+    term                           shift and go to state 69
+    zero_predicate                 shift and go to state 70
 
 state 34
 
-    (24) bias -> priority_bias .
+    (62) literal -> atom .
 
-    DOT             reduce using rule 24 (bias -> priority_bias .)
+    COMMA           reduce using rule 62 (literal -> atom .)
+    DOT             reduce using rule 62 (literal -> atom .)
 
 
 state 35
 
-    (15) min_max_bias -> MAX . TERM MIN TERM
-    (16) min_max_bias -> MAX . TERM
+    (63) literal -> term . OPERATOR term
 
-    TERM            shift and go to state 57
+    OPERATOR        shift and go to state 71
 
 
 state 36
 
-    (18) weight_bias -> WEIGHT . TERM
+    (66) literal -> zero_predicate .
 
-    TERM            shift and go to state 58
+    COMMA           reduce using rule 66 (literal -> zero_predicate .)
+    DOT             reduce using rule 66 (literal -> zero_predicate .)
 
 
 state 37
 
-    (17) priority_bias -> PRIORITY . TERM
+    (1) term -> LOWER .
+    (4) zero_predicate -> LOWER .
 
-    TERM            shift and go to state 59
+    OPERATOR        reduce using rule 1 (term -> LOWER .)
+    COMMA           reduce using rule 4 (zero_predicate -> LOWER .)
+    DOT             reduce using rule 4 (zero_predicate -> LOWER .)
 
 
 state 38
 
-    (27) example -> EXAMPLE_KEY NOT atom . DOT
-    (29) example -> EXAMPLE_KEY NOT atom . bias DOT
-    (19) bias -> . min_max_bias weight_bias priority_bias
-    (20) bias -> . min_max_bias priority_bias
-    (21) bias -> . min_max_bias weight_bias
-    (22) bias -> . weight_bias priority_bias
-    (23) bias -> . weight_bias
-    (24) bias -> . priority_bias
-    (25) bias -> . min_max_bias
-    (15) min_max_bias -> . MAX TERM MIN TERM
-    (16) min_max_bias -> . MAX TERM
-    (18) weight_bias -> . WEIGHT TERM
-    (17) priority_bias -> . PRIORITY TERM
+    (2) term -> NUMBER .
 
-    DOT             shift and go to state 60
-    MAX             shift and go to state 35
-    WEIGHT          shift and go to state 36
-    PRIORITY        shift and go to state 37
+    OPERATOR        reduce using rule 2 (term -> NUMBER .)
+    COMMA           reduce using rule 2 (term -> NUMBER .)
+    RPAREN          reduce using rule 2 (term -> NUMBER .)
+    MIN             reduce using rule 2 (term -> NUMBER .)
+    WEIGHT          reduce using rule 2 (term -> NUMBER .)
+    PRIORITY        reduce using rule 2 (term -> NUMBER .)
+    DOT             reduce using rule 2 (term -> NUMBER .)
 
-    bias                           shift and go to state 61
-    min_max_bias                   shift and go to state 32
-    weight_bias                    shift and go to state 33
-    priority_bias                  shift and go to state 34
 
 state 39
 
-    (42) normal_clause -> atom IMPLIES body . DOT
+    (3) term -> UPPER .
 
-    DOT             shift and go to state 62
+    OPERATOR        reduce using rule 3 (term -> UPPER .)
+    COMMA           reduce using rule 3 (term -> UPPER .)
+    RPAREN          reduce using rule 3 (term -> UPPER .)
+    MIN             reduce using rule 3 (term -> UPPER .)
+    WEIGHT          reduce using rule 3 (term -> UPPER .)
+    PRIORITY        reduce using rule 3 (term -> UPPER .)
+    DOT             reduce using rule 3 (term -> UPPER .)
 
 
 state 40
 
-    (45) literal -> NOT atom .
+    (13) atom -> PREDICATE LPAREN . terms RPAREN
+    (50) terms -> . term
+    (51) terms -> . atom
+    (52) terms -> . term COMMA terms
+    (53) terms -> . atom COMMA terms
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
 
-    COMMA           reduce using rule 45 (literal -> NOT atom .)
-    DOT             reduce using rule 45 (literal -> NOT atom .)
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
+    PREDICATE       shift and go to state 15
 
+    terms                          shift and go to state 72
+    term                           shift and go to state 73
+    atom                           shift and go to state 74
 
 state 41
 
-    (41) constraint -> NOT body DOT .
+    (30) example -> EXAMPLE_KEY atom DOT .
 
-    EXAMPLE_KEY     reduce using rule 41 (constraint -> NOT body DOT .)
-    MODEB_KEY       reduce using rule 41 (constraint -> NOT body DOT .)
-    MODEH_KEY       reduce using rule 41 (constraint -> NOT body DOT .)
-    NOT             reduce using rule 41 (constraint -> NOT body DOT .)
-    PREDICATE       reduce using rule 41 (constraint -> NOT body DOT .)
-    $end            reduce using rule 41 (constraint -> NOT body DOT .)
+    EXAMPLE_KEY     reduce using rule 30 (example -> EXAMPLE_KEY atom DOT .)
+    MODEB_KEY       reduce using rule 30 (example -> EXAMPLE_KEY atom DOT .)
+    MODEH_KEY       reduce using rule 30 (example -> EXAMPLE_KEY atom DOT .)
+    IMPLIES         reduce using rule 30 (example -> EXAMPLE_KEY atom DOT .)
+    PREDICATE       reduce using rule 30 (example -> EXAMPLE_KEY atom DOT .)
+    LOWER           reduce using rule 30 (example -> EXAMPLE_KEY atom DOT .)
+    $end            reduce using rule 30 (example -> EXAMPLE_KEY atom DOT .)
 
 
 state 42
 
-    (43) body -> literal COMMA . body
-    (43) body -> . literal COMMA body
-    (44) body -> . literal
-    (45) literal -> . NOT atom
-    (46) literal -> . atom
-    (47) literal -> . TERM OPERATOR TERM
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (32) example -> EXAMPLE_KEY atom bias . DOT
 
-    NOT             shift and go to state 20
-    TERM            shift and go to state 24
-    PREDICATE       shift and go to state 14
+    DOT             shift and go to state 76
 
-    literal                        shift and go to state 22
-    body                           shift and go to state 63
-    atom                           shift and go to state 23
 
 state 43
 
-    (47) literal -> TERM OPERATOR . TERM
+    (23) bias -> min_max_bias . weight_bias priority_bias
+    (24) bias -> min_max_bias . priority_bias
+    (25) bias -> min_max_bias . weight_bias
+    (29) bias -> min_max_bias .
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    TERM            shift and go to state 64
+    DOT             reduce using rule 29 (bias -> min_max_bias .)
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
+    weight_bias                    shift and go to state 77
+    priority_bias                  shift and go to state 78
 
 state 44
 
-    (32) modeb -> MODEB_KEY schema DOT .
+    (26) bias -> weight_bias . priority_bias
+    (27) bias -> weight_bias .
+    (21) priority_bias -> . PRIORITY term
 
-    EXAMPLE_KEY     reduce using rule 32 (modeb -> MODEB_KEY schema DOT .)
-    MODEB_KEY       reduce using rule 32 (modeb -> MODEB_KEY schema DOT .)
-    MODEH_KEY       reduce using rule 32 (modeb -> MODEB_KEY schema DOT .)
-    NOT             reduce using rule 32 (modeb -> MODEB_KEY schema DOT .)
-    PREDICATE       reduce using rule 32 (modeb -> MODEB_KEY schema DOT .)
-    $end            reduce using rule 32 (modeb -> MODEB_KEY schema DOT .)
+    DOT             reduce using rule 27 (bias -> weight_bias .)
+    PRIORITY        shift and go to state 48
 
+    priority_bias                  shift and go to state 79
 
 state 45
 
-    (34) modeb -> MODEB_KEY schema bias . DOT
+    (28) bias -> priority_bias .
 
-    DOT             shift and go to state 65
+    DOT             reduce using rule 28 (bias -> priority_bias .)
 
 
 state 46
 
-    (33) modeb -> MODEB_KEY NOT schema . DOT
-    (35) modeb -> MODEB_KEY NOT schema . bias DOT
-    (19) bias -> . min_max_bias weight_bias priority_bias
-    (20) bias -> . min_max_bias priority_bias
-    (21) bias -> . min_max_bias weight_bias
-    (22) bias -> . weight_bias priority_bias
-    (23) bias -> . weight_bias
-    (24) bias -> . priority_bias
-    (25) bias -> . min_max_bias
-    (15) min_max_bias -> . MAX TERM MIN TERM
-    (16) min_max_bias -> . MAX TERM
-    (18) weight_bias -> . WEIGHT TERM
-    (17) priority_bias -> . PRIORITY TERM
+    (19) min_max_bias -> MAX . term MIN term
+    (20) min_max_bias -> MAX . term
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
 
-    DOT             shift and go to state 66
-    MAX             shift and go to state 35
-    WEIGHT          shift and go to state 36
-    PRIORITY        shift and go to state 37
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
-    bias                           shift and go to state 67
-    min_max_bias                   shift and go to state 32
-    weight_bias                    shift and go to state 33
-    priority_bias                  shift and go to state 34
+    term                           shift and go to state 80
 
 state 47
 
-    (10) schema -> PREDICATE LPAREN . schema_terms RPAREN
-    (11) schema_terms -> . MARKER TERM
-    (12) schema_terms -> . MARKER TERM COMMA schema_terms
-    (13) schema_terms -> . schema
-    (14) schema_terms -> . schema COMMA schema_terms
-    (10) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (22) weight_bias -> WEIGHT . term
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
 
-    MARKER          shift and go to state 69
-    PREDICATE       shift and go to state 27
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
-    schema_terms                   shift and go to state 68
-    schema                         shift and go to state 70
+    term                           shift and go to state 81
 
 state 48
 
-    (30) modeh -> MODEH_KEY schema DOT .
+    (21) priority_bias -> PRIORITY . term
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
 
-    EXAMPLE_KEY     reduce using rule 30 (modeh -> MODEH_KEY schema DOT .)
-    MODEB_KEY       reduce using rule 30 (modeh -> MODEH_KEY schema DOT .)
-    MODEH_KEY       reduce using rule 30 (modeh -> MODEH_KEY schema DOT .)
-    NOT             reduce using rule 30 (modeh -> MODEH_KEY schema DOT .)
-    PREDICATE       reduce using rule 30 (modeh -> MODEH_KEY schema DOT .)
-    $end            reduce using rule 30 (modeh -> MODEH_KEY schema DOT .)
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
+    term                           shift and go to state 82
 
 state 49
 
-    (31) modeh -> MODEH_KEY schema bias . DOT
+    (31) example -> EXAMPLE_KEY NOT atom . DOT
+    (33) example -> EXAMPLE_KEY NOT atom . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    DOT             shift and go to state 71
+    DOT             shift and go to state 83
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
+    bias                           shift and go to state 84
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 50
 
-    (9) atom -> PREDICATE LPAREN terms . RPAREN
+    (35) example -> EXAMPLE_KEY NOT zero_predicate . DOT
+    (37) example -> EXAMPLE_KEY NOT zero_predicate . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    RPAREN          shift and go to state 72
+    DOT             shift and go to state 85
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
+    bias                           shift and go to state 86
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 51
 
-    (36) terms -> TERM .
-    (38) terms -> TERM . COMMA terms
+    (34) example -> EXAMPLE_KEY zero_predicate DOT .
 
-    RPAREN          reduce using rule 36 (terms -> TERM .)
-    COMMA           shift and go to state 73
+    EXAMPLE_KEY     reduce using rule 34 (example -> EXAMPLE_KEY zero_predicate DOT .)
+    MODEB_KEY       reduce using rule 34 (example -> EXAMPLE_KEY zero_predicate DOT .)
+    MODEH_KEY       reduce using rule 34 (example -> EXAMPLE_KEY zero_predicate DOT .)
+    IMPLIES         reduce using rule 34 (example -> EXAMPLE_KEY zero_predicate DOT .)
+    PREDICATE       reduce using rule 34 (example -> EXAMPLE_KEY zero_predicate DOT .)
+    LOWER           reduce using rule 34 (example -> EXAMPLE_KEY zero_predicate DOT .)
+    $end            reduce using rule 34 (example -> EXAMPLE_KEY zero_predicate DOT .)
 
 
 state 52
 
-    (37) terms -> atom .
-    (39) terms -> atom . COMMA terms
+    (36) example -> EXAMPLE_KEY zero_predicate bias . DOT
 
-    RPAREN          reduce using rule 37 (terms -> atom .)
-    COMMA           shift and go to state 74
+    DOT             shift and go to state 87
 
 
 state 53
 
-    (28) example -> EXAMPLE_KEY atom bias DOT .
+    (57) normal_clause -> atom IMPLIES body . DOT
 
-    EXAMPLE_KEY     reduce using rule 28 (example -> EXAMPLE_KEY atom bias DOT .)
-    MODEB_KEY       reduce using rule 28 (example -> EXAMPLE_KEY atom bias DOT .)
-    MODEH_KEY       reduce using rule 28 (example -> EXAMPLE_KEY atom bias DOT .)
-    NOT             reduce using rule 28 (example -> EXAMPLE_KEY atom bias DOT .)
-    PREDICATE       reduce using rule 28 (example -> EXAMPLE_KEY atom bias DOT .)
-    $end            reduce using rule 28 (example -> EXAMPLE_KEY atom bias DOT .)
+    DOT             shift and go to state 88
 
 
 state 54
 
-    (19) bias -> min_max_bias weight_bias . priority_bias
-    (21) bias -> min_max_bias weight_bias .
-    (17) priority_bias -> . PRIORITY TERM
+    (58) normal_clause -> zero_predicate IMPLIES body . DOT
 
-    DOT             reduce using rule 21 (bias -> min_max_bias weight_bias .)
-    PRIORITY        shift and go to state 37
+    DOT             shift and go to state 89
 
-    priority_bias                  shift and go to state 75
 
 state 55
 
-    (20) bias -> min_max_bias priority_bias .
+    (42) modeb -> MODEB_KEY schema DOT .
 
-    DOT             reduce using rule 20 (bias -> min_max_bias priority_bias .)
+    EXAMPLE_KEY     reduce using rule 42 (modeb -> MODEB_KEY schema DOT .)
+    MODEB_KEY       reduce using rule 42 (modeb -> MODEB_KEY schema DOT .)
+    MODEH_KEY       reduce using rule 42 (modeb -> MODEB_KEY schema DOT .)
+    IMPLIES         reduce using rule 42 (modeb -> MODEB_KEY schema DOT .)
+    PREDICATE       reduce using rule 42 (modeb -> MODEB_KEY schema DOT .)
+    LOWER           reduce using rule 42 (modeb -> MODEB_KEY schema DOT .)
+    $end            reduce using rule 42 (modeb -> MODEB_KEY schema DOT .)
 
 
 state 56
 
-    (22) bias -> weight_bias priority_bias .
+    (44) modeb -> MODEB_KEY schema bias . DOT
 
-    DOT             reduce using rule 22 (bias -> weight_bias priority_bias .)
+    DOT             shift and go to state 90
 
 
 state 57
 
-    (15) min_max_bias -> MAX TERM . MIN TERM
-    (16) min_max_bias -> MAX TERM .
+    (43) modeb -> MODEB_KEY NOT schema . DOT
+    (45) modeb -> MODEB_KEY NOT schema . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    MIN             shift and go to state 76
-    WEIGHT          reduce using rule 16 (min_max_bias -> MAX TERM .)
-    PRIORITY        reduce using rule 16 (min_max_bias -> MAX TERM .)
-    DOT             reduce using rule 16 (min_max_bias -> MAX TERM .)
+    DOT             shift and go to state 91
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
+    bias                           shift and go to state 92
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 58
 
-    (18) weight_bias -> WEIGHT TERM .
+    (47) modeb -> MODEB_KEY NOT zero_predicate . DOT
+    (49) modeb -> MODEB_KEY NOT zero_predicate . bias DOT
+    (23) bias -> . min_max_bias weight_bias priority_bias
+    (24) bias -> . min_max_bias priority_bias
+    (25) bias -> . min_max_bias weight_bias
+    (26) bias -> . weight_bias priority_bias
+    (27) bias -> . weight_bias
+    (28) bias -> . priority_bias
+    (29) bias -> . min_max_bias
+    (19) min_max_bias -> . MAX term MIN term
+    (20) min_max_bias -> . MAX term
+    (22) weight_bias -> . WEIGHT term
+    (21) priority_bias -> . PRIORITY term
 
-    PRIORITY        reduce using rule 18 (weight_bias -> WEIGHT TERM .)
-    DOT             reduce using rule 18 (weight_bias -> WEIGHT TERM .)
+    DOT             shift and go to state 93
+    MAX             shift and go to state 46
+    WEIGHT          shift and go to state 47
+    PRIORITY        shift and go to state 48
 
+    bias                           shift and go to state 94
+    min_max_bias                   shift and go to state 43
+    weight_bias                    shift and go to state 44
+    priority_bias                  shift and go to state 45
 
 state 59
 
-    (17) priority_bias -> PRIORITY TERM .
+    (46) modeb -> MODEB_KEY zero_predicate DOT .
 
-    DOT             reduce using rule 17 (priority_bias -> PRIORITY TERM .)
+    EXAMPLE_KEY     reduce using rule 46 (modeb -> MODEB_KEY zero_predicate DOT .)
+    MODEB_KEY       reduce using rule 46 (modeb -> MODEB_KEY zero_predicate DOT .)
+    MODEH_KEY       reduce using rule 46 (modeb -> MODEB_KEY zero_predicate DOT .)
+    IMPLIES         reduce using rule 46 (modeb -> MODEB_KEY zero_predicate DOT .)
+    PREDICATE       reduce using rule 46 (modeb -> MODEB_KEY zero_predicate DOT .)
+    LOWER           reduce using rule 46 (modeb -> MODEB_KEY zero_predicate DOT .)
+    $end            reduce using rule 46 (modeb -> MODEB_KEY zero_predicate DOT .)
 
 
 state 60
 
-    (27) example -> EXAMPLE_KEY NOT atom DOT .
+    (48) modeb -> MODEB_KEY zero_predicate bias . DOT
 
-    EXAMPLE_KEY     reduce using rule 27 (example -> EXAMPLE_KEY NOT atom DOT .)
-    MODEB_KEY       reduce using rule 27 (example -> EXAMPLE_KEY NOT atom DOT .)
-    MODEH_KEY       reduce using rule 27 (example -> EXAMPLE_KEY NOT atom DOT .)
-    NOT             reduce using rule 27 (example -> EXAMPLE_KEY NOT atom DOT .)
-    PREDICATE       reduce using rule 27 (example -> EXAMPLE_KEY NOT atom DOT .)
-    $end            reduce using rule 27 (example -> EXAMPLE_KEY NOT atom DOT .)
+    DOT             shift and go to state 95
 
 
 state 61
 
-    (29) example -> EXAMPLE_KEY NOT atom bias . DOT
+    (14) schema -> PREDICATE LPAREN . schema_terms RPAREN
+    (15) schema_terms -> . MARKER term
+    (16) schema_terms -> . MARKER term COMMA schema_terms
+    (17) schema_terms -> . schema
+    (18) schema_terms -> . schema COMMA schema_terms
+    (14) schema -> . PREDICATE LPAREN schema_terms RPAREN
 
-    DOT             shift and go to state 77
+    MARKER          shift and go to state 97
+    PREDICATE       shift and go to state 28
 
+    schema_terms                   shift and go to state 96
+    schema                         shift and go to state 98
 
 state 62
 
-    (42) normal_clause -> atom IMPLIES body DOT .
+    (38) modeh -> MODEH_KEY schema DOT .
 
-    EXAMPLE_KEY     reduce using rule 42 (normal_clause -> atom IMPLIES body DOT .)
-    MODEB_KEY       reduce using rule 42 (normal_clause -> atom IMPLIES body DOT .)
-    MODEH_KEY       reduce using rule 42 (normal_clause -> atom IMPLIES body DOT .)
-    NOT             reduce using rule 42 (normal_clause -> atom IMPLIES body DOT .)
-    PREDICATE       reduce using rule 42 (normal_clause -> atom IMPLIES body DOT .)
-    $end            reduce using rule 42 (normal_clause -> atom IMPLIES body DOT .)
+    EXAMPLE_KEY     reduce using rule 38 (modeh -> MODEH_KEY schema DOT .)
+    MODEB_KEY       reduce using rule 38 (modeh -> MODEH_KEY schema DOT .)
+    MODEH_KEY       reduce using rule 38 (modeh -> MODEH_KEY schema DOT .)
+    IMPLIES         reduce using rule 38 (modeh -> MODEH_KEY schema DOT .)
+    PREDICATE       reduce using rule 38 (modeh -> MODEH_KEY schema DOT .)
+    LOWER           reduce using rule 38 (modeh -> MODEH_KEY schema DOT .)
+    $end            reduce using rule 38 (modeh -> MODEH_KEY schema DOT .)
 
 
 state 63
 
-    (43) body -> literal COMMA body .
+    (39) modeh -> MODEH_KEY schema bias . DOT
 
-    DOT             reduce using rule 43 (body -> literal COMMA body .)
+    DOT             shift and go to state 99
 
 
 state 64
 
-    (47) literal -> TERM OPERATOR TERM .
+    (40) modeh -> MODEH_KEY zero_predicate DOT .
 
-    COMMA           reduce using rule 47 (literal -> TERM OPERATOR TERM .)
-    DOT             reduce using rule 47 (literal -> TERM OPERATOR TERM .)
+    EXAMPLE_KEY     reduce using rule 40 (modeh -> MODEH_KEY zero_predicate DOT .)
+    MODEB_KEY       reduce using rule 40 (modeh -> MODEH_KEY zero_predicate DOT .)
+    MODEH_KEY       reduce using rule 40 (modeh -> MODEH_KEY zero_predicate DOT .)
+    IMPLIES         reduce using rule 40 (modeh -> MODEH_KEY zero_predicate DOT .)
+    PREDICATE       reduce using rule 40 (modeh -> MODEH_KEY zero_predicate DOT .)
+    LOWER           reduce using rule 40 (modeh -> MODEH_KEY zero_predicate DOT .)
+    $end            reduce using rule 40 (modeh -> MODEH_KEY zero_predicate DOT .)
 
 
 state 65
 
-    (34) modeb -> MODEB_KEY schema bias DOT .
+    (41) modeh -> MODEH_KEY zero_predicate bias . DOT
 
-    EXAMPLE_KEY     reduce using rule 34 (modeb -> MODEB_KEY schema bias DOT .)
-    MODEB_KEY       reduce using rule 34 (modeb -> MODEB_KEY schema bias DOT .)
-    MODEH_KEY       reduce using rule 34 (modeb -> MODEB_KEY schema bias DOT .)
-    NOT             reduce using rule 34 (modeb -> MODEB_KEY schema bias DOT .)
-    PREDICATE       reduce using rule 34 (modeb -> MODEB_KEY schema bias DOT .)
-    $end            reduce using rule 34 (modeb -> MODEB_KEY schema bias DOT .)
+    DOT             shift and go to state 100
 
 
 state 66
 
-    (33) modeb -> MODEB_KEY NOT schema DOT .
+    (56) constraint -> IMPLIES body DOT .
 
-    EXAMPLE_KEY     reduce using rule 33 (modeb -> MODEB_KEY NOT schema DOT .)
-    MODEB_KEY       reduce using rule 33 (modeb -> MODEB_KEY NOT schema DOT .)
-    MODEH_KEY       reduce using rule 33 (modeb -> MODEB_KEY NOT schema DOT .)
-    NOT             reduce using rule 33 (modeb -> MODEB_KEY NOT schema DOT .)
-    PREDICATE       reduce using rule 33 (modeb -> MODEB_KEY NOT schema DOT .)
-    $end            reduce using rule 33 (modeb -> MODEB_KEY NOT schema DOT .)
+    EXAMPLE_KEY     reduce using rule 56 (constraint -> IMPLIES body DOT .)
+    MODEB_KEY       reduce using rule 56 (constraint -> IMPLIES body DOT .)
+    MODEH_KEY       reduce using rule 56 (constraint -> IMPLIES body DOT .)
+    IMPLIES         reduce using rule 56 (constraint -> IMPLIES body DOT .)
+    PREDICATE       reduce using rule 56 (constraint -> IMPLIES body DOT .)
+    LOWER           reduce using rule 56 (constraint -> IMPLIES body DOT .)
+    $end            reduce using rule 56 (constraint -> IMPLIES body DOT .)
 
 
 state 67
 
-    (35) modeb -> MODEB_KEY NOT schema bias . DOT
+    (59) body -> literal COMMA . body
+    (59) body -> . literal COMMA body
+    (60) body -> . literal
+    (61) literal -> . NOT atom
+    (62) literal -> . atom
+    (63) literal -> . term OPERATOR term
+    (64) literal -> . NOT term OPERATOR term
+    (65) literal -> . NOT zero_predicate
+    (66) literal -> . zero_predicate
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+    (4) zero_predicate -> . LOWER
 
-    DOT             shift and go to state 78
+    NOT             shift and go to state 33
+    PREDICATE       shift and go to state 15
+    LOWER           shift and go to state 37
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
+    literal                        shift and go to state 32
+    body                           shift and go to state 101
+    atom                           shift and go to state 34
+    term                           shift and go to state 35
+    zero_predicate                 shift and go to state 36
 
 state 68
 
-    (10) schema -> PREDICATE LPAREN schema_terms . RPAREN
+    (61) literal -> NOT atom .
 
-    RPAREN          shift and go to state 79
+    COMMA           reduce using rule 61 (literal -> NOT atom .)
+    DOT             reduce using rule 61 (literal -> NOT atom .)
 
 
 state 69
 
-    (11) schema_terms -> MARKER . TERM
-    (12) schema_terms -> MARKER . TERM COMMA schema_terms
+    (64) literal -> NOT term . OPERATOR term
 
-    TERM            shift and go to state 80
+    OPERATOR        shift and go to state 102
 
 
 state 70
 
-    (13) schema_terms -> schema .
-    (14) schema_terms -> schema . COMMA schema_terms
+    (65) literal -> NOT zero_predicate .
 
-    RPAREN          reduce using rule 13 (schema_terms -> schema .)
-    COMMA           shift and go to state 81
+    COMMA           reduce using rule 65 (literal -> NOT zero_predicate .)
+    DOT             reduce using rule 65 (literal -> NOT zero_predicate .)
 
 
 state 71
 
-    (31) modeh -> MODEH_KEY schema bias DOT .
+    (63) literal -> term OPERATOR . term
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
 
-    EXAMPLE_KEY     reduce using rule 31 (modeh -> MODEH_KEY schema bias DOT .)
-    MODEB_KEY       reduce using rule 31 (modeh -> MODEH_KEY schema bias DOT .)
-    MODEH_KEY       reduce using rule 31 (modeh -> MODEH_KEY schema bias DOT .)
-    NOT             reduce using rule 31 (modeh -> MODEH_KEY schema bias DOT .)
-    PREDICATE       reduce using rule 31 (modeh -> MODEH_KEY schema bias DOT .)
-    $end            reduce using rule 31 (modeh -> MODEH_KEY schema bias DOT .)
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
 
+    term                           shift and go to state 103
 
 state 72
 
-    (9) atom -> PREDICATE LPAREN terms RPAREN .
+    (13) atom -> PREDICATE LPAREN terms . RPAREN
 
-    DOT             reduce using rule 9 (atom -> PREDICATE LPAREN terms RPAREN .)
-    IMPLIES         reduce using rule 9 (atom -> PREDICATE LPAREN terms RPAREN .)
-    MAX             reduce using rule 9 (atom -> PREDICATE LPAREN terms RPAREN .)
-    WEIGHT          reduce using rule 9 (atom -> PREDICATE LPAREN terms RPAREN .)
-    PRIORITY        reduce using rule 9 (atom -> PREDICATE LPAREN terms RPAREN .)
-    COMMA           reduce using rule 9 (atom -> PREDICATE LPAREN terms RPAREN .)
-    RPAREN          reduce using rule 9 (atom -> PREDICATE LPAREN terms RPAREN .)
+    RPAREN          shift and go to state 104
 
 
 state 73
 
-    (38) terms -> TERM COMMA . terms
-    (36) terms -> . TERM
-    (37) terms -> . atom
-    (38) terms -> . TERM COMMA terms
-    (39) terms -> . atom COMMA terms
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (50) terms -> term .
+    (52) terms -> term . COMMA terms
 
-    TERM            shift and go to state 51
-    PREDICATE       shift and go to state 14
+    RPAREN          reduce using rule 50 (terms -> term .)
+    COMMA           shift and go to state 105
 
-    terms                          shift and go to state 82
-    atom                           shift and go to state 52
 
 state 74
 
-    (39) terms -> atom COMMA . terms
-    (36) terms -> . TERM
-    (37) terms -> . atom
-    (38) terms -> . TERM COMMA terms
-    (39) terms -> . atom COMMA terms
-    (9) atom -> . PREDICATE LPAREN terms RPAREN
+    (51) terms -> atom .
+    (53) terms -> atom . COMMA terms
 
-    TERM            shift and go to state 51
-    PREDICATE       shift and go to state 14
+    RPAREN          reduce using rule 51 (terms -> atom .)
+    COMMA           shift and go to state 106
 
-    atom                           shift and go to state 52
-    terms                          shift and go to state 83
 
 state 75
 
-    (19) bias -> min_max_bias weight_bias priority_bias .
+    (1) term -> LOWER .
 
-    DOT             reduce using rule 19 (bias -> min_max_bias weight_bias priority_bias .)
+    COMMA           reduce using rule 1 (term -> LOWER .)
+    RPAREN          reduce using rule 1 (term -> LOWER .)
+    MIN             reduce using rule 1 (term -> LOWER .)
+    WEIGHT          reduce using rule 1 (term -> LOWER .)
+    PRIORITY        reduce using rule 1 (term -> LOWER .)
+    DOT             reduce using rule 1 (term -> LOWER .)
 
 
 state 76
 
-    (15) min_max_bias -> MAX TERM MIN . TERM
+    (32) example -> EXAMPLE_KEY atom bias DOT .
 
-    TERM            shift and go to state 84
+    EXAMPLE_KEY     reduce using rule 32 (example -> EXAMPLE_KEY atom bias DOT .)
+    MODEB_KEY       reduce using rule 32 (example -> EXAMPLE_KEY atom bias DOT .)
+    MODEH_KEY       reduce using rule 32 (example -> EXAMPLE_KEY atom bias DOT .)
+    IMPLIES         reduce using rule 32 (example -> EXAMPLE_KEY atom bias DOT .)
+    PREDICATE       reduce using rule 32 (example -> EXAMPLE_KEY atom bias DOT .)
+    LOWER           reduce using rule 32 (example -> EXAMPLE_KEY atom bias DOT .)
+    $end            reduce using rule 32 (example -> EXAMPLE_KEY atom bias DOT .)
 
 
 state 77
 
-    (29) example -> EXAMPLE_KEY NOT atom bias DOT .
+    (23) bias -> min_max_bias weight_bias . priority_bias
+    (25) bias -> min_max_bias weight_bias .
+    (21) priority_bias -> . PRIORITY term
 
-    EXAMPLE_KEY     reduce using rule 29 (example -> EXAMPLE_KEY NOT atom bias DOT .)
-    MODEB_KEY       reduce using rule 29 (example -> EXAMPLE_KEY NOT atom bias DOT .)
-    MODEH_KEY       reduce using rule 29 (example -> EXAMPLE_KEY NOT atom bias DOT .)
-    NOT             reduce using rule 29 (example -> EXAMPLE_KEY NOT atom bias DOT .)
-    PREDICATE       reduce using rule 29 (example -> EXAMPLE_KEY NOT atom bias DOT .)
-    $end            reduce using rule 29 (example -> EXAMPLE_KEY NOT atom bias DOT .)
+    DOT             reduce using rule 25 (bias -> min_max_bias weight_bias .)
+    PRIORITY        shift and go to state 48
 
+    priority_bias                  shift and go to state 107
 
 state 78
 
-    (35) modeb -> MODEB_KEY NOT schema bias DOT .
+    (24) bias -> min_max_bias priority_bias .
 
-    EXAMPLE_KEY     reduce using rule 35 (modeb -> MODEB_KEY NOT schema bias DOT .)
-    MODEB_KEY       reduce using rule 35 (modeb -> MODEB_KEY NOT schema bias DOT .)
-    MODEH_KEY       reduce using rule 35 (modeb -> MODEB_KEY NOT schema bias DOT .)
-    NOT             reduce using rule 35 (modeb -> MODEB_KEY NOT schema bias DOT .)
-    PREDICATE       reduce using rule 35 (modeb -> MODEB_KEY NOT schema bias DOT .)
-    $end            reduce using rule 35 (modeb -> MODEB_KEY NOT schema bias DOT .)
+    DOT             reduce using rule 24 (bias -> min_max_bias priority_bias .)
 
 
 state 79
 
-    (10) schema -> PREDICATE LPAREN schema_terms RPAREN .
+    (26) bias -> weight_bias priority_bias .
 
-    DOT             reduce using rule 10 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
-    MAX             reduce using rule 10 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
-    WEIGHT          reduce using rule 10 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
-    PRIORITY        reduce using rule 10 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
-    COMMA           reduce using rule 10 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
-    RPAREN          reduce using rule 10 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
+    DOT             reduce using rule 26 (bias -> weight_bias priority_bias .)
 
 
 state 80
 
-    (11) schema_terms -> MARKER TERM .
-    (12) schema_terms -> MARKER TERM . COMMA schema_terms
+    (19) min_max_bias -> MAX term . MIN term
+    (20) min_max_bias -> MAX term .
 
-    RPAREN          reduce using rule 11 (schema_terms -> MARKER TERM .)
-    COMMA           shift and go to state 85
+    MIN             shift and go to state 108
+    WEIGHT          reduce using rule 20 (min_max_bias -> MAX term .)
+    PRIORITY        reduce using rule 20 (min_max_bias -> MAX term .)
+    DOT             reduce using rule 20 (min_max_bias -> MAX term .)
 
 
 state 81
 
-    (14) schema_terms -> schema COMMA . schema_terms
-    (11) schema_terms -> . MARKER TERM
-    (12) schema_terms -> . MARKER TERM COMMA schema_terms
-    (13) schema_terms -> . schema
-    (14) schema_terms -> . schema COMMA schema_terms
-    (10) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (22) weight_bias -> WEIGHT term .
 
-    MARKER          shift and go to state 69
-    PREDICATE       shift and go to state 27
+    PRIORITY        reduce using rule 22 (weight_bias -> WEIGHT term .)
+    DOT             reduce using rule 22 (weight_bias -> WEIGHT term .)
 
-    schema                         shift and go to state 70
-    schema_terms                   shift and go to state 86
 
 state 82
 
-    (38) terms -> TERM COMMA terms .
+    (21) priority_bias -> PRIORITY term .
 
-    RPAREN          reduce using rule 38 (terms -> TERM COMMA terms .)
+    DOT             reduce using rule 21 (priority_bias -> PRIORITY term .)
 
 
 state 83
 
-    (39) terms -> atom COMMA terms .
+    (31) example -> EXAMPLE_KEY NOT atom DOT .
 
-    RPAREN          reduce using rule 39 (terms -> atom COMMA terms .)
+    EXAMPLE_KEY     reduce using rule 31 (example -> EXAMPLE_KEY NOT atom DOT .)
+    MODEB_KEY       reduce using rule 31 (example -> EXAMPLE_KEY NOT atom DOT .)
+    MODEH_KEY       reduce using rule 31 (example -> EXAMPLE_KEY NOT atom DOT .)
+    IMPLIES         reduce using rule 31 (example -> EXAMPLE_KEY NOT atom DOT .)
+    PREDICATE       reduce using rule 31 (example -> EXAMPLE_KEY NOT atom DOT .)
+    LOWER           reduce using rule 31 (example -> EXAMPLE_KEY NOT atom DOT .)
+    $end            reduce using rule 31 (example -> EXAMPLE_KEY NOT atom DOT .)
 
 
 state 84
 
-    (15) min_max_bias -> MAX TERM MIN TERM .
+    (33) example -> EXAMPLE_KEY NOT atom bias . DOT
 
-    WEIGHT          reduce using rule 15 (min_max_bias -> MAX TERM MIN TERM .)
-    PRIORITY        reduce using rule 15 (min_max_bias -> MAX TERM MIN TERM .)
-    DOT             reduce using rule 15 (min_max_bias -> MAX TERM MIN TERM .)
+    DOT             shift and go to state 109
 
 
 state 85
 
-    (12) schema_terms -> MARKER TERM COMMA . schema_terms
-    (11) schema_terms -> . MARKER TERM
-    (12) schema_terms -> . MARKER TERM COMMA schema_terms
-    (13) schema_terms -> . schema
-    (14) schema_terms -> . schema COMMA schema_terms
-    (10) schema -> . PREDICATE LPAREN schema_terms RPAREN
+    (35) example -> EXAMPLE_KEY NOT zero_predicate DOT .
 
-    MARKER          shift and go to state 69
-    PREDICATE       shift and go to state 27
+    EXAMPLE_KEY     reduce using rule 35 (example -> EXAMPLE_KEY NOT zero_predicate DOT .)
+    MODEB_KEY       reduce using rule 35 (example -> EXAMPLE_KEY NOT zero_predicate DOT .)
+    MODEH_KEY       reduce using rule 35 (example -> EXAMPLE_KEY NOT zero_predicate DOT .)
+    IMPLIES         reduce using rule 35 (example -> EXAMPLE_KEY NOT zero_predicate DOT .)
+    PREDICATE       reduce using rule 35 (example -> EXAMPLE_KEY NOT zero_predicate DOT .)
+    LOWER           reduce using rule 35 (example -> EXAMPLE_KEY NOT zero_predicate DOT .)
+    $end            reduce using rule 35 (example -> EXAMPLE_KEY NOT zero_predicate DOT .)
 
-    schema_terms                   shift and go to state 87
-    schema                         shift and go to state 70
 
 state 86
 
-    (14) schema_terms -> schema COMMA schema_terms .
+    (37) example -> EXAMPLE_KEY NOT zero_predicate bias . DOT
 
-    RPAREN          reduce using rule 14 (schema_terms -> schema COMMA schema_terms .)
+    DOT             shift and go to state 110
 
 
 state 87
 
-    (12) schema_terms -> MARKER TERM COMMA schema_terms .
+    (36) example -> EXAMPLE_KEY zero_predicate bias DOT .
 
-    RPAREN          reduce using rule 12 (schema_terms -> MARKER TERM COMMA schema_terms .)
+    EXAMPLE_KEY     reduce using rule 36 (example -> EXAMPLE_KEY zero_predicate bias DOT .)
+    MODEB_KEY       reduce using rule 36 (example -> EXAMPLE_KEY zero_predicate bias DOT .)
+    MODEH_KEY       reduce using rule 36 (example -> EXAMPLE_KEY zero_predicate bias DOT .)
+    IMPLIES         reduce using rule 36 (example -> EXAMPLE_KEY zero_predicate bias DOT .)
+    PREDICATE       reduce using rule 36 (example -> EXAMPLE_KEY zero_predicate bias DOT .)
+    LOWER           reduce using rule 36 (example -> EXAMPLE_KEY zero_predicate bias DOT .)
+    $end            reduce using rule 36 (example -> EXAMPLE_KEY zero_predicate bias DOT .)
+
+
+state 88
+
+    (57) normal_clause -> atom IMPLIES body DOT .
+
+    EXAMPLE_KEY     reduce using rule 57 (normal_clause -> atom IMPLIES body DOT .)
+    MODEB_KEY       reduce using rule 57 (normal_clause -> atom IMPLIES body DOT .)
+    MODEH_KEY       reduce using rule 57 (normal_clause -> atom IMPLIES body DOT .)
+    IMPLIES         reduce using rule 57 (normal_clause -> atom IMPLIES body DOT .)
+    PREDICATE       reduce using rule 57 (normal_clause -> atom IMPLIES body DOT .)
+    LOWER           reduce using rule 57 (normal_clause -> atom IMPLIES body DOT .)
+    $end            reduce using rule 57 (normal_clause -> atom IMPLIES body DOT .)
+
+
+state 89
+
+    (58) normal_clause -> zero_predicate IMPLIES body DOT .
+
+    EXAMPLE_KEY     reduce using rule 58 (normal_clause -> zero_predicate IMPLIES body DOT .)
+    MODEB_KEY       reduce using rule 58 (normal_clause -> zero_predicate IMPLIES body DOT .)
+    MODEH_KEY       reduce using rule 58 (normal_clause -> zero_predicate IMPLIES body DOT .)
+    IMPLIES         reduce using rule 58 (normal_clause -> zero_predicate IMPLIES body DOT .)
+    PREDICATE       reduce using rule 58 (normal_clause -> zero_predicate IMPLIES body DOT .)
+    LOWER           reduce using rule 58 (normal_clause -> zero_predicate IMPLIES body DOT .)
+    $end            reduce using rule 58 (normal_clause -> zero_predicate IMPLIES body DOT .)
+
+
+state 90
+
+    (44) modeb -> MODEB_KEY schema bias DOT .
+
+    EXAMPLE_KEY     reduce using rule 44 (modeb -> MODEB_KEY schema bias DOT .)
+    MODEB_KEY       reduce using rule 44 (modeb -> MODEB_KEY schema bias DOT .)
+    MODEH_KEY       reduce using rule 44 (modeb -> MODEB_KEY schema bias DOT .)
+    IMPLIES         reduce using rule 44 (modeb -> MODEB_KEY schema bias DOT .)
+    PREDICATE       reduce using rule 44 (modeb -> MODEB_KEY schema bias DOT .)
+    LOWER           reduce using rule 44 (modeb -> MODEB_KEY schema bias DOT .)
+    $end            reduce using rule 44 (modeb -> MODEB_KEY schema bias DOT .)
+
+
+state 91
+
+    (43) modeb -> MODEB_KEY NOT schema DOT .
+
+    EXAMPLE_KEY     reduce using rule 43 (modeb -> MODEB_KEY NOT schema DOT .)
+    MODEB_KEY       reduce using rule 43 (modeb -> MODEB_KEY NOT schema DOT .)
+    MODEH_KEY       reduce using rule 43 (modeb -> MODEB_KEY NOT schema DOT .)
+    IMPLIES         reduce using rule 43 (modeb -> MODEB_KEY NOT schema DOT .)
+    PREDICATE       reduce using rule 43 (modeb -> MODEB_KEY NOT schema DOT .)
+    LOWER           reduce using rule 43 (modeb -> MODEB_KEY NOT schema DOT .)
+    $end            reduce using rule 43 (modeb -> MODEB_KEY NOT schema DOT .)
+
+
+state 92
+
+    (45) modeb -> MODEB_KEY NOT schema bias . DOT
+
+    DOT             shift and go to state 111
+
+
+state 93
+
+    (47) modeb -> MODEB_KEY NOT zero_predicate DOT .
+
+    EXAMPLE_KEY     reduce using rule 47 (modeb -> MODEB_KEY NOT zero_predicate DOT .)
+    MODEB_KEY       reduce using rule 47 (modeb -> MODEB_KEY NOT zero_predicate DOT .)
+    MODEH_KEY       reduce using rule 47 (modeb -> MODEB_KEY NOT zero_predicate DOT .)
+    IMPLIES         reduce using rule 47 (modeb -> MODEB_KEY NOT zero_predicate DOT .)
+    PREDICATE       reduce using rule 47 (modeb -> MODEB_KEY NOT zero_predicate DOT .)
+    LOWER           reduce using rule 47 (modeb -> MODEB_KEY NOT zero_predicate DOT .)
+    $end            reduce using rule 47 (modeb -> MODEB_KEY NOT zero_predicate DOT .)
+
+
+state 94
+
+    (49) modeb -> MODEB_KEY NOT zero_predicate bias . DOT
+
+    DOT             shift and go to state 112
+
+
+state 95
+
+    (48) modeb -> MODEB_KEY zero_predicate bias DOT .
+
+    EXAMPLE_KEY     reduce using rule 48 (modeb -> MODEB_KEY zero_predicate bias DOT .)
+    MODEB_KEY       reduce using rule 48 (modeb -> MODEB_KEY zero_predicate bias DOT .)
+    MODEH_KEY       reduce using rule 48 (modeb -> MODEB_KEY zero_predicate bias DOT .)
+    IMPLIES         reduce using rule 48 (modeb -> MODEB_KEY zero_predicate bias DOT .)
+    PREDICATE       reduce using rule 48 (modeb -> MODEB_KEY zero_predicate bias DOT .)
+    LOWER           reduce using rule 48 (modeb -> MODEB_KEY zero_predicate bias DOT .)
+    $end            reduce using rule 48 (modeb -> MODEB_KEY zero_predicate bias DOT .)
+
+
+state 96
+
+    (14) schema -> PREDICATE LPAREN schema_terms . RPAREN
+
+    RPAREN          shift and go to state 113
+
+
+state 97
+
+    (15) schema_terms -> MARKER . term
+    (16) schema_terms -> MARKER . term COMMA schema_terms
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
+
+    term                           shift and go to state 114
+
+state 98
+
+    (17) schema_terms -> schema .
+    (18) schema_terms -> schema . COMMA schema_terms
+
+    RPAREN          reduce using rule 17 (schema_terms -> schema .)
+    COMMA           shift and go to state 115
+
+
+state 99
+
+    (39) modeh -> MODEH_KEY schema bias DOT .
+
+    EXAMPLE_KEY     reduce using rule 39 (modeh -> MODEH_KEY schema bias DOT .)
+    MODEB_KEY       reduce using rule 39 (modeh -> MODEH_KEY schema bias DOT .)
+    MODEH_KEY       reduce using rule 39 (modeh -> MODEH_KEY schema bias DOT .)
+    IMPLIES         reduce using rule 39 (modeh -> MODEH_KEY schema bias DOT .)
+    PREDICATE       reduce using rule 39 (modeh -> MODEH_KEY schema bias DOT .)
+    LOWER           reduce using rule 39 (modeh -> MODEH_KEY schema bias DOT .)
+    $end            reduce using rule 39 (modeh -> MODEH_KEY schema bias DOT .)
+
+
+state 100
+
+    (41) modeh -> MODEH_KEY zero_predicate bias DOT .
+
+    EXAMPLE_KEY     reduce using rule 41 (modeh -> MODEH_KEY zero_predicate bias DOT .)
+    MODEB_KEY       reduce using rule 41 (modeh -> MODEH_KEY zero_predicate bias DOT .)
+    MODEH_KEY       reduce using rule 41 (modeh -> MODEH_KEY zero_predicate bias DOT .)
+    IMPLIES         reduce using rule 41 (modeh -> MODEH_KEY zero_predicate bias DOT .)
+    PREDICATE       reduce using rule 41 (modeh -> MODEH_KEY zero_predicate bias DOT .)
+    LOWER           reduce using rule 41 (modeh -> MODEH_KEY zero_predicate bias DOT .)
+    $end            reduce using rule 41 (modeh -> MODEH_KEY zero_predicate bias DOT .)
+
+
+state 101
+
+    (59) body -> literal COMMA body .
+
+    DOT             reduce using rule 59 (body -> literal COMMA body .)
+
+
+state 102
+
+    (64) literal -> NOT term OPERATOR . term
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
+
+    term                           shift and go to state 116
+
+state 103
+
+    (63) literal -> term OPERATOR term .
+
+    COMMA           reduce using rule 63 (literal -> term OPERATOR term .)
+    DOT             reduce using rule 63 (literal -> term OPERATOR term .)
+
+
+state 104
+
+    (13) atom -> PREDICATE LPAREN terms RPAREN .
+
+    DOT             reduce using rule 13 (atom -> PREDICATE LPAREN terms RPAREN .)
+    IMPLIES         reduce using rule 13 (atom -> PREDICATE LPAREN terms RPAREN .)
+    MAX             reduce using rule 13 (atom -> PREDICATE LPAREN terms RPAREN .)
+    WEIGHT          reduce using rule 13 (atom -> PREDICATE LPAREN terms RPAREN .)
+    PRIORITY        reduce using rule 13 (atom -> PREDICATE LPAREN terms RPAREN .)
+    COMMA           reduce using rule 13 (atom -> PREDICATE LPAREN terms RPAREN .)
+    RPAREN          reduce using rule 13 (atom -> PREDICATE LPAREN terms RPAREN .)
+
+
+state 105
+
+    (52) terms -> term COMMA . terms
+    (50) terms -> . term
+    (51) terms -> . atom
+    (52) terms -> . term COMMA terms
+    (53) terms -> . atom COMMA terms
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
+    PREDICATE       shift and go to state 15
+
+    term                           shift and go to state 73
+    terms                          shift and go to state 117
+    atom                           shift and go to state 74
+
+state 106
+
+    (53) terms -> atom COMMA . terms
+    (50) terms -> . term
+    (51) terms -> . atom
+    (52) terms -> . term COMMA terms
+    (53) terms -> . atom COMMA terms
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+    (13) atom -> . PREDICATE LPAREN terms RPAREN
+
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
+    PREDICATE       shift and go to state 15
+
+    atom                           shift and go to state 74
+    terms                          shift and go to state 118
+    term                           shift and go to state 73
+
+state 107
+
+    (23) bias -> min_max_bias weight_bias priority_bias .
+
+    DOT             reduce using rule 23 (bias -> min_max_bias weight_bias priority_bias .)
+
+
+state 108
+
+    (19) min_max_bias -> MAX term MIN . term
+    (1) term -> . LOWER
+    (2) term -> . NUMBER
+    (3) term -> . UPPER
+
+    LOWER           shift and go to state 75
+    NUMBER          shift and go to state 38
+    UPPER           shift and go to state 39
+
+    term                           shift and go to state 119
+
+state 109
+
+    (33) example -> EXAMPLE_KEY NOT atom bias DOT .
+
+    EXAMPLE_KEY     reduce using rule 33 (example -> EXAMPLE_KEY NOT atom bias DOT .)
+    MODEB_KEY       reduce using rule 33 (example -> EXAMPLE_KEY NOT atom bias DOT .)
+    MODEH_KEY       reduce using rule 33 (example -> EXAMPLE_KEY NOT atom bias DOT .)
+    IMPLIES         reduce using rule 33 (example -> EXAMPLE_KEY NOT atom bias DOT .)
+    PREDICATE       reduce using rule 33 (example -> EXAMPLE_KEY NOT atom bias DOT .)
+    LOWER           reduce using rule 33 (example -> EXAMPLE_KEY NOT atom bias DOT .)
+    $end            reduce using rule 33 (example -> EXAMPLE_KEY NOT atom bias DOT .)
+
+
+state 110
+
+    (37) example -> EXAMPLE_KEY NOT zero_predicate bias DOT .
+
+    EXAMPLE_KEY     reduce using rule 37 (example -> EXAMPLE_KEY NOT zero_predicate bias DOT .)
+    MODEB_KEY       reduce using rule 37 (example -> EXAMPLE_KEY NOT zero_predicate bias DOT .)
+    MODEH_KEY       reduce using rule 37 (example -> EXAMPLE_KEY NOT zero_predicate bias DOT .)
+    IMPLIES         reduce using rule 37 (example -> EXAMPLE_KEY NOT zero_predicate bias DOT .)
+    PREDICATE       reduce using rule 37 (example -> EXAMPLE_KEY NOT zero_predicate bias DOT .)
+    LOWER           reduce using rule 37 (example -> EXAMPLE_KEY NOT zero_predicate bias DOT .)
+    $end            reduce using rule 37 (example -> EXAMPLE_KEY NOT zero_predicate bias DOT .)
+
+
+state 111
+
+    (45) modeb -> MODEB_KEY NOT schema bias DOT .
+
+    EXAMPLE_KEY     reduce using rule 45 (modeb -> MODEB_KEY NOT schema bias DOT .)
+    MODEB_KEY       reduce using rule 45 (modeb -> MODEB_KEY NOT schema bias DOT .)
+    MODEH_KEY       reduce using rule 45 (modeb -> MODEB_KEY NOT schema bias DOT .)
+    IMPLIES         reduce using rule 45 (modeb -> MODEB_KEY NOT schema bias DOT .)
+    PREDICATE       reduce using rule 45 (modeb -> MODEB_KEY NOT schema bias DOT .)
+    LOWER           reduce using rule 45 (modeb -> MODEB_KEY NOT schema bias DOT .)
+    $end            reduce using rule 45 (modeb -> MODEB_KEY NOT schema bias DOT .)
+
+
+state 112
+
+    (49) modeb -> MODEB_KEY NOT zero_predicate bias DOT .
+
+    EXAMPLE_KEY     reduce using rule 49 (modeb -> MODEB_KEY NOT zero_predicate bias DOT .)
+    MODEB_KEY       reduce using rule 49 (modeb -> MODEB_KEY NOT zero_predicate bias DOT .)
+    MODEH_KEY       reduce using rule 49 (modeb -> MODEB_KEY NOT zero_predicate bias DOT .)
+    IMPLIES         reduce using rule 49 (modeb -> MODEB_KEY NOT zero_predicate bias DOT .)
+    PREDICATE       reduce using rule 49 (modeb -> MODEB_KEY NOT zero_predicate bias DOT .)
+    LOWER           reduce using rule 49 (modeb -> MODEB_KEY NOT zero_predicate bias DOT .)
+    $end            reduce using rule 49 (modeb -> MODEB_KEY NOT zero_predicate bias DOT .)
+
+
+state 113
+
+    (14) schema -> PREDICATE LPAREN schema_terms RPAREN .
+
+    DOT             reduce using rule 14 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
+    MAX             reduce using rule 14 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
+    WEIGHT          reduce using rule 14 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
+    PRIORITY        reduce using rule 14 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
+    COMMA           reduce using rule 14 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
+    RPAREN          reduce using rule 14 (schema -> PREDICATE LPAREN schema_terms RPAREN .)
+
+
+state 114
+
+    (15) schema_terms -> MARKER term .
+    (16) schema_terms -> MARKER term . COMMA schema_terms
+
+    RPAREN          reduce using rule 15 (schema_terms -> MARKER term .)
+    COMMA           shift and go to state 120
+
+
+state 115
+
+    (18) schema_terms -> schema COMMA . schema_terms
+    (15) schema_terms -> . MARKER term
+    (16) schema_terms -> . MARKER term COMMA schema_terms
+    (17) schema_terms -> . schema
+    (18) schema_terms -> . schema COMMA schema_terms
+    (14) schema -> . PREDICATE LPAREN schema_terms RPAREN
+
+    MARKER          shift and go to state 97
+    PREDICATE       shift and go to state 28
+
+    schema                         shift and go to state 98
+    schema_terms                   shift and go to state 121
+
+state 116
+
+    (64) literal -> NOT term OPERATOR term .
+
+    COMMA           reduce using rule 64 (literal -> NOT term OPERATOR term .)
+    DOT             reduce using rule 64 (literal -> NOT term OPERATOR term .)
+
+
+state 117
+
+    (52) terms -> term COMMA terms .
+
+    RPAREN          reduce using rule 52 (terms -> term COMMA terms .)
+
+
+state 118
+
+    (53) terms -> atom COMMA terms .
+
+    RPAREN          reduce using rule 53 (terms -> atom COMMA terms .)
+
+
+state 119
+
+    (19) min_max_bias -> MAX term MIN term .
+
+    WEIGHT          reduce using rule 19 (min_max_bias -> MAX term MIN term .)
+    PRIORITY        reduce using rule 19 (min_max_bias -> MAX term MIN term .)
+    DOT             reduce using rule 19 (min_max_bias -> MAX term MIN term .)
+
+
+state 120
+
+    (16) schema_terms -> MARKER term COMMA . schema_terms
+    (15) schema_terms -> . MARKER term
+    (16) schema_terms -> . MARKER term COMMA schema_terms
+    (17) schema_terms -> . schema
+    (18) schema_terms -> . schema COMMA schema_terms
+    (14) schema -> . PREDICATE LPAREN schema_terms RPAREN
+
+    MARKER          shift and go to state 97
+    PREDICATE       shift and go to state 28
+
+    schema_terms                   shift and go to state 122
+    schema                         shift and go to state 98
+
+state 121
+
+    (18) schema_terms -> schema COMMA schema_terms .
+
+    RPAREN          reduce using rule 18 (schema_terms -> schema COMMA schema_terms .)
+
+
+state 122
+
+    (16) schema_terms -> MARKER term COMMA schema_terms .
+
+    RPAREN          reduce using rule 16 (schema_terms -> MARKER term COMMA schema_terms .)
 

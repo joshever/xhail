@@ -44,7 +44,7 @@ class Modeh:
     CONSTRAINT_SEPARATOR = '-'
     weight = 1
     priority = 2
-    min = 0
+    min = 2
     max = 1000000
 
     def __init__(self, atom: Atom, n: str):
@@ -63,6 +63,12 @@ class Modeh:
     def setMin(self, min):
         self.min = min
 
+    def getMax(self):
+        return self.max
+    
+    def getMin(self):
+        return self.min
+
     def generalise(self, atom, n=1):
         terms = atom.terms
         for idt, term in enumerate(terms):
@@ -79,7 +85,6 @@ class Modeh:
     def createProgram(self):
         new_atom = copy.deepcopy(self.atom)
         generalised_atom, n = self.generalise(new_atom)
-        print(str(generalised_atom))
         types = ', '.join(generalised_atom.getTypes())
         variables = ', '.join([f"V{i}" for i in range(1, n)])
 

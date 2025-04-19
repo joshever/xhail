@@ -18,17 +18,17 @@ class Model:
         self.DEPTH = DEPTH
 
     # ---------- METHODS ---------- #
-    def call(self):
-        control = clingo.Control()
-        control.add("base", [], self.program)
-        control.ground([("base", [])])
-        clingo_models = []
-        def on_model(clingo_model):
-            clingo_model = clingo_model.symbols(shown=True)
-            clingo_models.append(clingo_model)
-        control.solve(on_model=on_model)
-        self.clingo_models = clingo_models
-        return clingo_models
+    # def call(self):
+    #     control = clingo.Control()
+    #     control.add("base", [], self.program)
+    #     control.ground([("base", [])])
+    #     clingo_models = []
+    #     def on_model(clingo_model):
+    #         clingo_model = clingo_model.symbols(shown=True)
+    #         clingo_models.append(clingo_model)
+    #     control.solve(on_model=on_model)
+    #     self.clingo_models = clingo_models
+    #     return clingo_models
     
     def getBestModel(self):
         control = clingo.Control()

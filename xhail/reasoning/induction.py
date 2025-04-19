@@ -25,7 +25,7 @@ class Induction:
     # ----- Generate and Load Choice statements ----- #
     def loadChoice(self, clauses):
         program = "\n"
-        program += "{ use(V1, 0) } :- clause(V1).\n"
+        program += "1 { use(V1, 0) } :- clause(V1).\n"
         if self.model.DEPTH != 0 and sum((1 if clause.body != [] else 0) for clause in clauses) > 0:
             program += "{ use(V1, V2) } :- clause(V1), literal(V1, V2).\n"
 
@@ -128,14 +128,15 @@ class Induction:
                 visited.add(objectStr)
                 result.append(object)
         return result
-
-    def runPhase(self):
+    
+    def prepareClauses(self):
         # ----- Prepare Clauses ----- #
         clauses = [clause.generalise() for clause in self.model.getKernel()]
         clauses = self.updateClauseTypes(clauses)
         clauses = self.uniqueObjects(clauses)
+        return clauses
 
-        # ----- Constuct Program ----- #
+    def loadProgram(self, clauses):
         program = f'#show use/2.\n'
         program += self.loadBackground(self.BG)
         program += self.loadExamples(self.EX)
@@ -143,7 +144,9 @@ class Induction:
         program += self.loadMinimize(clauses)
         program += self.loadUseTry(clauses)
         program += self.loadClauseLevels(clauses)
-
+        return program
+    
+    def getIncludedClauses(self, program, clauses):
         # ----- Update Model ----- #
         self.model.setProgram(program)
         self.model.writeProgram("xhail/output/induction.lp")
@@ -174,6 +177,14 @@ class Induction:
         else:
             print("no solutions")
             return
-        
+        return included_clauses
+
+
+    def runPhase(self):
+        clauses = self.prepareClauses()
+        program = self.loadProgram(clauses)
+        print(program)
+        included_clauses = self.getIncludedClauses(program, clauses)
+        print(included_clauses)
         final_clauses = self.uniqueObjects(included_clauses)
         self.model.setHypothesis(final_clauses)

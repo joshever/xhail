@@ -28,6 +28,7 @@ tokens = (
     'MAX',
     'WEIGHT',
     'PRIORITY',
+    'SPEECH',
 )
 
 # Define Tokens
@@ -36,8 +37,6 @@ t_EXAMPLE_KEY = r'\#example'
 t_MODEH_KEY = r'\#modeh'
 t_MODEB_KEY = r'\#modeb'
 t_PREDICATE = r'(?!not\b)([a-z][a-zA-Z_0-9]*)(?=\()'
-#t_ZERO_PREDICATE = r'(?!not\b)([a-z][a-zA-Z_0-9]*)'
-#t_TERM = r'(?!not\b)[a-zA-Z_][a-zA-Z_0-9]*|[0-9]+'
 t_UPPER = r'(?!not\b)\b[A-Z][a-zA-Z0-9_]*\b'
 t_LOWER = r'(?!not\b)\b[a-z][a-zA-Z0-9_]*\b'
 t_NUMBER = r'\d+'
@@ -278,7 +277,9 @@ def p_terms(p):
              | atom COMMA terms
     '''
     if len(p) == 2 and not isinstance(p[1], Atom):
-        p[0] = [Normal(p[1])]
+        n = Normal(p[1])
+        n.setType('constant')
+        p[0] = [n]
     elif len(p) == 2:
         p[0] = [p[1]]
     elif len(p) == 4 and not isinstance(p[1], Atom):

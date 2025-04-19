@@ -7,7 +7,7 @@ from xhail.parser.parser import Parser
 if __name__ == '__main__':
     # ---------- read input ---------- #
     DEPTH = 2
-    INPUT_FILENAME = 'tests/opt.lp'#'example1.lp'#'tests/deduction.lp'#'test.lp'#
+    INPUT_FILENAME = 'tests/bug2.lp'#'example1.lp'#'tests/deduction.lp'#'test.lp'#
 
     # ---------- parse data ---------- #
     parser = Parser()
@@ -38,6 +38,7 @@ if __name__ == '__main__':
     abduction, deduction, induction = Abduction(model), Deduction(model), Induction(model)
     
     abduction.runPhase()
+    print("deltas:", [str(d) for d in model.getDelta()])
     deduction.runPhase()
     induction.runPhase()
     

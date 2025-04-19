@@ -63,14 +63,19 @@ class Deduction:
                     return chain
         return ["Mistake!"]
     
-    def runPhase(self):
-        # im using head atoms!!! I should be using abduced atoms.
+    def getAtoms(self):
         head_atoms = [mh.atom for mh in self.MH]
         body_atoms = [mb.atom for mb in self.MB if mb.negation == False]
         negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
+        return [head_atoms, body_atoms, matches]
+    
+    def constructLevels(self, clause_components):
+        head_atoms = clause_components[0]
+        body_atoms = clause_components[1]
+        matches = clause_components[2]
         d = 1
         levels = []
         priorityTerms, allTerms = set([]), set([])
@@ -92,14 +97,20 @@ class Deduction:
             levels.append(currentLevel)
 
             d += 1
-
-
         results = []
+        return levels
+    
+    def constructClauses(self, levels):
         top = len(levels) - 1
-            
         clauses = []
         for choice in levels[top]:
             chain = self.findNext(choice[3], levels, top-1)
             chain.append(choice[0])
             clauses.append(Clause(chain[0], [Literal(Atom(atom.predicate[4:], atom.terms), True) if atom.predicate[:4] == "not_" else Literal(atom, False) for atom in chain[1:]]))
+        return clauses
+
+    def runPhase(self):
+        clause_components = self.getAtoms()
+        levels = self.constructLevels(clause_components)
+        clauses = self.constructClauses(levels)
         self.model.setKernel(clauses)

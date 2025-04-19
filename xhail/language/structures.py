@@ -48,7 +48,7 @@ class Modeh:
         self.n = n
         self.weight = 1
         self.priority = 1
-        self.min = 0
+        self.min = 1
         self.max = 1000000
 
     def setWeight(self, weight):
@@ -92,9 +92,7 @@ class Modeh:
     
     def createProgram(self):
         new_atom = copy.deepcopy(self.atom)
-        print("before", new_atom)
         generalised_atom, n = self.generalise(new_atom)
-        print("hi", generalised_atom)
         types = ', '.join(generalised_atom.getTypes())
         variables = ', '.join([f"V{i}" for i in range(1, n)])
 

@@ -140,8 +140,6 @@ class Clause:
             if isinstance(term, Normal):
                 if term.type != 'constant':
                     unique.add(term.value)
-                else:
-                    print(term, term.type)
             elif isinstance(term, Atom):
                 if term.type == 'constant':
                     continue

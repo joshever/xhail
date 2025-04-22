@@ -1,36 +1,21 @@
+import argparse
 from xhail.reasoning.abduction import Abduction
 from xhail.reasoning.deduction import Deduction
 from xhail.reasoning.induction import Induction
 from xhail.reasoning.model import Model
 from xhail.parser.parser import Parser
 
-if __name__ == '__main__':
+def main(args):
     # ---------- read input ---------- #
-    DEPTH = 3
-    INPUT_FILENAME = 'tests/out_bug.lp'#'example1.lp'#'tests/deduction.lp'#'test.lp'#
+    DEPTH = args.depth
+    INPUT_FILENAME = args.fname
 
     # ---------- parse data ---------- #
     parser = Parser()
     parser.loadFile(INPUT_FILENAME)
     parser.parseProgram()
-    EX, MH, MB, BG = parser.separate()
+    EX, MH, MB, BG = parser.separate()    
 
-    # # print my program
-    # for ex in EX:
-    #     print(str(ex))
-
-    # for mh in MH:
-    #     print(str(mh))
-
-    # for mb in MB:
-    #     print(str(mb))
-    
-    # for bg in BG:
-    #     print(str(bg))
-    
-    
-
-    # create empty context Model
     model = Model(EX, MH, MB, BG, DEPTH)
     # IF HYPOTHESIS == [] -> REPEAT UNTIL MODEH MIN == MODEH MAX OR ABDUCTION UNSATISFIED.
     
@@ -43,3 +28,12 @@ if __name__ == '__main__':
     print("deltas:", [str(d) for d in model.getDelta()])
     print("kernel:", [str(k) for k in model.getKernel()])
     print("hypothesis:", [str(h) for h in model.getHypothesis()])
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="PyXHAIL input parameters.")
+    parser.add_argument('--depth', type=int, default=3, help='Depth of hypothesis clauses')
+    parser.add_argument('--verbose', type=bool, default=True, help='Save Clingo programs')
+    parser.add_argument('--fname', type=str, default='tests/test.lp', help='Input program filename')
+    args = parser.parse_args()
+    main(args)

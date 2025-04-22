@@ -1,6 +1,5 @@
 import clingo
 from xhail.parser.parser import Parser
-from xhail.language.terms import isSubsumed
 
 class Interface:
     best_model = None

@@ -11,19 +11,29 @@ class Deduction:
         self.DEPTH = context.DEPTH
         self.context = context
 
-    # ----- get marker terms given specific marker (+/-) ----- #
-    def getMarkerTerms(self, atom, mode, marker):
+    # ---------- FILTER TERMS AND ATOMS ---------- #
+    def filterTerms(self, atom, mode, marker):
         n = set()
         for term1, term2 in zip(atom.terms, mode.terms):
             if isinstance(term2, Atom):
-                n.update(self.getMarkerTerms(term1, term2, marker))
+                n.update(self.filterTerms(term1, term2, marker))
             elif isinstance(term2, PlaceMarker) and term2.marker == marker:
                 n.add(term1.value)
             else:
                 continue
         return n
     
-    def extractTerms(self, schemas, facts, priorityTerms, allTerms, previous, mode):
+    def filterAtoms(self):
+        head_atoms = [mh.atom for mh in self.MH]
+        body_atoms = [mb.atom for mb in self.MB if mb.negation == False]
+        negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]
+        body_atoms += negated_bodies
+        conditions = head_atoms + body_atoms
+        matches = self.context.loadMatches(self.context.current_id, conditions)
+        return [head_atoms, body_atoms, matches]
+    
+    # ---------- BUILD LEVELS AND CLAUSES ---------- #
+    def buildLevel(self, schemas, facts, priorityTerms, allTerms, previous, mode):
         level = []
         for schema in schemas:
             for fact in facts:
@@ -33,17 +43,17 @@ class Deduction:
                     res, fact = self.context.isSubsumed(self.context.current_id, fact, schema)
                     if res:
                         if mode == 'head':
-                            factPriorityTerms = self.getMarkerTerms(fact, schema, '+')
+                            factPriorityTerms = self.filterTerms(fact, schema, '+')
                             factAllTerms = factPriorityTerms
                         elif mode == 'body':
                             # check if positive terms fulfilled.
-                            factPositiveTerms = self.getMarkerTerms(fact, schema, '+')
+                            factPositiveTerms = self.filterTerms(fact, schema, '+')
                             # if positive terms in priorty or backup...
                             if factPositiveTerms.issubset(factAllTerms):
                                 factPriorityTerms.difference(factPositiveTerms)
                                 factPositiveTerms.difference(factPriorityTerms)
                                 factPositiveTerms.difference(factAllTerms)
-                                factPriorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
+                                factPriorityTerms.update(self.filterTerms(fact, schema, '-'))
                                 factAllTerms.update(factPriorityTerms)
                             else:
                                 continue         
@@ -51,42 +61,22 @@ class Deduction:
                             continue
                         level.append([fact, factPriorityTerms, factAllTerms, previous])
         return level
-
-    def findNext(self, atomToFind, levels, idl):
-        if atomToFind == None:
-            return []
-        else:
-            for idc, choice in enumerate(levels[idl]):
-                if str(choice[0]) == str(atomToFind):
-                    chain = self.findNext(choice[3], levels, idl-1)
-                    chain.append(choice[0])
-                    return chain
-        return ["Mistake!"]
     
-    def getAtoms(self):
-        head_atoms = [mh.atom for mh in self.MH]
-        body_atoms = [mb.atom for mb in self.MB if mb.negation == False]
-        negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]
-        body_atoms += negated_bodies
-        conditions = head_atoms + body_atoms
-        matches = self.context.loadMatches(self.context.current_id, conditions)
-        return [head_atoms, body_atoms, matches]
-    
-    def constructLevels(self, clause_components):
+    def buildLevels(self, clause_components):
         head_atoms = clause_components[0]
         body_atoms = clause_components[1]
         matches = clause_components[2]
         d = 1
         levels = []
         priorityTerms, allTerms = set([]), set([])
-        levels.append(self.extractTerms(head_atoms, matches, priorityTerms, allTerms, None, 'head'))
+        levels.append(self.buildLevel(head_atoms, matches, priorityTerms, allTerms, None, 'head'))
         while d <= self.DEPTH:
             currentLevel = []
             for prevMatch in levels[d-1]:
                 if prevMatch[1] == None:
                     continue
                 else:
-                    results = self.extractTerms(body_atoms, matches, prevMatch[1], prevMatch[2], prevMatch[0], 'body')
+                    results = self.buildLevel(body_atoms, matches, prevMatch[1], prevMatch[2], prevMatch[0], 'body')
                     if results == None:
                         continue
                     for result in results:
@@ -99,18 +89,30 @@ class Deduction:
             d += 1
         results = []
         return levels
+
+    def buildClause(self, atomToFind, levels, idl):
+        if atomToFind == None:
+            return []
+        else:
+            for idc, choice in enumerate(levels[idl]):
+                if str(choice[0]) == str(atomToFind):
+                    chain = self.buildClause(choice[3], levels, idl-1)
+                    chain.append(choice[0])
+                    return chain
+        return ["Mistake!"]
     
-    def constructClauses(self, levels):
+    def buildClauses(self, levels):
         top = len(levels) - 1
         clauses = []
         for choice in levels[top]:
-            chain = self.findNext(choice[3], levels, top-1)
+            chain = self.buildClause(choice[3], levels, top-1)
             chain.append(choice[0])
             clauses.append(Clause(chain[0], [Literal(Atom(atom.predicate[4:], atom.terms), True) if atom.predicate[:4] == "not_" else Literal(atom, False) for atom in chain[1:]]))
         return clauses
 
-    def runPhase(self):
-        clause_components = self.getAtoms()
-        levels = self.constructLevels(clause_components)
-        clauses = self.constructClauses(levels)
+    # ---------- RUN ---------- #
+    def run(self):
+        clause_components = self.filterAtoms()
+        levels = self.buildLevels(clause_components)
+        clauses = self.buildClauses(levels)
         self.context.setKernel(clauses)

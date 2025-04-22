@@ -11,6 +11,7 @@ class Abduction:
         self.BG = context.BG
         self.context = context
 
+    # ---------- INCREASE ABDUCIBLES COUNT ---------- #
     def incrementMax(self):
         valid = False
         for mh in self.MH:
@@ -19,7 +20,7 @@ class Abduction:
                 valid = True
         return valid
 
-    # ----- methods for constructing program ----- #
+    # ---------- LOAD METHODS ---------- #
     def loadExamples(self, examples):
         examplesProgram = '%EXAMPLES%\n'
         for example in examples:
@@ -47,8 +48,8 @@ class Abduction:
         backgroundProgram = '%ORIGINAL BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
         return backgroundProgram + '\n'
 
-    # ----- run the abductive phase ----- #
-    def runPhase(self):
+    # ---------- RUN ---------- #
+    def run(self):
         program = ""
 
         program += self.loadBackground(self.BG)
@@ -58,6 +59,5 @@ class Abduction:
 
         abd_id = self.context.addInterface(program) # 5 second timeout
         self.context.current_id = abd_id
-        #self.context.getInterfaceResult(abd_id)
         self.context.writeInterfaceProgram(abd_id, "xhail/output/abduction.lp")
         self.context.loadDelta(abd_id)

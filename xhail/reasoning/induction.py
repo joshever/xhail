@@ -12,6 +12,8 @@ class Induction:
         self.BG = context.BG
         self.EX = context.EX
 
+    # ---------- LOAD METHODS ---------- #
+
     def loadExamples(self, examples):
         examplesProgram = '%EXAMPLES%\n'
         for example in examples:
@@ -22,7 +24,6 @@ class Induction:
         backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
         return backgroundProgram + '\n'
 
-    # ----- Generate and Load Choice statements ----- #
     def loadChoice(self, clauses):
         program = "\n"
         program += "1 { use(V1, 0) } :- clause(V1).\n"
@@ -35,7 +36,6 @@ class Induction:
                 program += f"literal({idc}, {idl}).\n"
         return program
     
-    # ----- Generate and Load Clause Level statements ----- #
     def loadClauseLevels(self, clauses):
         program = "\n"
         if self.context.DEPTH != 0 and sum((1 if clause.body != [] else 0) for clause in clauses) > 0:
@@ -48,7 +48,6 @@ class Induction:
                     program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
         return program
     
-    # ----- Generate and Load Minimize statements ----- #
     def loadMinimize(self, clauses):
         program = "\n"
         for idc, clause in enumerate(clauses):
@@ -56,7 +55,6 @@ class Induction:
                 program += "#minimize{ 1@2 : "+f"use({idc},{idl})"+" }.\n"
         return program
     
-    # ----- Generate and Load Use/Try statements ----- #
     def loadUseTry(self, clauses):
         program = "\n"
 
@@ -74,17 +72,27 @@ class Induction:
             program += str(clause.head) + " :- " + f"use({idc}, 0)" + (', ' if clause.head.getArity() != 0 else '')
             if try_heads[idc] != []:
                 program += ', '.join(try_head for try_head in try_heads[idc]) + ', '
-            program += ', '.join(self.uniqueObjects(clause.getTypes())) + '.\n'
+            program += ', '.join(self.removeDuplicates(clause.getTypes())) + '.\n'
 
         return program
+    
+    def loadProgram(self, clauses):
+        program = f'#show use/2.\n'
+        program += self.loadBackground(self.BG)
+        program += self.loadExamples(self.EX)
+        program += self.loadChoice(clauses)
+        program += self.loadMinimize(clauses)
+        program += self.loadUseTry(clauses)
+        program += self.loadClauseLevels(clauses)
+        return program
 
-    # ----- Assign Types for Atom ----- #
-    def updateAtomTypes(self, atom, mode): # modeb / modeh terms
+    # ---------- ASSIGN TYPES ---------- #
+    def assignAtomTypes(self, atom, mode): # modeb / modeh terms
         if atom.predicate != mode.predicate:
             return (False, None)
         for term1, term2 in zip(atom.terms, mode.terms):
             if isinstance(term2, Atom):
-               res = self.updateAtomTypes(term1, term2)
+               res = self.assignAtomTypes(term1, term2)
                if res[0] == False:
                    return (False, None)
                else:
@@ -99,55 +107,33 @@ class Induction:
         return (True, atom)
     
     # ----- Assing Types for Clause ----- #
-    def updateClauseTypes(self, clauses):
+    def assignClauseTypes(self, clauses):
         new_clauses = []
         for clause in clauses:
             new_head = None
             new_body = []
             for modeh in self.MH:
-                valid, head = self.updateAtomTypes(clause.head, modeh.atom)
+                valid, head = self.assignAtomTypes(clause.head, modeh.atom)
                 if valid == True:
                     new_head = head
                     break
             for literal in clause.body:
                 for modeb in self.MB:
-                    valid, new_literal = self.updateAtomTypes(literal.atom, modeb.atom)
+                    valid, new_literal = self.assignAtomTypes(literal.atom, modeb.atom)
                     if valid == True:
                         new_body.append(Literal(new_literal, literal.negation))
                         break
             new_clauses.append(Clause(new_head, new_body))
         return new_clauses
     
-    # ----- Remove Duplicates ----- #
-    def uniqueObjects(self, objects):
-        result = []
-        visited = set()
-        for object in objects:
-            objectStr = str(object)
-            if objectStr not in visited:
-                visited.add(objectStr)
-                result.append(object)
-        return result
-    
-    def prepareClauses(self):
-        # ----- Prepare Clauses ----- #
+    # ---------- CLAUSE OPERATIONS ---------- #
+    def revampClauses(self):
         clauses = [clause.generalise() for clause in self.context.getKernel()]
-        clauses = self.updateClauseTypes(clauses)
-        clauses = self.uniqueObjects(clauses)
+        clauses = self.assignClauseTypes(clauses)
+        clauses = self.removeDuplicates(clauses)
         return clauses
-
-    def loadProgram(self, clauses):
-        program = f'#show use/2.\n'
-        program += self.loadBackground(self.BG)
-        program += self.loadExamples(self.EX)
-        program += self.loadChoice(clauses)
-        program += self.loadMinimize(clauses)
-        program += self.loadUseTry(clauses)
-        program += self.loadClauseLevels(clauses)
-        return program
     
-    def getIncludedClauses(self, clauses):
-        # ----- Update Model ----- #
+    def filterClauses(self, clauses):
         self.context.getInterfaceResult(self.context.current_id)
         self.context.writeInterfaceProgram(self.context.current_id, "xhail/output/induction.lp")
 
@@ -171,22 +157,32 @@ class Induction:
                     new_body = []
                     for literal in selectors[key]:
                         new_body.append(clauses[key].body[literal-1])
-                    new_body = self.uniqueObjects(new_body)
+                    new_body = self.removeDuplicates(new_body)
                     new_clause = Clause(new_head, new_body)
                     included_clauses.append(new_clause)
         else:
             print("no solutions")
             return
         return included_clauses
+    
+    def removeDuplicates(self, objects):
+        result = []
+        visited = set()
+        for object in objects:
+            objectStr = str(object)
+            if objectStr not in visited:
+                visited.add(objectStr)
+                result.append(object)
+        return result
 
-
-    def runPhase(self):
-        clauses = self.prepareClauses()
+    # ---------- RUN ---------- #
+    def run(self):
+        clauses = self.revampClauses()
         program = self.loadProgram(clauses)
 
         ind_id = self.context.addInterface(program) # 5 second timeout
         self.context.current_id = ind_id
 
-        included_clauses = self.getIncludedClauses(clauses)
-        final_clauses = self.uniqueObjects(included_clauses)
+        included_clauses = self.filterClauses(clauses)
+        final_clauses = self.removeDuplicates(included_clauses)
         self.context.setHypothesis(final_clauses)

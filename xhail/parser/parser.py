@@ -278,7 +278,6 @@ def p_terms(p):
     '''
     if len(p) == 2 and not isinstance(p[1], Atom):
         n = Normal(p[1])
-        n.setType('constant')
         p[0] = [n]
     elif len(p) == 2:
         p[0] = [p[1]]

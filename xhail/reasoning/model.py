@@ -57,7 +57,7 @@ class Model:
     def clearProgram(self):
         self.program = ""
 
-    def isSubsumed(self, atom, mode): # 
+    def isSubsumed(self, atom, mode):
         if atom.predicate != mode.predicate:
             return (False, None)
         for term1, term2 in zip(atom.terms, mode.terms):
@@ -70,6 +70,7 @@ class Model:
                     return (False, None)
                 else:
                     if term2.type == 'constant':
+                        print(term1, term2)
                         term1.type = 'constant'
                         continue
             elif isinstance(term2, PlaceMarker) and isinstance(term1, Atom):

@@ -48,7 +48,7 @@ class Modeh:
         self.n = n
         self.weight = 1
         self.priority = 1
-        self.min = 1
+        self.min = 0
         self.max = 1000000
 
     def setWeight(self, weight):

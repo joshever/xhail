@@ -183,8 +183,7 @@ class Induction:
     def runPhase(self):
         clauses = self.prepareClauses()
         program = self.loadProgram(clauses)
-        print(program)
         included_clauses = self.getIncludedClauses(program, clauses)
-        print(included_clauses)
+        #print(included_clauses)
         final_clauses = self.uniqueObjects(included_clauses)
         self.model.setHypothesis(final_clauses)

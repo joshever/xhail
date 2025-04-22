@@ -5,11 +5,11 @@ from ..language.terms import Atom, Clause, Literal, PlaceMarker
 # -------------------------------------- #
 
 class Deduction:
-    def __init__(self, model):
-        self.MH = model.MH
-        self.MB = model.MB
-        self.DEPTH = model.DEPTH
-        self.model = model
+    def __init__(self, context):
+        self.MH = context.MH
+        self.MB = context.MB
+        self.DEPTH = context.DEPTH
+        self.context = context
 
     # ----- get marker terms given specific marker (+/-) ----- #
     def getMarkerTerms(self, atom, mode, marker):
@@ -30,7 +30,7 @@ class Deduction:
                 factPriorityTerms = priorityTerms.copy()
                 factAllTerms = allTerms.copy()
                 if str(fact) != str(previous):
-                    res, fact = self.model.isSubsumed(fact, schema)
+                    res, fact = self.context.isSubsumed(self.context.current_id, fact, schema)
                     if res:
                         if mode == 'head':
                             factPriorityTerms = self.getMarkerTerms(fact, schema, '+')
@@ -69,7 +69,7 @@ class Deduction:
         negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
-        matches = self.model.getMatches(conditions)
+        matches = self.context.loadMatches(self.context.current_id, conditions)
         return [head_atoms, body_atoms, matches]
     
     def constructLevels(self, clause_components):
@@ -113,4 +113,4 @@ class Deduction:
         clause_components = self.getAtoms()
         levels = self.constructLevels(clause_components)
         clauses = self.constructClauses(levels)
-        self.model.setKernel(clauses)
+        self.context.setKernel(clauses)

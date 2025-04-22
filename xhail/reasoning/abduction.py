@@ -3,13 +3,13 @@
 # -------------------------------------- #
 
 class Abduction:
-    # ----- examples, modehs, background, model required ------ #
-    def __init__(self, model):
-        self.EX = model.EX
-        self.MH = model.MH
-        self.MB = model.MB
-        self.BG = model.BG
-        self.model = model
+    # ----- examples, modehs, background, context required ------ #
+    def __init__(self, context):
+        self.EX = context.EX
+        self.MH = context.MH
+        self.MB = context.MB
+        self.BG = context.BG
+        self.context = context
 
     def incrementMax(self):
         valid = False
@@ -56,7 +56,8 @@ class Abduction:
         program += self.loadExamples(self.EX)
         program += self.loadAbducibles(self.MH)
 
-        self.model.setProgram(program)
-        self.model.getBestModel()
-        self.model.writeProgram("xhail/output/abduction.lp")
-        self.model.setDelta()
+        abd_id = self.context.addInterface(program) # 5 second timeout
+        self.context.current_id = abd_id
+        #self.context.getInterfaceResult(abd_id)
+        self.context.writeInterfaceProgram(abd_id, "xhail/output/abduction.lp")
+        self.context.loadDelta(abd_id)

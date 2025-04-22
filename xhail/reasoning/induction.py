@@ -5,12 +5,12 @@ from xhail.language.terms import Atom, Clause, Literal, Normal, PlaceMarker
 # -------------------------------------- #
 
 class Induction:
-    def __init__(self, model):
-        self.model = model
-        self.MH = model.MH
-        self.MB = model.MB
-        self.BG = model.BG
-        self.EX = model.EX
+    def __init__(self, context):
+        self.context = context
+        self.MH = context.MH
+        self.MB = context.MB
+        self.BG = context.BG
+        self.EX = context.EX
 
     def loadExamples(self, examples):
         examplesProgram = '%EXAMPLES%\n'
@@ -26,7 +26,7 @@ class Induction:
     def loadChoice(self, clauses):
         program = "\n"
         program += "1 { use(V1, 0) } :- clause(V1).\n"
-        if self.model.DEPTH != 0 and sum((1 if clause.body != [] else 0) for clause in clauses) > 0:
+        if self.context.DEPTH != 0 and sum((1 if clause.body != [] else 0) for clause in clauses) > 0:
             program += "{ use(V1, V2) } :- clause(V1), literal(V1, V2).\n"
 
         for idc, clause in enumerate(clauses):
@@ -38,7 +38,7 @@ class Induction:
     # ----- Generate and Load Clause Level statements ----- #
     def loadClauseLevels(self, clauses):
         program = "\n"
-        if self.model.DEPTH != 0 and sum((1 if clause.body != [] else 0) for clause in clauses) > 0:
+        if self.context.DEPTH != 0 and sum((1 if clause.body != [] else 0) for clause in clauses) > 0:
             program += ":- level(X, Y), not level(X, 0).\n"
             for idc, clause in enumerate(clauses):
                 # level 0 include not. all levels
@@ -131,7 +131,7 @@ class Induction:
     
     def prepareClauses(self):
         # ----- Prepare Clauses ----- #
-        clauses = [clause.generalise() for clause in self.model.getKernel()]
+        clauses = [clause.generalise() for clause in self.context.getKernel()]
         clauses = self.updateClauseTypes(clauses)
         clauses = self.uniqueObjects(clauses)
         return clauses
@@ -146,16 +146,16 @@ class Induction:
         program += self.loadClauseLevels(clauses)
         return program
     
-    def getIncludedClauses(self, program, clauses):
+    def getIncludedClauses(self, clauses):
         # ----- Update Model ----- #
-        self.model.setProgram(program)
-        self.model.writeProgram("xhail/output/induction.lp")
+        self.context.getInterfaceResult(self.context.current_id)
+        self.context.writeInterfaceProgram(self.context.current_id, "xhail/output/induction.lp")
 
         selectors = {}
-        best_model = self.model.getBestModel()
-        if str(best_model) != '[]':
+        best_context = self.context.getInterfaceResult(self.context.current_id)
+        if str(best_context) != '[]':
             selectors = {}
-            facts = self.model.parseModel(best_model)
+            facts = self.context.interfaces[self.context.current_id].parseModel(best_context)
             for fact in facts:
                 terms = fact.head.terms
                 if int(terms[0].value) in selectors.keys():
@@ -183,7 +183,10 @@ class Induction:
     def runPhase(self):
         clauses = self.prepareClauses()
         program = self.loadProgram(clauses)
-        included_clauses = self.getIncludedClauses(program, clauses)
-        #print(included_clauses)
+
+        ind_id = self.context.addInterface(program) # 5 second timeout
+        self.context.current_id = ind_id
+
+        included_clauses = self.getIncludedClauses(clauses)
         final_clauses = self.uniqueObjects(included_clauses)
-        self.model.setHypothesis(final_clauses)
+        self.context.setHypothesis(final_clauses)

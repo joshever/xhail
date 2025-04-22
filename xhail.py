@@ -1,14 +1,15 @@
 import argparse
+from xhail.state.context import Context
 from xhail.reasoning.abduction import Abduction
 from xhail.reasoning.deduction import Deduction
 from xhail.reasoning.induction import Induction
-from xhail.reasoning.model import Model
 from xhail.parser.parser import Parser
 
 def main(args):
     # ---------- read input ---------- #
     DEPTH = args.depth
     INPUT_FILENAME = args.fname
+    TIMEOUT = args.timeout
 
     # ---------- parse data ---------- #
     parser = Parser()
@@ -16,24 +17,26 @@ def main(args):
     parser.parseProgram()
     EX, MH, MB, BG = parser.separate()    
 
-    model = Model(EX, MH, MB, BG, DEPTH)
-    # IF HYPOTHESIS == [] -> REPEAT UNTIL MODEH MIN == MODEH MAX OR ABDUCTION UNSATISFIED.
+    context = Context(EX, MH, MB, BG, DEPTH, TIMEOUT)
     
-    abduction, deduction, induction = Abduction(model), Deduction(model), Induction(model)
-    
-    abduction.runPhase()
-    deduction.runPhase()
-    induction.runPhase()
-    
-    print("deltas:", [str(d) for d in model.getDelta()])
-    print("kernel:", [str(k) for k in model.getKernel()])
-    print("hypothesis:", [str(h) for h in model.getHypothesis()])
+    phases = [Abduction(context), Deduction(context), Induction(context)]
 
+    while context.getState() == 'solving':
+        for phase in phases:
+            phase.runPhase()
+    
+    if context.state == 'complete':
+        print("deltas:", [str(d) for d in context.getDelta()])
+        print("kernel:", [str(k) for k in context.getKernel()])
+        print("hypothesis:", [str(h) for h in context.getHypothesis()])
+    else:
+        print("UNSATISFIABLE")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="PyXHAIL input parameters.")
     parser.add_argument('--depth', type=int, default=3, help='Depth of hypothesis clauses')
     parser.add_argument('--verbose', type=bool, default=True, help='Save Clingo programs')
     parser.add_argument('--fname', type=str, default='tests/test.lp', help='Input program filename')
+    parser.add_argument('--timeout', type=int, default=10, help='Clingo Solver Timeout')
     args = parser.parse_args()
     main(args)

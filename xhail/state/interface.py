@@ -33,6 +33,8 @@ class Interface:
     
     def parseModel(self, model):
         strModel = ""
+        if model == None:
+            return []
         for m in model:
             strModel += str(m) + '.\n'
         simpleParser = Parser()

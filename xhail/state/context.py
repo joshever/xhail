@@ -59,12 +59,14 @@ class Context:
 
     # ---------- SETTERS ---------- #
     def setKernel(self, kernel):
-        if kernel != []:
-            self.state = 'complete'
         self.kernel = kernel
     
     def setHypothesis(self, hypothesis):
         self.hypothesis = hypothesis
+        if self.hypothesis == []:
+            self.state = 'UNSATISFIABLE'
+        else:
+            self.state = 'COMPLETE'
 
     def setState(self, state):
         self.state = state
@@ -83,11 +85,10 @@ class Context:
                     return (False, None)
                 else:
                     if term2.type == 'constant':
-                        print(term1, term2)
                         term1.type = 'constant'
                         continue
             elif isinstance(term2, PlaceMarker) and isinstance(term1, Atom):
-                if self.getMatches([Atom(term2.type, [term1])]) == []:
+                if self.loadMatches(id, [Atom(term2.type, [term1])]) == []:
                     return (False, None)
                 elif term2.marker == '$':
                       term1.type = 'constant'

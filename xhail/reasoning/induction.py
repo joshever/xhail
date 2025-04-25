@@ -134,9 +134,6 @@ class Induction:
         return clauses
     
     def filterClauses(self, clauses):
-        self.context.getInterfaceResult(self.context.current_id)
-        self.context.writeInterfaceProgram(self.context.current_id, "xhail/output/induction.lp")
-
         selectors = {}
         best_context = self.context.getInterfaceResult(self.context.current_id)
         if str(best_context) != '[]':
@@ -163,7 +160,7 @@ class Induction:
         else:
             print("no solutions")
             return
-        return included_clauses
+        return self.removeDuplicates(included_clauses)
     
     def removeDuplicates(self, objects):
         result = []
@@ -174,15 +171,17 @@ class Induction:
                 visited.add(objectStr)
                 result.append(object)
         return result
+    
+    def callInterface(self, program):
+        ind_id = self.context.addInterface(program) # 5 second timeout
+        self.context.current_id = ind_id
+        self.context.getInterfaceResult(self.context.current_id)
+        self.context.writeInterfaceProgram(self.context.current_id, "xhail/output/induction.lp")
 
     # ---------- RUN ---------- #
     def run(self):
         clauses = self.revampClauses()
         program = self.loadProgram(clauses)
-
-        ind_id = self.context.addInterface(program) # 5 second timeout
-        self.context.current_id = ind_id
-
-        included_clauses = self.filterClauses(clauses)
-        final_clauses = self.removeDuplicates(included_clauses)
+        self.callInterface(program)
+        final_clauses = self.filterClauses(clauses)
         self.context.setHypothesis(final_clauses)

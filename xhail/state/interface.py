@@ -4,6 +4,7 @@ from xhail.parser.parser import Parser
 class Interface:
     best_model = None
     program = ""
+    models = []
 
     def __init__(self, id, program, timeout):
         self.id = id
@@ -26,9 +27,11 @@ class Interface:
         control.solve(on_model=on_model)
         if clingo_models == []:
             return '[]'
-        best_model = min(clingo_models, key=lambda m: [int(c) for c in m[1]])
-        self.best_model = best_model[0]
-        return best_model[0]
+        min_score = min(s for _, s in clingo_models)
+        min_models = [m for m, s in clingo_models if s == min_score]
+        self.best_model = 0
+        self.models = min_models
+        return self.models[0]
     
     def parseModel(self, model):
         strModel = ""
@@ -48,7 +51,14 @@ class Interface:
     
     # ---------- GETTERS ---------- #
     def getBestModel(self):
-        return self.best_model
+        return self.models[self.best_model] if self.best_model != None else None
+    
+    def getNextModel(self):
+        if self.best_model + 1 < len(self.models):
+            self.best_model += 1
+            return self.models[self.best_model]
+        else:
+            return None
     
     def getProgram(self):
         return self.program

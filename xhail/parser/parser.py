@@ -13,7 +13,6 @@ tokens = (
     'MODEB_KEY',
     'MODEH_KEY',
     'PREDICATE',
-    #'term',
     'UPPER',
     'LOWER',
     'NUMBER',
@@ -47,7 +46,7 @@ t_IMPLIES = r':-'
 t_DOT = r'\.'
 t_MARKER = r'\+|\-|\$'
 t_OPERATOR = r'(==|!=|<=|>=|<|>)'
-t_MIN = r'\~'
+t_MIN = r'~'
 t_MAX = r':'
 t_WEIGHT = r'='
 t_PRIORITY = r'@'

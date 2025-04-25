@@ -1,13 +1,15 @@
-#example p(1).
+p(X) :- q(X, 1), q(X, 2).
 
-q(1,a ;; 2,b ;; 3,c).
+p(X) :- r(X).
 
-number(1..3).
+s(a). s(b). s2(b).
 
-letter(a;b;c).
+t(1). t(2).
 
-#modeh p(+number).
+#modeh r(+s).
 
-#modeb q(+number,-letter).
+#modeh q(+s2, +t) @0.
 
-#modeb not q(+number,-letter).
+#example not p(a)=50.
+
+#example p(b)=100 .

@@ -1,7 +1,18 @@
-#example q.
+#example p(1).
+q(1,a).
+q(2,b).
+q(3,c).
 
-q:-p(a,1,1,1,1).
+number(1).
+number(2).
+number(3).
 
-int(0..1).
+letter(a).
+letter(b).
+letter(c).
 
-#modeh p(a,$int,+int,-int,-int).
+#modeh p(+number).
+
+#modeb q(+number,-letter).
+
+#modeb not q(+number,-letter).

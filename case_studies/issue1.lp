@@ -5,4 +5,4 @@ q:-p(a,1,1,1,1).
 int(0).
 int(1).
 
-#modeh p(a,$int,+int,-int,-int).
+#modeh p(a,1,$int,+int,-int).

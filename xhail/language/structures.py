@@ -97,7 +97,7 @@ class Modeh:
         variables = ', '.join([f"V{i}" for i in range(1, n)])
 
         program = []
-        program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + f'{(':' + types) if self.atom.arity != 0 else ''} ' + '} ' + str(self.max) + '.')
+        program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + f'{(':' + types) if self.atom.arity != 0 else ''} ' + '} ' + str(self.min) + '.')
         program.append('#minimize{' + f'{str(self.getWeight())}@{str(self.getPriority())}{(',' + variables) if self.atom.arity != 0 else ''}: abduced_{generalised_atom}' + f'{(',' + types) if self.atom.arity != 0 else ''}' + '}.')
         program.append(f'{generalised_atom} :- abduced_{generalised_atom}{(',' + types) if self.atom.arity != 0 else ''}.')
         return '\n'.join(program)

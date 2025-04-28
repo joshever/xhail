@@ -6,32 +6,40 @@ class Context:
     kernel = []
     hypothesis = []
     interfaces = []
-    current_id = 0
+    abd_id = 0
+    ind_id = 1
     state = 'solving'
 
-    def __init__(self, EX, MH, MB, BG, DEPTH, TIMEOUT):
+    v = False
+    e = False
+    t = 10
+    c = 10
+
+    def __init__(self, EX, MH, MB, BG, DEPTH):
         self.EX = EX
         self.MH = MH
         self.MB = MB
         self.BG = BG
         self.DEPTH = DEPTH
-        self.TIMEOUT = TIMEOUT
 
     # ---------- METHODS ---------- #
     def loadDelta(self, id):
         self.delta = self.loadMatches(id, [mh.atom for mh in self.MH])
         return self.delta
     
-    def addInterface(self, program):
+    def addInterface(self, program, e, c, t):
         id = len(self.interfaces)
-        self.interfaces.append(Interface(id, program, self.TIMEOUT))
+        self.interfaces.append(Interface(id, program, e, c, t))
         return id
     
     def writeInterfaceProgram(self, id, destination):
         self.interfaces[id].writeProgram(destination)
 
     def loadMatches(self, id, atomConditions):
-        model = self.interfaces[id].getBestModel()
+        if not self.e:
+            model = self.interfaces[id].getBestModel()
+        else:
+            model = self.interfaces[id].getNextModel()
         facts = self.interfaces[id].parseModel(model)
         result = []
         for fact in facts:
@@ -40,6 +48,9 @@ class Context:
                 if res:
                     result.append(fact.head)
         return result
+    
+    def incrementModel(self):
+        return self.interfaces[self.abd_id].incrementModel()
 
     # ---------- GETTERS ---------- #
     def getDelta(self):
@@ -63,13 +74,17 @@ class Context:
     
     def setHypothesis(self, hypothesis):
         self.hypothesis = hypothesis
-        if self.hypothesis == []:
-            self.state = 'UNSATISFIABLE'
-        else:
-            self.state = 'COMPLETE'
 
     def setState(self, state):
         self.state = state
+
+    def setVerbose(self, val):
+        self.verbose = val
+
+    def setExpressivity(self, e, t, c):
+        self.e = e
+        self.t = t
+        self.c = c
     
     # ---------- SUBSUMPTION METHOD ---------- #
     def isSubsumed(self, id, atom, mode):

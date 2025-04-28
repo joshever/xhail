@@ -57,8 +57,6 @@ class Induction:
     
     def loadUseTry(self, clauses):
         program = "\n"
-
-        # logic
         try_heads = {}
         for idc, clause in enumerate(clauses):
             try_heads[idc] = []
@@ -173,7 +171,7 @@ class Induction:
         return result
     
     def callInterface(self, program):
-        ind_id = self.context.addInterface(program) # 5 second timeout
+        ind_id = self.context.addInterface(program, False, 0, 0) # 5 second timeout
         self.context.current_id = ind_id
         self.context.getInterfaceResult(self.context.current_id)
         self.context.writeInterfaceProgram(self.context.current_id, "xhail/output/induction.lp")

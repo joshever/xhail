@@ -7,6 +7,6 @@ bird(X) :- penguin(X).
 #example flies(b).
 #example not flies(c).
 
-#modeh flies(+bird).
+#modeh flies(+bird) :1 ~ 2.
 #modeb penguin(+bird).
 #modeb not penguin(+bird).

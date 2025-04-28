@@ -3,14 +3,43 @@ from xhail.parser.parser import Parser
 
 class Interface:
     best_model = None
+    enumerated_models = []
+    model_selector = -1
     program = ""
-    models = []
 
-    def __init__(self, id, program, timeout):
+    def __init__(self, id, program, isExpressive, timelimit, modellimit):
         self.id = id
         self.program = program
-        self.timeout = timeout
-        self.loadBestModel()
+        self.expressive = isExpressive
+        self.timelimit = timelimit
+        self.modellimit = modellimit
+        if isExpressive:
+            self.loadManyModels(timelimit, modellimit)
+        else:
+            self.loadBestModel()
+
+    def loadManyModels(self, timeLimit, countLimit):
+        results = {}
+        ctl = clingo.Control(["0", "--opt-mode=enum"])
+        ctl.add("base", [], self.program)
+        ctl.ground([("base", [])])
+        ctl.configuration.solve.time_limit = timeLimit
+        with ctl.solve(yield_=True) as handle:
+            for i, model in enumerate(handle):
+                if i >= countLimit:
+                    break
+                
+                atoms = model.symbols(shown=True)
+                atom_list = [str(atom) for atom in atoms]
+                score = model.cost[0] if model.cost else 0
+                if score not in results:
+                    results[score] = []
+                results[score].append(atom_list)
+
+        for score, models in sorted(results.items()):
+            for model in models:
+                self.enumerated_models.append(model)
+        self.model_selector = 0
 
     # ---------- METHODS ---------- #
     def loadBestModel(self):
@@ -29,9 +58,8 @@ class Interface:
             return '[]'
         min_score = min(s for _, s in clingo_models)
         min_models = [m for m, s in clingo_models if s == min_score]
-        self.best_model = 0
-        self.models = min_models
-        return self.models[0]
+        self.best_model = min_models[0]
+        return self.best_model
     
     def parseModel(self, model):
         strModel = ""
@@ -51,14 +79,20 @@ class Interface:
     
     # ---------- GETTERS ---------- #
     def getBestModel(self):
-        return self.models[self.best_model] if self.best_model != None else None
+        return self.best_model
     
     def getNextModel(self):
-        if self.best_model + 1 < len(self.models):
-            self.best_model += 1
-            return self.models[self.best_model]
+        if self.model_selector == -1 or self.model_selector >= len(self.enumerated_models):
+            return []
         else:
-            return None
+            return self.enumerated_models[self.model_selector]
+    
+    def incrementModel(self):
+        self.model_selector += 1
+        if self.model_selector >= len(self.enumerated_models):
+            return False
+        else:
+            return True
     
     def getProgram(self):
         return self.program

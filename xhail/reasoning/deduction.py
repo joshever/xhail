@@ -99,7 +99,7 @@ class Deduction:
                     chain = self.buildClause(choice[3], levels, idl-1)
                     chain.append(choice[0])
                     return chain
-        return ["Mistake!"]
+        return []
     
     def buildClauses(self, levels):
         top = len(levels) - 1

@@ -3,6 +3,7 @@
 # -------------------------------------- #
 
 class Abduction:
+    abd_id = -1
     # ----- examples, modehs, background, context required ------ #
     def __init__(self, context):
         self.EX = context.EX
@@ -61,37 +62,21 @@ class Abduction:
         return program
     
     def callInterface(self, program):
-        abd_id = self.context.addInterface(program) # 5 second timeout
+        abd_id = self.context.addInterface(program, self.context.e, self.context.t, self.context.c)
         self.context.current_id = abd_id
         self.context.writeInterfaceProgram(abd_id, "xhail/output/abduction.lp")
+        if self.context.v:
+            self.context.writeInterfaceProgram(abd_id, "abduction.lp")
         self.context.loadDelta(abd_id)
         self.abd_id = abd_id
         
 
     # ---------- RUN ---------- #
     def run(self):
-        #self.context.delta = []
-        #while self.context.delta == []:
-        #self.context.current_id = self.abd_id
-        program = self.loadProgram()
-        self.callInterface(program)
-            # else:
-            #     res = self.context.interfaces[self.abd_id].getNextModel()
-            #     # more models with this program?
-            #     if res != None:
-            #         self.context.loadDelta(self.abd_id)
-            #     # update program
-            #     else:
-            #         res = self.incrementMin()
-            #         # if no result. set to stop
-            #         if res == None:
-            #             self.context.setState('UNSATISFIABLE')
-            #         # update min.
-            #         else:
-            #             program = self.loadProgram()
-            #             self.context.interfaces[self.abd_id].setProgram(program)
-            #             self.context.interfaces[self.abd_id].loadBestModel()
-            #             self.context.writeInterfaceProgram(self.abd_id, "xhail/output/abduction.lp")
-            #             self.context.loadDelta(self.abd_id)
-        
-            
+        if self.context.e and self.abd_id != -1:
+            self.context.current_id = self.abd_id
+            if self.context.interfaces[self.abd_id].getNextModel():
+                self.context.loadDelta(self.abd_id)
+        else:
+            program = self.loadProgram()
+            self.callInterface(program)

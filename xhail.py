@@ -10,7 +10,18 @@ def main(args):
     # ---------- COMMAND LINE ARGUMENTS ---------- #
     DEPTH = args.depth
     INPUT_FILENAME = args.fname
+
+    isBackground = args.b
+    BACKGROUND = args.bname
+
+    isTimeout = args.t
     TIMEOUT = args.timeout
+
+    isExpressive = args.e
+    TIMELIMIT = args.timelimit
+    MODELLIMIT = args.modellimit
+
+    isVERBOSE = args.v
     
     # ---------- PARSER ---------- #
     parser = Parser()
@@ -18,13 +29,16 @@ def main(args):
     parser.parseProgram()
     EX, MH, MB, BG = parser.separate() 
 
-    if args.background == True:
-        BG_string = open(args.bname, 'r', encoding="utf-8").read()
+    if isBackground:
+        BG_string = open(BACKGROUND, 'r', encoding="utf-8").read()
         BG.append(str(BG_string))
 
     # ---------- CONTEXT AND PHASES ---------- #
-    context = Context(EX, MH, MB, BG, DEPTH, TIMEOUT)
-    phases = [Abduction(context), Deduction(context), Induction(context)]
+    context = Context(EX, MH, MB, BG, DEPTH)
+    context.setExpressivity(isExpressive, TIMELIMIT, MODELLIMIT)
+    context.setVerbose(isVERBOSE)
+    abduction, deduction, induction = Abduction(context), Deduction(context), Induction(context)
+    phases = [abduction, deduction, induction]
 
     # ---------- MAIN LOOP ---------- #
     start = time.time()
@@ -32,9 +46,20 @@ def main(args):
         for phase in phases:
             phase.run()
             current = time.time() - start
-            if current > TIMEOUT:
+            if isTimeout and current > TIMEOUT:
                 context.setState('TIMEOUT')
-        print([str(d) for d in context.getDelta()])
+        if context.hypothesis != []:
+            context.setState('COMPLETE')
+            continue
+        inc = context.incrementModel()
+        if not inc:
+            incMin = abduction.incrementMin()
+            if not incMin:
+                context.setState('UNSATISFIABLE')
+            else:
+                pass
+        else:
+            pass
     
     # ---------- DISPLAY RESULTS ---------- #
     print(context.getState())
@@ -47,10 +72,17 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="PyXHAIL input parameters.")
     parser.add_argument('--depth', type=int, default=2, help='Depth of hypothesis clauses')
-    parser.add_argument('--verbose', type=bool, default=True, help='Save Clingo programs')
     parser.add_argument('--fname', type=str, default='tests/test.lp', help='Input program filename')
-    parser.add_argument('--timeout', type=int, default=10, help='Clingo Solver Timeout')
-    parser.add_argument('--background', type=bool, default=False, help='Add additional Background program')
+    parser.add_argument('-v', action='store_true')
+
+    parser.add_argument('-e', action='store_true')
+    parser.add_argument('--timelimit', type=int, default=10, help='Clingo Solver Timeout')
+    parser.add_argument('--modellimit', type=int, default=10, help='Clingo Solver Model Limit')
+
+    parser.add_argument('-b', action='store_true')
     parser.add_argument('--bname', type=str, default='', help='Background program filename')
+
+    parser.add_argument('-t', action='store_true')
+    parser.add_argument('--timeout', type=int, default=1000, help='Number of Seconds before ending')
     args = parser.parse_args()
     main(args)

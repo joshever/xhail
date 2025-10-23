@@ -30,7 +30,10 @@ To utilize the XHail framework, you can create a logic program in a `.lp` file a
    bird(a).
    bird(b).
    penguin(c).
-   flies(X) :- bird(X), not penguin(X).
+   bird(X) :- penguin(X).
+
+   #modeh bird(+bird).
+   
    ```
 
 2. Run the `xhail.py` script to process the logic program:

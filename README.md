@@ -1,6 +1,6 @@
-# XHAIL: Python Implementation of eXtended Hybrid Abductive-Inductive Logic Programming
+# XHAIL: Python Implementation of eXtended Hybrid Abductive-Inductive Learning.
 
-**XHail** is a Python-based framework that implements a hybrid approach to logic programming, combining abductive, deductive, and inductive reasoning. It is designed to infer logical rules from background knowledge and examples, facilitating tasks such as knowledge discovery and machine learning.
+**XHAIL** is a Python-based framework that implements a hybrid approach to logic programming, combining abductive, deductive, and inductive reasoning. It is designed to infer logical rules from background knowledge and examples, facilitating tasks such as knowledge discovery and machine learning.
 
 ## 🔍 Overview
 

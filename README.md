@@ -27,13 +27,23 @@ To utilize the XHail framework, you can create a logic program in a `.lp` file a
 1. Create a file named `example.lp` with the following content:
 
    ```prolog
+   %% example.lp
+   %%%%%%%%%%%%%%
+   
+   bird(X) :- penguin(X).
    bird(a).
    bird(b).
-   penguin(c).
-   bird(X) :- penguin(X).
-
-   #modeh bird(+bird).
+   bird(c).
+   penguin(d).
    
+   #modeh flies(+bird).
+   #modeb penguin(+bird).
+   #modeb not penguin(+bird).
+   
+   #example flies(a).
+   #example flies(b).
+   #example flies(c).
+   #example not flies(d).
    ```
 
 2. Run the `xhail.py` script to process the logic program:
@@ -70,8 +80,6 @@ Contributions are welcome! To contribute:
 3. Commit your changes.
 4. Push to your fork.
 5. Submit a pull request detailing your changes.
-
-Please ensure that your code adheres to the existing style and includes appropriate tests.
 
 ## 📄 License
 

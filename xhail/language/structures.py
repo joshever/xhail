@@ -74,11 +74,20 @@ class Modeh:
     def createProgram(self):
         new_atom = copy.deepcopy(self.atom)
         generalised_atom, n = self.generalise(new_atom)
+
+        # 0-arity case: no type constraints or variables needed
+        if not generalised_atom.terms:
+            program = []
+            program.append(f'{self.min} ' + '{ abduced_' + str(generalised_atom) + ' } ' + f'{self.max}.')
+            program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)} : abduced_{generalised_atom}' + '}.')
+            program.append(f'{generalised_atom} :- abduced_{generalised_atom}.')
+            return '\n'.join(program)
+
         types = ', '.join(generalised_atom.getTypes())
         variables = ', '.join([f"V{i}" for i in range(1, n)])
 
         program = []
-        program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + ' : '+ types + ' } ' + str(self.max) + '.')
+        program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + ' : ' + types + ' } ' + str(self.max) + '.')
         program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}, {variables}: abduced_{generalised_atom}, {types}' + '}.')
         program.append(f'{generalised_atom} :- abduced_{generalised_atom}, {types}.')
         return '\n'.join(program)
@@ -138,12 +147,18 @@ class Modeb:
         if self.negation == True:
             new_atom = copy.deepcopy(self.atom)
             generalised_atom, _ = self.generalise(new_atom)
-            types = ', '.join(generalised_atom.getTypes())
-            program = f"{str(Atom(f"not_{generalised_atom.predicate}", generalised_atom.terms))} :- not {generalised_atom}, {types}."
+            not_pred = 'not_' + generalised_atom.predicate  # D1 fix: was a nested same-quote f-string (PEP 701)
+            not_atom = Atom(not_pred, generalised_atom.terms)
+            if not generalised_atom.terms:  # 0-arity case
+                program = f"{not_atom} :- not {generalised_atom}."
+            else:
+                types = ', '.join(generalised_atom.getTypes())
+                program = f"{not_atom} :- not {generalised_atom}, {types}."
         else:
             program = ""
 
         return program
     
     def __str__(self):
-        return f'#modeb {'not ' if self.negation == True else ''}{str(self.atom)}'
+        neg = 'not ' if self.negation else ''  # D1 fix: was a nested same-quote f-string (PEP 701)
+        return f'#modeb {neg}{self.atom}'

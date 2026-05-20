@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+# ---------------------------------------------------------------------------
+# Project metadata
+# ---------------------------------------------------------------------------
+[project]
+name = "xhail"
+version = "0.1.0"
+description = "XHAIL: eXtended Hybrid Abductive Inductive Learning — a symbolic ILP system built on Answer Set Programming"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+keywords = [
+    "inductive-logic-programming",
+    "answer-set-programming",
+    "symbolic-ai",
+    "machine-learning",
+    "ilp",
+    "asp",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "clingo>=5.6",
+    "ply>=3.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "mypy>=1.0",
+]
+
+[project.scripts]
+xhail = "xhail.cli:main"
+
+[project.urls]
+Repository = "https://github.com/everettmakes/xhail"
+"Bug Tracker" = "https://github.com/everettmakes/xhail/issues"
+
+# ---------------------------------------------------------------------------
+# Package discovery
+# ---------------------------------------------------------------------------
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["xhail", "xhail.*"]
+exclude = ["tests*", "play*"]
+
+# ---------------------------------------------------------------------------
+# Ruff (linting + formatting)
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    "E501",   # line too long — handled by formatter
+    "F841",   # local variable assigned but never used (PLY grammar actions)
+]
+
+# ---------------------------------------------------------------------------
+# mypy (type checking)
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_ignores = true
+# PLY uses a lot of dynamic magic — don't enforce strict checks on those files
+[[tool.mypy.overrides]]
+module = ["xhail.parser.*"]
+ignore_errors = true
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: end-to-end tests that call clingo (slower, require clingo installed)",
+]

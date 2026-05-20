@@ -10,6 +10,8 @@ class Atom(Term):
         self.predicate = predicate
     
     def __str__(self):
+        if not self.terms:
+            return self.predicate
         clause_terms = ','.join([str(x) for x in self.terms])
         return f'{self.predicate}({clause_terms})'
 
@@ -30,10 +32,9 @@ class Atom(Term):
 
 # ---------- normal term ---------- #
 class Normal(Term):
-    type = ''
-
     def __init__(self, value: str):
         self.value = value
+        self.type = ''  # instance attribute — was a class attribute (D10: shared mutable state)
 
     def __str__(self):
         return self.value
@@ -120,7 +121,7 @@ class Clause:
             if isinstance(term, Normal):
                 newAtom.terms.append(Normal(matching[term.value]))
             else:
-                newTerm = self.replaceConstants(self, term, matching)
+                newTerm = self.replaceConstants(term, matching)  # D8 fix: was passing self as first arg
                 newAtom.terms.append(newTerm)
         return newAtom
     
@@ -150,4 +151,5 @@ class Constraint(Clause):
         self.body = body
 
     def __str__(self):
-        return f':- {', '.join([str(literal) for literal in self.body])}.'
+        body_str = ', '.join(str(lit) for lit in self.body)  # D1 fix: was a nested same-quote f-string (PEP 701)
+        return f':- {body_str}.'

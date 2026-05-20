@@ -1,7 +1,20 @@
+import signal
+import platform
+
 from xhail.language.structures import Modeb, Modeh
 from ..language.terms import Atom, Clause, Literal, Normal, PlaceMarker
 
+
+class DeductionTimeoutError(RuntimeError):
+    """Raised when the deduction phase exceeds the configured time limit."""
+    pass
+
+
 class Deduction:
+    # D6: configurable timeout in seconds for the deduction phase.
+    # Uses SIGALRM (Unix/macOS only). Set to 0 to disable.
+    TIMEOUT = 60
+
     def __init__(self, model):
         self.MH = model.MH
         self.MB = model.MB
@@ -36,9 +49,11 @@ class Deduction:
                         factPositiveTerms = self.getMarkerTerms(fact, schema, '+')
                         # if positive terms in priorty or backup...
                         if factPositiveTerms.issubset(factAllTerms):
-                            factPriorityTerms.difference(factPositiveTerms)
-                            factPositiveTerms.difference(factPriorityTerms)
-                            factPositiveTerms.difference(factAllTerms)
+                            # D9 fix: .difference() returns a new set and was never assigned.
+                            # Changed to .difference_update() which mutates in place.
+                            factPriorityTerms.difference_update(factPositiveTerms)
+                            factPositiveTerms.difference_update(factPriorityTerms)
+                            factPositiveTerms.difference_update(factAllTerms)
                             factPriorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
                             factAllTerms.update(factPriorityTerms)
                         else:
@@ -65,6 +80,29 @@ class Deduction:
 
     
     def runPhase(self):
+        # D6 fix: deduction previously hung indefinitely on certain inputs.
+        # Wrap with a SIGALRM timeout on Unix/macOS; no-op on Windows.
+        use_timeout = (
+            self.TIMEOUT > 0
+            and platform.system() != 'Windows'
+            and hasattr(signal, 'SIGALRM')
+        )
+        if use_timeout:
+            def _handle_timeout(signum, frame):
+                raise DeductionTimeoutError(
+                    f"Deduction phase exceeded the {self.TIMEOUT}s time limit. "
+                    "Try reducing --depth or simplifying the input program."
+                )
+            old_handler = signal.signal(signal.SIGALRM, _handle_timeout)
+            signal.alarm(self.TIMEOUT)
+        try:
+            self._runPhase()
+        finally:
+            if use_timeout:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
+
+    def _runPhase(self):
         head_atoms = [mh.atom for mh in self.MH]
         body_atoms = [mb.atom for mb in self.MB if mb.negation == False]
         negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]

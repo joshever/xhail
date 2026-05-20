@@ -1,4 +1,8 @@
 # ----- ABDUCTION PHASE (1) ------- #
+import logging
+
+logger = logging.getLogger(__name__)
+
 # ---------- abductor ----------- #
 class Abduction:
     # ---------- examples, modehs, background, model required ----------- #
@@ -45,5 +49,11 @@ class Abduction:
         program += self.loadAbducibles(self.MH)
 
         self.model.setProgram(program)
+        logger.debug("Running abduction phase...")
         self.model.call()
-        self.model.writeProgram("xhail/output/abduction.lp")
+
+        if self.model.debug_output_dir is not None:
+            dest = self.model.debug_output_dir / "abduction.lp"
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            self.model.writeProgram(str(dest))
+            logger.debug("Abduction program written to %s", dest)

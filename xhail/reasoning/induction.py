@@ -1,4 +1,9 @@
+import logging
+
 from xhail.language.terms import Atom, Clause, Literal, Normal, PlaceMarker
+
+logger = logging.getLogger(__name__)
+
 
 class Induction:
     def __init__(self, model):
@@ -139,7 +144,13 @@ class Induction:
 
         # ---------- Update Model ---------- #
         self.model.setProgram(program)
-        self.model.writeProgram("xhail/output/induction.lp")
+        logger.debug("Running induction phase...")
+
+        if self.model.debug_output_dir is not None:
+            dest = self.model.debug_output_dir / "induction.lp"
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            self.model.writeProgram(str(dest))
+            logger.debug("Induction program written to %s", dest)
 
         selectors = {}
         best_model = self.model.getBestModel()
@@ -164,6 +175,10 @@ class Induction:
                     new_body = self.uniqueObjects(new_body)
                     new_clause = Clause(new_head, new_body)
                     included_clauses.append(new_clause)
-            print([str(clause) for clause in included_clauses])
+            self.model.setHypothesis(included_clauses)
+            logger.info("Learned hypothesis (%d rule(s)):", len(included_clauses))
+            for clause in included_clauses:
+                logger.info("  %s", clause)
         else:
-            print("no solutions")
+            self.model.setHypothesis([])
+            logger.info("No hypothesis found (induction returned no solution).")

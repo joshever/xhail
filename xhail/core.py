@@ -24,11 +24,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, Union
 
-from .parser.parser import Parser, ParseError
-from .reasoning.model import Model
+from .parser.parser import Parser
 from .reasoning.abduction import Abduction
-from .reasoning.deduction import Deduction, DeductionTimeoutError
+from .reasoning.deduction import Deduction
 from .reasoning.induction import Induction
+from .reasoning.model import Model
 
 logger = logging.getLogger(__name__)
 

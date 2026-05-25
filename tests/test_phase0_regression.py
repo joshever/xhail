@@ -16,6 +16,7 @@ with the 'integration' pytest mark so they can be skipped in fast CI:
     pytest -m "not integration"
 """
 from pathlib import Path
+
 import pytest
 
 REPO_ROOT = Path(__file__).parent.parent
@@ -62,13 +63,13 @@ class TestConstraintConstructor:
     """D2: Constraint() takes exactly one argument (body list)."""
 
     def test_constraint_one_arg(self):
-        from xhail.language.terms import Constraint, Literal, Atom
+        from xhail.language.terms import Atom, Constraint, Literal
         body = [Literal(Atom('penguin', []), False)]
         c = Constraint(body)
         assert str(c) == ':- penguin.'
 
     def test_constraint_str_with_terms(self):
-        from xhail.language.terms import Constraint, Literal, Atom, Normal
+        from xhail.language.terms import Atom, Constraint, Literal, Normal
         body = [Literal(Atom('bird', [Normal('X')]), False)]
         c = Constraint(body)
         assert ':- bird(X).' == str(c)
@@ -121,7 +122,7 @@ class TestParseErrors:
     """D4: Parse failures must raise ParseError, not produce a NoneType crash."""
 
     def test_bad_syntax_raises_parse_error(self):
-        from xhail.parser.parser import Parser, ParseError
+        from xhail.parser.parser import ParseError, Parser
         p = Parser()
         p.loadString(':-.')  # bare :- with no body
         with pytest.raises((ParseError, Exception)):
@@ -129,7 +130,7 @@ class TestParseErrors:
 
     def test_parse_error_is_informative(self):
         """ParseError message should mention the problem token, not be empty."""
-        from xhail.parser.parser import Parser, ParseError
+        from xhail.parser.parser import Parser
         p = Parser()
         p.loadString('this is not valid %%%')
         try:
@@ -142,8 +143,8 @@ class TestConstraintSyntax:
     """D5: Idiomatic ':- body.' constraint syntax must be accepted."""
 
     def test_implies_constraint(self):
-        from xhail.parser.parser import Parser
         from xhail.language.terms import Constraint
+        from xhail.parser.parser import Parser
         p = Parser()
         p.loadString(':- penguin(X).')
         result = p.parseProgram()
@@ -152,8 +153,8 @@ class TestConstraintSyntax:
 
     def test_not_constraint_still_works(self):
         """Backward-compat: 'not body.' constraint form must still parse."""
-        from xhail.parser.parser import Parser
         from xhail.language.terms import Constraint
+        from xhail.parser.parser import Parser
         p = Parser()
         p.loadString('not penguin(X).')
         result = p.parseProgram()
@@ -174,8 +175,8 @@ class TestModelInstanceState:
         )
 
     def test_kernels_are_independent(self):
+        from xhail.language.terms import Atom, Clause
         from xhail.reasoning.model import Model
-        from xhail.language.terms import Clause, Atom, Literal
         m1 = Model([], [], [], [], 5)
         m2 = Model([], [], [], [], 5)
         fake_clause = Clause(Atom('test', []), [])

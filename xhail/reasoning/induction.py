@@ -18,7 +18,7 @@ class Induction:
         for example in examples:
             examplesProgram += example.createProgram() + '\n'
         return examplesProgram + '\n'
-    
+
     def loadBackground(self, background):
         backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
         return backgroundProgram + '\n'
@@ -34,7 +34,7 @@ class Induction:
             for idl in range(1, len(clause.body)+1):
                 program += f"literal({idc}, {idl}).\n"
         return program
-    
+
     # ---------- Generate and Load Clause Level statements ---------- #
     def loadClauseLevels(self, clauses):
         program = "\n"
@@ -46,7 +46,7 @@ class Induction:
                 levels.append(f"level({idc},{idl})")
                 program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
         return program
-    
+
     # ---------- Generate and Load Minimize statements ---------- #
     def loadMinimize(self, clauses):
         program = "\n"
@@ -54,7 +54,7 @@ class Induction:
             for idl in range(len(clause.body)+1):
                 program += "#minimize{ 1@2 : "+f"use({idc},{idl})"+" }.\n"
         return program
-    
+
     # ---------- Generate and Load Use/Try statements ---------- #
     def loadUseTry(self, clauses):
         program = "\n"
@@ -67,7 +67,7 @@ class Induction:
                 try_heads[idc].append(f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])})")
                 program += f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])}) :- use({idc}, {idl+1}), {str(literal)}, {', '.join(literal.atom.getTypes())}.\n"
                 program += f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])}) :- not use({idc}, {idl+1}), {', '.join(literal.atom.getTypes())}.\n"
-        
+
 
         for idc, clause in enumerate(clauses):
             program += str(clause.head) + " :- " + f"use({idc}, 0)" + ' , '
@@ -83,7 +83,7 @@ class Induction:
         for term1, term2 in zip(atom.terms, mode.terms):
             if isinstance(term2, Atom):
                res = self.updateTypes(term1, term2)
-               if res[0] == False:
+               if not res[0]:
                    return (False, None)
                else:
                    term1 = res[1]
@@ -95,7 +95,7 @@ class Induction:
             else:
                 continue
         return (True, atom)
-    
+
     # ---------- Assing Types for Clause ---------- #
     def updateClauseTypes(self, clauses):
         new_clauses = []
@@ -104,18 +104,18 @@ class Induction:
             new_body = []
             for modeh in self.MH:
                 valid, head = self.updateAtomTypes(clause.head, modeh.atom)
-                if valid == True:
+                if valid:
                     new_head = head
                     break
             for literal in clause.body:
                 for modeb in self.MB:
                     valid, new_literal = self.updateAtomTypes(literal.atom, modeb.atom)
-                    if valid == True:
+                    if valid:
                         new_body.append(Literal(new_literal, literal.negation))
                         break
             new_clauses.append(Clause(new_head, new_body))
         return new_clauses
-    
+
     # ---------- Remove Duplicates ---------- #
     def uniqueObjects(self, objects):
         result = []
@@ -134,7 +134,7 @@ class Induction:
         clauses = self.uniqueObjects(clauses)
 
         # ---------- Constuct Program ---------- #
-        program = f'#show use/2.\n'
+        program = '#show use/2.\n'
         program += self.loadBackground(self.BG)
         program += self.loadExamples(self.EX)
         program += self.loadChoice(clauses)
@@ -162,8 +162,8 @@ class Induction:
                 if int(terms[0].value) in selectors.keys():
                     selectors[int(terms[0].value)].append(int(terms[1].value))
                 else:
-                    selectors[int(terms[0].value)] = [int(terms[1].value)]  
- 
+                    selectors[int(terms[0].value)] = [int(terms[1].value)]
+
             included_clauses = []
             for key in selectors.keys():
                 if 0 in selectors[key]: # head = key

@@ -1,5 +1,10 @@
 # XHAIL
 
+[![CI](https://github.com/everettmakes/xhail/actions/workflows/ci.yml/badge.svg)](https://github.com/everettmakes/xhail/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/everettmakes/xhail/branch/main/graph/badge.svg)](https://codecov.io/gh/everettmakes/xhail)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **eXtended Hybrid Abductive Inductive Learning** — a symbolic Inductive Logic Programming (ILP) system built on Answer Set Programming (ASP).
 
 XHAIL learns interpretable logic-program rules from background knowledge and labelled examples by chaining three phases: **abduction → deduction → induction**. It is a clean Python reimplementation of the XHAIL paradigm introduced by Oliver Ray (2009), built on the [clingo](https://potassco.org/clingo/) ASP solver.

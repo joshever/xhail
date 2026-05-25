@@ -1,5 +1,8 @@
 import copy
+
 from ..language.terms import Atom, Normal, PlaceMarker
+
+
 # ----- STRUCTURE CLASS DEFINITIONS ------ #
 # ---------- example ----------- #
 class Example:
@@ -25,7 +28,7 @@ class Example:
         program.append('%#maximize{' + f'{str(self.weight)}@{str(self.priority)} : {negation_string}{self.atom}' + '}.')
         program.append(f':- {self.atom}.' if self.negation else f':- not {self.atom}.')
         return '\n'.join(program)
-    
+
     def __str__(self):
         return '#example '+ ('not ' if self.negation else '') + str(self.atom)
 
@@ -70,7 +73,7 @@ class Modeh:
             else:
                 term, n = self.generalise(term, n)
         return atom, n
-    
+
     def createProgram(self):
         new_atom = copy.deepcopy(self.atom)
         generalised_atom, n = self.generalise(new_atom)
@@ -94,7 +97,7 @@ class Modeh:
 
     def __str__(self):
         return '#modeh ' + str(self.atom)
-    
+
 # ---------- modeb ----------- #
 class Modeb:
     KEY_WORD = '#modeb'
@@ -142,9 +145,9 @@ class Modeb:
             else:
                 term, n = self.generalise(term, n)
         return atom, n
-    
+
     def createProgram(self):
-        if self.negation == True:
+        if self.negation:
             new_atom = copy.deepcopy(self.atom)
             generalised_atom, _ = self.generalise(new_atom)
             not_pred = 'not_' + generalised_atom.predicate  # D1 fix: was a nested same-quote f-string (PEP 701)
@@ -158,7 +161,7 @@ class Modeb:
             program = ""
 
         return program
-    
+
     def __str__(self):
         neg = 'not ' if self.negation else ''  # D1 fix: was a nested same-quote f-string (PEP 701)
         return f'#modeb {neg}{self.atom}'

@@ -8,7 +8,7 @@ class Atom(Term):
     def __init__(self, predicate: str, terms: list[Term]):
         self.terms = terms
         self.predicate = predicate
-    
+
     def __str__(self):
         if not self.terms:
             return self.predicate
@@ -22,10 +22,10 @@ class Atom(Term):
                 variables += [term]
             elif isinstance(term, Atom):
                 variables += term.getVariables()
-            else: 
+            else:
                 continue
         return variables
-    
+
     def getTypes(self):
         variables = self.getVariables()
         return [str(Atom(var.type, [var.value])) for var in variables]
@@ -38,10 +38,10 @@ class Normal(Term):
 
     def __str__(self):
         return self.value
-    
+
     def getType(self):
         return self.type
-    
+
     def setType(self, type):
         self.type = type
 
@@ -59,14 +59,14 @@ class Literal:
     def __init__(self, atom: Atom, negation: bool):
         self.atom = atom
         self.negation = negation
-    
+
     def __str__(self):
         return ('not ' if self.negation else '') + str(self.atom)
-    
+
 class MiscLiteral:
     def __init__(self, misc: str):
         self.misc = misc
-    
+
     def __str__(self):
         return self.misc
 
@@ -78,13 +78,13 @@ class Clause:
 
     def isHorn(self):
         for literal in self.body:
-            if literal.negation == True:
+            if literal.negation:
                 return False
         return True
-    
+
     def __str__(self):
         return str(self.head) + ' :- ' + ', '.join([str(literal) for literal in self.body]) + '.'
-    
+
     def generalise(self): # returned generalised clause.
         matching = {} # lowercase to uppercase
         unique = set()
@@ -113,7 +113,7 @@ class Clause:
             else:
                 unique.update(self.findConstants(term, unique))
         return unique
-    
+
     def replaceConstants(self, atom, matching):
         newAtom = Atom(atom.predicate, [])
         terms = atom.terms
@@ -124,14 +124,14 @@ class Clause:
                 newTerm = self.replaceConstants(term, matching)  # D8 fix: was passing self as first arg
                 newAtom.terms.append(newTerm)
         return newAtom
-    
+
     def getVariables(self):
         variables = []
         variables += self.head.getVariables()
         for literal in self.body:
             variables += literal.atom.getVariables()
         return variables
-    
+
     def getTypes(self):
         variables = self.getVariables()
         return [str(Atom(var.type, [var.value])) for var in variables]
@@ -141,7 +141,7 @@ class Clause:
 class Fact(Clause):
     def __init__(self, head: Atom):
         self.head = head
-    
+
     def __str__(self):
         return str(self.head) + '.'
 

@@ -19,17 +19,17 @@ class Abduction:
         for example in examples:
             examplesProgram += example.createProgram() + '\n'
         return examplesProgram + '\n'
-    
+
     def loadAbducibles(self, modehs):
         abduciblesProgram = '%ABDUCIBLES%\n'
         for modeh in modehs:
             abduciblesProgram += modeh.createProgram() + '\n'
         return abduciblesProgram + '\n'
-    
+
     def loadNegations(self, modebs):
         negationProgram = '%NEGATIONS%\n'
         for modeb in modebs:
-            if modeb.negation == True:
+            if modeb.negation:
                 negationProgram += modeb.createProgram() + '\n'
             else:
                 continue

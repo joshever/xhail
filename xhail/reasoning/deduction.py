@@ -1,8 +1,7 @@
-import signal
 import platform
+import signal
 
-from xhail.language.structures import Modeb, Modeh
-from ..language.terms import Atom, Clause, Literal, Normal, PlaceMarker
+from ..language.terms import Atom, Clause, Literal, PlaceMarker
 
 
 class DeductionTimeoutError(RuntimeError):
@@ -33,7 +32,7 @@ class Deduction:
             else:
                 continue
         return n
-    
+
     def extractTerms(self, schemas, facts, priorityTerms, allTerms, previous, mode):
         level = []
         for schema in schemas:
@@ -57,14 +56,14 @@ class Deduction:
                             factPriorityTerms.update(self.getMarkerTerms(fact, schema, '-'))
                             factAllTerms.update(factPriorityTerms)
                         else:
-                            continue         
+                            continue
                     else:
                         continue
                     level.append([fact, factPriorityTerms, factAllTerms, previous])
         return level
 
     def findNext(self, atomToFind, levels, idl):
-        if atomToFind == None:
+        if atomToFind is None:
             return []
         else:
             for idc, choice in enumerate(levels[idl]):
@@ -78,7 +77,7 @@ class Deduction:
 
 
 
-    
+
     def runPhase(self):
         # D6 fix: deduction previously hung indefinitely on certain inputs.
         # Wrap with a SIGALRM timeout on Unix/macOS; no-op on Windows.
@@ -104,8 +103,8 @@ class Deduction:
 
     def _runPhase(self):
         head_atoms = [mh.atom for mh in self.MH]
-        body_atoms = [mb.atom for mb in self.MB if mb.negation == False]
-        negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation == True]
+        body_atoms = [mb.atom for mb in self.MB if not mb.negation]
+        negated_bodies = [Atom(f'not_{mb.atom.predicate}', mb.atom.terms) for mb in self.MB if mb.negation]
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
@@ -116,11 +115,11 @@ class Deduction:
         while d <= self.DEPTH:
             currentLevel = []
             for prevMatch in levels[d-1]:
-                if prevMatch[1] == None:
+                if prevMatch[1] is None:
                     continue
                 else:
                     results = self.extractTerms(body_atoms, matches, prevMatch[1], prevMatch[2], prevMatch[0], 'body')
-                    if results == None:
+                    if results is None:
                         continue
                     for result in results:
                         currentLevel.append(result)
@@ -134,12 +133,12 @@ class Deduction:
 
         results = []
         top = len(levels) - 1
-            
+
 
         clauses = []
         for choice in levels[top]:
             chain = self.findNext(choice[3], levels, top-1)
             chain.append(choice[0])
             clauses.append(Clause(chain[0], [Literal(Atom(atom.predicate[4:], atom.terms), True) if atom.predicate[:4] == "not_" else Literal(atom, False) for atom in chain[1:]]))
-        
+
         self.model.setKernel(clauses)

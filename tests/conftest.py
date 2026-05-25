@@ -5,8 +5,8 @@ Adds the repo root to sys.path so that `import xhail` resolves to the
 xhail/ package directory regardless of where pytest is invoked from.
 """
 import sys
-import os
 from pathlib import Path
+
 import pytest
 
 # Repo root is one level above this file (tests/ → repo root)

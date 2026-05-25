@@ -1,6 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
-from ..language.structures import Modeb, Example, Modeh
+
+from ..language.structures import Example, Modeb, Modeh
 from ..language.terms import Atom, Clause, Constraint, Fact, Literal, Normal, PlaceMarker
 
 

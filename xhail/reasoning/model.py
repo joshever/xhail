@@ -4,8 +4,8 @@ from typing import Optional
 
 import clingo
 
-from ..parser.parser import Parser
 from ..language.terms import Atom, Normal, PlaceMarker
+from ..parser.parser import Parser
 
 logger = logging.getLogger(__name__)
 
@@ -48,20 +48,20 @@ class Model:
         control.solve(on_model=on_model)
         self.clingo_models = clingo_models
         return clingo_models
-    
+
     def getBestModel(self):
         control = clingo.Control()#["--opt-mode=opt"])
         #control.configuration.solve.models = 0
         control.add("base", [], self.program)
         control.ground([("base", [])])
         clingo_models = []
-        
+
         def on_model(clingo_model):
             model_symbols = clingo_model.symbols(shown=True)
             model_cost = clingo_model.cost
             logger.debug("clingo model: %s  cost: %s", model_symbols, model_cost)
             clingo_models.append([model_symbols, model_cost])
-        
+
         control.solve(on_model=on_model)
         #result = handle.get()  # Wait for the solving process to finish
         #if not clingo_models:
@@ -73,7 +73,7 @@ class Model:
         self.best_model = best_model
         return best_model[0]
 
-    
+
     def writeProgram(self, destination):
         file = open(destination, "w")
         file.write(self.program)
@@ -83,7 +83,7 @@ class Model:
         self.program = ""
 
     # ensures normal values are the same, and any placeholders can be different.
-    def isSubsumed(self, atom, mode): # 
+    def isSubsumed(self, atom, mode): #
         if atom.predicate != mode.predicate:
             return False
         for term1, term2 in zip(atom.terms, mode.terms):
@@ -101,7 +101,7 @@ class Model:
             else:
                 continue
         return True
-    
+
     def parseModel(self, model):
         strModel = ""
         for m in model:
@@ -117,14 +117,14 @@ class Model:
 
     def getProgram(self):
         return self.program
-    
+
     def getClingoModels(self):
         return self.clingo_models
-    
+
     def getDelta(self):
         self.delta = self.getAtoms(self.MH)
         return self.delta
-    
+
     def getMatches(self, atomConditions):
         # D7 fix: was getClingoModels()[0] which raises IndexError on UNSAT (no models).
         models = self.getClingoModels()
@@ -148,7 +148,7 @@ class Model:
         return self.kernel
 
     # ---------- SETTERS ---------- #
-    
+
     def setKernel(self, kernel):
         self.kernel = kernel
 
@@ -162,11 +162,10 @@ class Model:
 
     def setProgram(self, program):
         self.program = program
-    
+
     def getExamples(self):
         return self.EX
-    
+
     def getBackground(self):
         return self.BG
-    
-    
+

@@ -71,7 +71,10 @@ class Deduction:
                     chain = self.findNext(choice[3], levels, idl-1)
                     chain.append(choice[0])
                     return chain
-        return ["Mistake!"]
+        raise RuntimeError(
+            f"Deduction chain broken: could not find atom '{atomToFind}' "
+            f"in levels[{idl}]. This indicates a bug in the deduction search."
+        )
 
 
 

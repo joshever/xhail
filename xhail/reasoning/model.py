@@ -122,7 +122,8 @@ class Model:
         return self.clingo_models
 
     def getDelta(self):
-        self.delta = self.getAtoms(self.MH)
+        head_atoms = [mh.atom for mh in self.MH]
+        self.delta = self.getMatches(head_atoms)
         return self.delta
 
     def getMatches(self, atomConditions):

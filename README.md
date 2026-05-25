@@ -166,18 +166,38 @@ pytest
 
 ---
 
+## How does XHAIL compare to other ILP systems?
+
+XHAIL is one of several modern ILP systems. Its defining feature is the **three-phase abductive-inductive pipeline** — abduction, deduction, and induction each implemented as a separate ASP solve call — which provides transparent intermediate artefacts at every step.
+
+| System | Hypothesis language | NAF | Solver | Recursive programs |
+|--------|---------------------|-----|--------|--------------------|
+| [Aleph](https://www.cs.ox.ac.uk/activities/programinduction/Aleph/aleph.html) | Horn clauses | ✗ | Prolog | Limited |
+| [Metagol](https://github.com/metagol/metagol) | Metarule instances | ✗ | Prolog | ✓ (via metarules) |
+| [ILASP](https://doc.ilasp.com/) | Full ASP (rules, choices, constraints) | ✓ | clingo | Limited |
+| [FastLAS](https://spike-imperial.github.io/FastLAS/) | Normal + choice rules | ✓ | clingo | Limited |
+| **XHAIL** (this work) | Normal rules with NAF | ✓ | clingo | ✗ (known limitation) |
+
+- **vs Aleph / Metagol:** XHAIL supports negation-as-failure (NAF), essential for rules with exceptions ("flies unless penguin"). Horn-clause systems cannot express this.
+- **vs ILASP:** XHAIL's pipeline decomposes the problem into three inspectable phases. Each intermediate result (abduced atoms Δ, kernel K) is human-readable. ILASP is more expressive but treats the hypothesis search as a single opaque solve.
+- **vs FastLAS:** XHAIL prioritises transparency of the reasoning process; FastLAS prioritises scalability.
+
+See [`RELATED_WORK.md`](RELATED_WORK.md) for a full comparison and [`RESEARCH_FRAMING.md`](RESEARCH_FRAMING.md) for the research questions and known limitations.
+
+---
+
 ## Roadmap
 
-This project is being actively developed from an undergraduate dissertation prototype into a research-engineering portfolio project. See [`XHAIL_AUDIT_AND_ROADMAP.md`](XHAIL_AUDIT_AND_ROADMAP.md) for the full plan.
+This project is being actively developed from an undergraduate dissertation prototype into a research-engineering portfolio project.
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 0 | Correctness & stabilisation — 14 defects fixed, 22 regression tests | ✅ Done |
+| 0 | Correctness & stabilisation — 14 defects fixed, 101 regression tests | ✅ Done |
 | 1 | Repository professionalisation — packaging, CLI, public API | ✅ Done |
-| 2 | Testing & CI — GitHub Actions, coverage reporting | 🔲 Next |
-| 3 | Experimental framework — benchmarks, evaluation metrics, reproducible runs | 🔲 Planned |
-| 4 | Research positioning — related-work comparison (ILASP, Aleph, Metagol, FastLAS) | 🔲 Planned |
-| 5 | Technical report / mini-paper | 🔲 Planned |
+| 2 | Testing & CI — GitHub Actions, coverage, pre-commit | ✅ Done |
+| 3 | Experimental framework — 4 benchmarks, metrics runner, visualisation | ✅ Done |
+| 4 | Research positioning — related-work comparison, research framing | ✅ Done |
+| 5 | Technical report / mini-paper | 🔲 Next |
 
 ---
 

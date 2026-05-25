@@ -43,6 +43,10 @@ dev = [
     "mypy>=1.0",
     "pre-commit>=3.0",
 ]
+publish = [
+    "build>=1.0",
+    "twine>=5.0",
+]
 
 [project.scripts]
 xhail = "xhail.cli:main"
@@ -58,6 +62,10 @@ Repository = "https://github.com/everettmakes/xhail"
 where = ["."]
 include = ["xhail", "xhail.*"]
 exclude = ["tests*", "play*"]
+
+[tool.setuptools.package-data]
+# Include .lp files bundled with the package (e.g. xhail/output/*.lp)
+xhail = ["**/*.lp"]
 
 # ---------------------------------------------------------------------------
 # Ruff (linting + formatting)

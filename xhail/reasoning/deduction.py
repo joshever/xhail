@@ -65,12 +65,16 @@ class Deduction:
     def findNext(self, atomToFind, levels, idl):
         if atomToFind is None:
             return []
-        else:
-            for idc, choice in enumerate(levels[idl]):
-                if str(choice[0]) == str(atomToFind):
-                    chain = self.findNext(choice[3], levels, idl-1)
-                    chain.append(choice[0])
-                    return chain
+        if idl < 0:
+            raise RuntimeError(
+                f"Deduction chain broken: exhausted all levels searching for '{atomToFind}'. "
+                "This indicates a bug in the deduction search."
+            )
+        for idc, choice in enumerate(levels[idl]):
+            if str(choice[0]) == str(atomToFind):
+                chain = self.findNext(choice[3], levels, idl-1)
+                chain.append(choice[0])
+                return chain
         raise RuntimeError(
             f"Deduction chain broken: could not find atom '{atomToFind}' "
             f"in levels[{idl}]. This indicates a bug in the deduction search."

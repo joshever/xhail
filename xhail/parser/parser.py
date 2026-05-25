@@ -56,7 +56,9 @@ def t_ignore_COMMENT(t):
     pass
 
 
-lexer = lex.lex()
+# Module-level lexer used only by PLY internally for token definitions.
+# Parser instances create their own lexer via lex.lex() to avoid shared state.
+_lex_master = lex.lex()
 
 
 # ---------- program and clauses ---------- #
@@ -227,6 +229,12 @@ def p_error(p):
         raise ParseError("Syntax error at EOF")
 
 
+# Build the yacc parser once after all p_* grammar rules are defined.
+# PLY introspects the calling frame, so this must appear after the grammar functions.
+# write_tables=False: don't write parsetab.py to disk.
+_parser_cache = yacc.yacc(debug=False, write_tables=False)
+
+
 class Parser:
     def __init__(self):
         self.data = ""
@@ -251,10 +259,10 @@ class Parser:
 
     # ---------- default parse mode ----------- #
     def parseProgram(self):
-        # write_tables=False: don't write parsetab.py / parser.out to disk.
-        # debug=False: suppress verbose output.
-        _parser = yacc.yacc(debug=False, write_tables=False)
-        self.parsedData = _parser.parse(self.data)
+        # Reuse the module-level cached parser; create a fresh lexer per call
+        # so concurrent / repeated parses don't share lexer state.
+        _lexer = lex.lex()
+        self.parsedData = _parser_cache.parse(self.data, lexer=_lexer)
         # D4 fix: parser returned None means a syntax error occurred.
         # p_error now raises ParseError directly, so None here is belt-and-braces.
         if self.parsedData is None:

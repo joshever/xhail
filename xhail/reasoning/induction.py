@@ -46,11 +46,9 @@ class Induction:
 
     # ---------- Generate and Load Minimize statements ---------- #
     def loadMinimize(self, clauses):
-        program = "\n"
-        for idc, clause in enumerate(clauses):
-            for idl in range(len(clause.body)+1):
-                program += "#minimize{ 1@2 : "+f"use({idc},{idl})"+" }.\n"
-        return program
+        # Single aggregate minimize directive instead of one per literal —
+        # semantically identical but produces far less program text for large kernels.
+        return "\n#minimize{ 1@2,I,J : use(I,J) }.\n"
 
     # ---------- Build a try/N atom, handling 0-arity (propositional) predicates ---------- #
     def _try_term(self, idc: int, idl: int, literal) -> str:
@@ -98,7 +96,7 @@ class Induction:
             return (False, None)
         for term1, term2 in zip(atom.terms, mode.terms):
             if isinstance(term2, Atom):
-               res = self.updateTypes(term1, term2)
+               res = self.updateAtomTypes(term1, term2)
                if not res[0]:
                    return (False, None)
                else:

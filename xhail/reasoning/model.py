@@ -27,6 +27,7 @@ class Model:
         self.delta = []
         self.kernel: list = []       # clauses built during deduction
         self.hypothesis: list = []   # final learned clauses set by induction
+        self._subsumption_cache: dict = {}  # (str(atom), str(mode)) -> bool
 
         self.EX = EX
         self.MH = MH
@@ -83,7 +84,15 @@ class Model:
         self.program = ""
 
     # ensures normal values are the same, and any placeholders can be different.
-    def isSubsumed(self, atom, mode): #
+    def isSubsumed(self, atom, mode) -> bool:
+        cache_key = (str(atom), str(mode))
+        if cache_key in self._subsumption_cache:
+            return self._subsumption_cache[cache_key]
+        result = self._isSubsumed(atom, mode)
+        self._subsumption_cache[cache_key] = result
+        return result
+
+    def _isSubsumed(self, atom, mode) -> bool:
         if atom.predicate != mode.predicate:
             return False
         for term1, term2 in zip(atom.terms, mode.terms):

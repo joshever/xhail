@@ -55,24 +55,43 @@ class Induction:
                 program += "#minimize{ 1@2 : "+f"use({idc},{idl})"+" }.\n"
         return program
 
+    # ---------- Build a try/N atom, handling 0-arity (propositional) predicates ---------- #
+    def _try_term(self, idc: int, idl: int, literal) -> str:
+        """Return the try/N atom string for a kernel literal.
+
+        For first-order predicates the atom carries variable arguments, e.g.
+        ``try(0, 1, V1)``.  For propositional (0-arity) predicates there are no
+        variables, so we emit ``try(0, 1)`` without a trailing comma.
+        """
+        vars_parts = [var.value for var in literal.atom.getVariables()]
+        if vars_parts:
+            return f"try({idc}, {idl}, {', '.join(vars_parts)})"
+        return f"try({idc}, {idl})"
+
     # ---------- Generate and Load Use/Try statements ---------- #
     def loadUseTry(self, clauses):
         program = "\n"
 
-        # logic
-        try_heads = {}
+        try_heads: dict[int, list[str]] = {}
         for idc, clause in enumerate(clauses):
             try_heads[idc] = []
             for idl, literal in enumerate(clause.body):
-                try_heads[idc].append(f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])})")
-                program += f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])}) :- use({idc}, {idl+1}), {str(literal)}, {', '.join(literal.atom.getTypes())}.\n"
-                program += f"try({idc}, {idl+1}, {', '.join([var.value for var in literal.atom.getVariables()])}) :- not use({idc}, {idl+1}), {', '.join(literal.atom.getTypes())}.\n"
-
+                try_term = self._try_term(idc, idl + 1, literal)
+                try_heads[idc].append(try_term)
+                types = literal.atom.getTypes()
+                types_suffix = (", " + ", ".join(types)) if types else ""
+                program += (
+                    f"{try_term} :- use({idc}, {idl+1}), {str(literal)}{types_suffix}.\n"
+                )
+                program += (
+                    f"{try_term} :- not use({idc}, {idl+1}){types_suffix}.\n"
+                )
 
         for idc, clause in enumerate(clauses):
-            program += str(clause.head) + " :- " + f"use({idc}, 0)" + ' , '
-            program += ', '.join(try_head for try_head in try_heads[idc])
-            program += ', ' + ', '.join(self.uniqueObjects(clause.getTypes())) + '.\n'
+            clause_types = self.uniqueObjects(clause.getTypes())
+            types_suffix = (", " + ", ".join(str(t) for t in clause_types)) if clause_types else ""
+            body_parts = [f"use({idc}, 0)"] + try_heads[idc]
+            program += f"{str(clause.head)} :- {', '.join(body_parts)}{types_suffix}.\n"
 
         return program
 

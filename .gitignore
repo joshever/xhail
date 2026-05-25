@@ -37,8 +37,11 @@ htmlcov/
 # XHAIL intermediate outputs — written during a run, not source
 # ---------------------------------------------------------------------------
 xhail/output/
-results/
 xhail_output/
+# Experiment results (generated data — keep directory, ignore content)
+experiments/results/*.csv
+experiments/results/*.json
+experiments/results/figures/
 
 # ---------------------------------------------------------------------------
 # Repo-specific scratch files (not deleted due to filesystem constraints)

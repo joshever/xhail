@@ -1,6 +1,7 @@
 import logging
 
 from xhail.language.terms import Atom, Clause, Literal, Normal, PlaceMarker
+from .utils import load_background, load_examples
 
 logger = logging.getLogger(__name__)
 
@@ -12,16 +13,6 @@ class Induction:
         self.MB = model.MB
         self.BG = model.BG
         self.EX = model.EX
-
-    def loadExamples(self, examples):
-        examplesProgram = '%EXAMPLES%\n'
-        for example in examples:
-            examplesProgram += example.createProgram() + '\n'
-        return examplesProgram + '\n'
-
-    def loadBackground(self, background):
-        backgroundProgram = '%BACKGROUND%\n' + '\n'.join([str(b) for b in background]) + '\n'
-        return backgroundProgram + '\n'
 
     # ---------- Generate and Load Choice statements ---------- #
     def loadChoice(self, clauses): # literal 0 == clause head. literal 1 = first clause literal. !!! clause 0 is first clause
@@ -38,7 +29,7 @@ class Induction:
     # ---------- Generate and Load Clause Level statements ---------- #
     def loadClauseLevels(self, clauses):
         program = "\n"
-        program += ":- level(X, Y), not level(X, 0)."
+        program += ":- level(X, Y), not level(X, 0).\n"
         for idc, clause in enumerate(clauses):
             for idl in range(len(clause.body) + 1):
                 program += f"level({idc},{idl}) :- use({idc},{idl}).\n"
@@ -149,8 +140,8 @@ class Induction:
 
         # ---------- Constuct Program ---------- #
         program = '#show use/2.\n'
-        program += self.loadBackground(self.BG)
-        program += self.loadExamples(self.EX)
+        program += load_background(self.BG)
+        program += load_examples(self.EX)
         program += self.loadChoice(clauses)
         program += self.loadMinimize(clauses)
         program += self.loadUseTry(clauses)

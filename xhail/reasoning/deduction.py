@@ -1,7 +1,28 @@
+import logging
 import platform
 import signal
+from dataclasses import dataclass, field
+from typing import Optional, Set
 
 from ..language.terms import Atom, Clause, Literal, PlaceMarker
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class DeductionNode:
+    """One node in the BFS deduction search.
+
+    Attributes:
+        fact: The ground atom matched at this level.
+        priority_terms: Terms that still need to be explained (input ``+`` terms).
+        all_terms: All terms seen so far (inputs + introduced outputs).
+        previous: The parent node's fact (None at level 0).
+    """
+    fact: Atom
+    priority_terms: Set[str]
+    all_terms: Set[str]
+    previous: Optional[Atom]
 
 
 class DeductionTimeoutError(RuntimeError):
@@ -34,7 +55,7 @@ class Deduction:
         return n
 
     def extractTerms(self, schemas, facts, priorityTerms, allTerms, previous, mode):
-        level = []
+        level: list[DeductionNode] = []
         for schema in schemas:
             for fact in facts:
                 factPriorityTerms = priorityTerms.copy()
@@ -44,9 +65,7 @@ class Deduction:
                         factPriorityTerms = self.getMarkerTerms(fact, schema, '+')
                         factAllTerms = factPriorityTerms
                     elif mode == 'body':
-                        # check if positive terms fulfilled.
                         factPositiveTerms = self.getMarkerTerms(fact, schema, '+')
-                        # if positive terms in priorty or backup...
                         if factPositiveTerms.issubset(factAllTerms):
                             # D9 fix: .difference() returns a new set and was never assigned.
                             # Changed to .difference_update() which mutates in place.
@@ -59,7 +78,7 @@ class Deduction:
                             continue
                     else:
                         continue
-                    level.append([fact, factPriorityTerms, factAllTerms, previous])
+                    level.append(DeductionNode(fact, factPriorityTerms, factAllTerms, previous))
         return level
 
     def findNext(self, atomToFind, levels, idl):
@@ -70,10 +89,10 @@ class Deduction:
                 f"Deduction chain broken: exhausted all levels searching for '{atomToFind}'. "
                 "This indicates a bug in the deduction search."
             )
-        for idc, choice in enumerate(levels[idl]):
-            if str(choice[0]) == str(atomToFind):
-                chain = self.findNext(choice[3], levels, idl-1)
-                chain.append(choice[0])
+        for node in levels[idl]:
+            if str(node.fact) == str(atomToFind):
+                chain = self.findNext(node.previous, levels, idl - 1)
+                chain.append(node.fact)
                 return chain
         raise RuntimeError(
             f"Deduction chain broken: could not find atom '{atomToFind}' "
@@ -115,37 +134,46 @@ class Deduction:
         body_atoms += negated_bodies
         conditions = head_atoms + body_atoms
         matches = self.model.getMatches(conditions)
-        d = 1
-        levels = []
-        priorityTerms, allTerms = set([]), set([])
-        levels.append(self.extractTerms(head_atoms, matches, priorityTerms, allTerms, None, 'head'))
-        while d <= self.DEPTH:
-            currentLevel = []
-            for prevMatch in levels[d-1]:
-                if prevMatch[1] is None:
+
+        levels: list[list[DeductionNode]] = []
+        levels.append(self.extractTerms(head_atoms, matches, set(), set(), None, 'head'))
+
+        for d in range(1, self.DEPTH + 1):
+            current_level: list[DeductionNode] = []
+            for node in levels[d - 1]:
+                if node.priority_terms is None:
                     continue
-                else:
-                    results = self.extractTerms(body_atoms, matches, prevMatch[1], prevMatch[2], prevMatch[0], 'body')
-                    if results is None:
-                        continue
-                    for result in results:
-                        currentLevel.append(result)
-            if currentLevel == []:
-                d = self.DEPTH + 1
-                continue
-            levels.append(currentLevel)
+                results = self.extractTerms(
+                    body_atoms, matches,
+                    node.priority_terms, node.all_terms,
+                    node.fact, 'body',
+                )
+                current_level.extend(results)
+            if not current_level:
+                break
+            levels.append(current_level)
 
-            d += 1
-
-
-        results = []
         top = len(levels) - 1
 
+        if top == 0 and not levels[0]:
+            logger.warning(
+                "Deduction produced an empty kernel: no facts in the abduced model "
+                "matched the mode declarations. Check that #modeh/#modeb schemas "
+                "align with your background predicates, or try increasing --depth."
+            )
 
         clauses = []
-        for choice in levels[top]:
-            chain = self.findNext(choice[3], levels, top-1)
-            chain.append(choice[0])
-            clauses.append(Clause(chain[0], [Literal(Atom(atom.predicate[4:], atom.terms), True) if atom.predicate[:4] == "not_" else Literal(atom, False) for atom in chain[1:]]))
+        for node in levels[top]:
+            chain = self.findNext(node.previous, levels, top - 1)
+            chain.append(node.fact)
+            clauses.append(Clause(
+                chain[0],
+                [
+                    Literal(Atom(atom.predicate[4:], atom.terms), True)
+                    if atom.predicate[:4] == "not_"
+                    else Literal(atom, False)
+                    for atom in chain[1:]
+                ],
+            ))
 
         self.model.setKernel(clauses)

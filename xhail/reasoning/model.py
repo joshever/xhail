@@ -1,11 +1,11 @@
 import logging
+import os
 from pathlib import Path
 from typing import Optional
 
 import clingo
 
-from ..language.terms import Atom, Normal, PlaceMarker
-from ..parser.parser import Parser
+from ..language.terms import Atom, Fact, Normal, PlaceMarker
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +51,8 @@ class Model:
         return clingo_models
 
     def getBestModel(self):
-        control = clingo.Control()#["--opt-mode=opt"])
-        #control.configuration.solve.models = 0
+        n_threads = min(4, os.cpu_count() or 1)
+        control = clingo.Control([f"--parallel-mode={n_threads}"])
         control.add("base", [], self.program)
         control.ground([("base", [])])
         clingo_models = []
@@ -111,16 +111,28 @@ class Model:
                 continue
         return True
 
-    def parseModel(self, model):
-        strModel = ""
-        for m in model:
-            strModel += str(m) + '.\n'
+    # ---------- clingo Symbol → XHAIL term/fact conversion ---------- #
 
-        simpleParser = Parser()
-        simpleParser.loadString(strModel)
-        facts = simpleParser.parseProgram()
+    def _symbol_to_term(self, symbol) -> "Atom | Normal":
+        """Convert a ground clingo Symbol to an XHAIL term (Atom or Normal)."""
+        if symbol.type == clingo.SymbolType.Number:
+            return Normal(str(symbol.number))
+        if symbol.arguments:          # nested functor, e.g. bird(tweety)
+            return self._symbol_to_atom(symbol)
+        return Normal(symbol.name)    # ground constant, e.g. tweety
 
-        return facts
+    def _symbol_to_atom(self, symbol) -> Atom:
+        """Convert a functor clingo Symbol to an XHAIL Atom."""
+        return Atom(symbol.name, [self._symbol_to_term(a) for a in symbol.arguments])
+
+    def parseModel(self, model) -> list:
+        """Convert a list of ground clingo Symbols to XHAIL Fact objects.
+
+        Replaces the previous implementation which converted symbols to strings
+        and re-parsed them with PLY — an unnecessary round-trip that dominated
+        runtime on any non-trivial input.
+        """
+        return [Fact(self._symbol_to_atom(sym)) for sym in model]
 
     # ---------- GETTERS ---------- #
 

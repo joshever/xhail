@@ -3,6 +3,33 @@ import copy
 from ..language.terms import Atom, Normal, PlaceMarker
 
 
+# ---------------------------------------------------------------------------
+# Shared helper
+# ---------------------------------------------------------------------------
+
+def generalise_atom(atom: Atom, n: int = 1, replace_outputs: bool = True):
+    """Replace PlaceMarker terms in *atom* with fresh variable Normals.
+
+    Args:
+        atom: The atom to generalise (mutated in place).
+        n: Counter for generating variable names (V1, V2, …).
+        replace_outputs: If True, replace both ``+`` and ``-`` markers
+            (Modeb behaviour).  If False, only replace ``+`` markers
+            (Modeh behaviour).
+
+    Returns:
+        ``(atom, n)`` where *n* is the next unused variable counter.
+    """
+    for idt, term in enumerate(atom.terms):
+        if isinstance(term, PlaceMarker) and (replace_outputs or term.marker == "+"):
+            atom.terms[idt] = Normal(f"V{n}")
+            atom.terms[idt].setType(term.type)
+            n += 1
+        elif not isinstance(term, PlaceMarker):
+            term, n = generalise_atom(term, n, replace_outputs)
+    return atom, n
+
+
 # ----- STRUCTURE CLASS DEFINITIONS ------ #
 # ---------- example ----------- #
 class Example:
@@ -62,17 +89,7 @@ class Modeh:
         self.min = min
 
     def generalise(self, atom, n=1):
-        terms = atom.terms
-        for idt, term in enumerate(terms):
-            if isinstance(term, PlaceMarker) and term.marker == '+':
-                value = f'V{n}'
-                type = term.type
-                atom.terms[idt] = Normal(value)
-                atom.terms[idt].setType(type)
-                n += 1
-            else:
-                term, n = self.generalise(term, n)
-        return atom, n
+        return generalise_atom(atom, n, replace_outputs=False)
 
     def createProgram(self):
         new_atom = copy.deepcopy(self.atom)
@@ -128,23 +145,7 @@ class Modeb:
         self.min = min
 
     def generalise(self, atom, n=1):
-        terms = atom.terms
-        for idt, term in enumerate(terms):
-            if isinstance(term, PlaceMarker) and term.marker == '+':
-                value = f'V{n}'
-                type = term.type
-                atom.terms[idt] = Normal(value)
-                atom.terms[idt].setType(type)
-                n += 1
-            elif isinstance(term, PlaceMarker):
-                value = f'V{n}'
-                type = term.type
-                atom.terms[idt] = Normal(value)
-                atom.terms[idt].setType(type)
-                n += 1
-            else:
-                term, n = self.generalise(term, n)
-        return atom, n
+        return generalise_atom(atom, n, replace_outputs=True)
 
     def createProgram(self):
         if self.negation:

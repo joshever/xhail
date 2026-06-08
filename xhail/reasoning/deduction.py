@@ -1,6 +1,5 @@
 import logging
-import platform
-import signal
+import threading
 from dataclasses import dataclass, field
 from typing import Optional, Set
 
@@ -105,27 +104,39 @@ class Deduction:
 
 
     def runPhase(self):
-        # D6 fix: deduction previously hung indefinitely on certain inputs.
-        # Wrap with a SIGALRM timeout on Unix/macOS; no-op on Windows.
-        use_timeout = (
-            self.TIMEOUT > 0
-            and platform.system() != 'Windows'
-            and hasattr(signal, 'SIGALRM')
-        )
-        if use_timeout:
-            def _handle_timeout(signum, frame):
-                raise DeductionTimeoutError(
-                    f"Deduction phase exceeded the {self.TIMEOUT}s time limit. "
-                    "Try reducing --depth or simplifying the input program."
-                )
-            old_handler = signal.signal(signal.SIGALRM, _handle_timeout)
-            signal.alarm(self.TIMEOUT)
-        try:
+        """Run deduction with an optional wall-clock timeout.
+
+        Uses a daemon thread + ``Thread.join(timeout)`` so this is safe to call
+        from any thread (including FastAPI / uvicorn worker threads).  The old
+        ``signal.SIGALRM`` approach raised ``ValueError`` when called outside the
+        main interpreter thread.
+        """
+        if self.TIMEOUT <= 0:
             self._runPhase()
-        finally:
-            if use_timeout:
-                signal.alarm(0)
-                signal.signal(signal.SIGALRM, old_handler)
+            return
+
+        exc_holder: list[BaseException] = []
+
+        def _target() -> None:
+            try:
+                self._runPhase()
+            except Exception as exc:  # noqa: BLE001
+                exc_holder.append(exc)
+
+        thread = threading.Thread(target=_target, daemon=True)
+        thread.start()
+        thread.join(timeout=self.TIMEOUT)
+
+        if thread.is_alive():
+            # Thread is still running — the call exceeded the time limit.
+            # The daemon thread will be reaped when the process exits.
+            raise DeductionTimeoutError(
+                f"Deduction phase exceeded the {self.TIMEOUT}s time limit. "
+                "Try reducing --depth or simplifying the input program."
+            )
+
+        if exc_holder:
+            raise exc_holder[0]
 
     def _runPhase(self):
         head_atoms = [mh.atom for mh in self.MH]

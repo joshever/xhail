@@ -431,76 +431,102 @@ function CopyButton({
   );
 }
 
-// ── Idle state: animated pipeline diagram ─────────────────────────────────
+// ── Idle state: animated pipeline diagram + stats + pip install ───────────
 
 function PipelineIdleState() {
+  const { copied, copy } = useClipboard();
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-8 py-10 px-4 animate-fade-in">
+    <div className="flex-1 flex flex-col items-center justify-center gap-6 py-8 px-4 animate-fade-in">
+
+      {/* Pipeline SVG */}
       <svg viewBox="0 0 500 110" className="w-full max-w-[480px]">
-        {/* ─ Node 1: Abduction ─ */}
         <rect x="2" y="18" width="126" height="68" rx="11"
           fill="rgba(56,189,248,.07)" stroke="rgba(56,189,248,.28)" strokeWidth="1.5" />
         <text x="65" y="49" textAnchor="middle" fill="#7dd3fc" fontSize="11.5"
-          fontFamily="JetBrains Mono, monospace" fontWeight="600" letterSpacing="1">
-          ABDUCE
-        </text>
+          fontFamily="JetBrains Mono, monospace" fontWeight="600" letterSpacing="1">ABDUCE</text>
         <text x="65" y="68" textAnchor="middle" fill="rgba(56,189,248,.4)" fontSize="9.5"
-          fontFamily="Inter, system-ui, sans-serif">
-          Generate candidates
-        </text>
-
-        {/* ─ Arrow 1 ─ */}
+          fontFamily="Inter, system-ui, sans-serif">Generate candidates</text>
         <line x1="128" y1="52" x2="178" y2="52" stroke="rgba(56,189,248,.35)"
           strokeWidth="1.5" strokeDasharray="5 4">
           <animate attributeName="stroke-dashoffset" values="0;-27" dur="1s" repeatCount="indefinite" />
         </line>
         <polygon points="178,47.5 186,52 178,56.5" fill="rgba(56,189,248,.45)" />
-
-        {/* ─ Node 2: Deduction ─ */}
         <rect x="187" y="18" width="126" height="68" rx="11"
           fill="rgba(6,182,212,.06)" stroke="rgba(6,182,212,.22)" strokeWidth="1.5" />
         <text x="250" y="49" textAnchor="middle" fill="#67e8f9" fontSize="11.5"
-          fontFamily="JetBrains Mono, monospace" fontWeight="600" letterSpacing="1">
-          DEDUCE
-        </text>
+          fontFamily="JetBrains Mono, monospace" fontWeight="600" letterSpacing="1">DEDUCE</text>
         <text x="250" y="68" textAnchor="middle" fill="rgba(6,182,212,.38)" fontSize="9.5"
-          fontFamily="Inter, system-ui, sans-serif">
-          Build kernel set
-        </text>
-
-        {/* ─ Arrow 2 ─ */}
+          fontFamily="Inter, system-ui, sans-serif">Build kernel set</text>
         <line x1="313" y1="52" x2="363" y2="52" stroke="rgba(6,182,212,.3)"
           strokeWidth="1.5" strokeDasharray="5 4">
           <animate attributeName="stroke-dashoffset" values="0;-27" dur="1s" begin="0.33s" repeatCount="indefinite" />
         </line>
         <polygon points="363,47.5 371,52 363,56.5" fill="rgba(6,182,212,.4)" />
-
-        {/* ─ Node 3: Induction ─ */}
         <rect x="372" y="18" width="126" height="68" rx="11"
           fill="rgba(74,222,128,.06)" stroke="rgba(74,222,128,.25)" strokeWidth="1.5" />
         <text x="435" y="49" textAnchor="middle" fill="#86efac" fontSize="11.5"
-          fontFamily="JetBrains Mono, monospace" fontWeight="600" letterSpacing="1">
-          INDUCE
-        </text>
+          fontFamily="JetBrains Mono, monospace" fontWeight="600" letterSpacing="1">INDUCE</text>
         <text x="435" y="68" textAnchor="middle" fill="rgba(74,222,128,.4)" fontSize="9.5"
-          fontFamily="Inter, system-ui, sans-serif">
-          Search hypothesis
-        </text>
+          fontFamily="Inter, system-ui, sans-serif">Search hypothesis</text>
       </svg>
 
-      <div className="text-center space-y-2">
-        <p className="text-slate-500 text-sm">
-          Load an example or write your own program, then press{" "}
-          <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded
-            bg-[var(--surface-2)] border border-[var(--border-2)]
-            text-[10px] font-mono text-slate-400">
-            ⌘ ↵
-          </kbd>{" "}
-          to run.
-        </p>
-        <p className="text-slate-700 text-xs">
-          XHAIL abduces candidate atoms, deduces a kernel set, then induces the minimal consistent hypothesis.
-        </p>
+      {/* Key stats */}
+      <div className="flex gap-2 flex-wrap justify-center">
+        {[
+          { value: "2ms",  label: "penguins",       color: "#38bdf8" },
+          { value: "64×",  label: "vs Java XHAIL",  color: "#7dd3fa" },
+          { value: "10",   label: "benchmarks",     color: "#4ade80" },
+          { value: "v0.1", label: "on PyPI",        color: "#86efac" },
+        ].map(({ value, label, color }) => (
+          <div key={label}
+            className="flex flex-col items-center px-4 py-2.5 rounded-lg border"
+            style={{ borderColor: `${color}22`, background: `${color}06`, minWidth: 72 }}>
+            <span className="text-sm font-bold font-mono leading-none" style={{ color }}>{value}</span>
+            <span className="text-[9px] text-slate-600 mt-1 uppercase tracking-wider">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* pip install */}
+      <div
+        className="flex items-center gap-3 px-4 py-2.5 rounded-lg border font-mono text-sm"
+        style={{ borderColor: "var(--border-2)", background: "var(--surface-2)", color: "#94a3b8" }}
+      >
+        <span className="text-slate-600 select-none">$</span>
+        <code className="flex-1 text-slate-300">pip install xhail</code>
+        <button
+          onClick={() => copy("pip install xhail", "pip")}
+          className="text-slate-600 hover:text-slate-300 transition-colors flex-shrink-0"
+          title="Copy"
+        >
+          {copied === "pip" ? <IconCheck size={12} /> : <IconCopy size={12} />}
+        </button>
+      </div>
+
+      {/* Instructions */}
+      <p className="text-slate-500 text-sm text-center max-w-sm">
+        Load an example or write your own program, then press{" "}
+        <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded
+          bg-[var(--surface-2)] border border-[var(--border-2)]
+          text-[10px] font-mono text-slate-400">
+          ⌘ ↵
+        </kbd>{" "}
+        to run.
+      </p>
+
+      {/* Feature pills */}
+      <div className="flex gap-2 flex-wrap justify-center">
+        {[
+          { icon: "◈", label: "Symbolic & interpretable" },
+          { icon: "⚡", label: "ASP-powered"             },
+          { icon: "⬡", label: "ILP / Ray (2009)"        },
+        ].map(({ icon, label }) => (
+          <span key={label}
+            className="text-[10px] font-mono px-3 py-1 rounded-full border text-slate-600"
+            style={{ borderColor: "var(--border)" }}>
+            {icon} {label}
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -773,6 +799,36 @@ export default function Home() {
           </div>
         </header>
 
+        {/* ══════════ HERO STRIP ══════════ */}
+        <div
+          className="flex items-center justify-center gap-4 px-5 py-2 border-b border-[var(--border)] flex-wrap"
+          style={{ background: "rgba(56,189,248,.03)" }}
+        >
+          <span className="text-[10px] text-slate-600 font-mono hidden sm:inline">
+            Symbolic ILP via Answer Set Programming
+          </span>
+          <span className="w-px h-3 bg-[var(--border)] hidden sm:inline-block" />
+          {[
+            { v: "2ms",  l: "penguins",      c: "#38bdf8" },
+            { v: "64×",  l: "speedup",       c: "#7dd3fa" },
+            { v: "10",   l: "benchmarks",    c: "#4ade80" },
+          ].map(({ v, l, c }) => (
+            <span key={l} className="text-[10px] font-mono">
+              <span style={{ color: c }} className="font-semibold">{v}</span>
+              <span className="text-slate-700 ml-1">{l}</span>
+            </span>
+          ))}
+          <span className="w-px h-3 bg-[var(--border)] hidden sm:inline-block" />
+          <a
+            href="https://pypi.org/project/xhail/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] font-mono text-slate-600 hover:text-sky-400 transition-colors"
+          >
+            pip install xhail ↗
+          </a>
+        </div>
+
         {/* ══════════ BODY ══════════ */}
         <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
 
@@ -958,28 +1014,40 @@ export default function Home() {
                 <span className="text-[8px]">▼</span>
               </summary>
               <div
-                className="px-4 pt-3 pb-4 border-t border-[var(--border)]"
+                className="px-4 pt-3 pb-4 border-t border-[var(--border)] flex flex-col gap-2"
                 style={{ background: "var(--surface)" }}
               >
+                {[
+                  { code: "#modeh", pred: "flies", arg: "+bird",  color: "#38bdf8", desc: "Head mode — predicate to learn" },
+                  { code: "#modeb", pred: "penguin", arg: "+bird", color: "#22d3ee", desc: "Body mode — available conditions" },
+                  { code: "#example", pred: "flies(a)",  arg: null,  color: "#4ade80", desc: "Positive example" },
+                  { code: "#example not", pred: "flies(d)", arg: null, color: "#86efac", desc: "Negative example" },
+                ].map(({ code, pred, arg, color, desc }) => (
+                  <div key={code + pred}
+                    className="flex items-center gap-3 px-3 py-2 rounded-md border"
+                    style={{ borderColor: `${color}1a`, background: `${color}06` }}>
+                    <code className="font-mono text-[11px] whitespace-nowrap flex-shrink-0" style={{ color }}>
+                      {code} <span style={{ color: "#94a3b8" }}>{pred}</span>
+                      {arg && <span style={{ color: "#64748b" }}>({arg})</span>}
+                      {!arg && <span style={{ color: "#64748b" }}>.</span>}
+                      {arg && <span style={{ color: "#64748b" }}>.</span>}
+                    </code>
+                    <span className="text-[10px] text-slate-600 ml-auto text-right">{desc}</span>
+                  </div>
+                ))}
                 <div
-                  className="grid text-[11px] text-slate-500 leading-relaxed gap-y-2"
-                  style={{ gridTemplateColumns: "auto 1fr", columnGap: "12px" }}
-                >
-                  {[
-                    ["#modeh pred(+type).", "Head mode — predicate to learn"],
-                    ["#modeb pred(+type).", "Body mode — available conditions"],
-                    ["#example atom.",      "Positive example"],
-                    ["#example not atom.",  "Negative example"],
-                    ["fact(a). r(X) :- …", "Background knowledge (normal ASP)"],
-                  ].map(([code, desc]) => (
-                    <>
-                      <code key={code} className="text-sky-300 font-mono whitespace-nowrap self-center">
-                        {code}
-                      </code>
-                      <span key={desc} className="text-slate-600">{desc}</span>
-                    </>
-                  ))}
+                  className="flex items-center gap-3 px-3 py-2 rounded-md border mt-1"
+                  style={{ borderColor: "var(--border)", background: "var(--surface-2)" }}>
+                  <code className="font-mono text-[11px] whitespace-nowrap text-slate-500">
+                    fact(a).&nbsp;&nbsp;<span style={{ color: "#475569" }}>r(X) :- body(X).</span>
+                  </code>
+                  <span className="text-[10px] text-slate-600 ml-auto text-right">Background knowledge (ASP)</span>
                 </div>
+                <p className="text-[10px] text-slate-700 pt-1">
+                  <span className="text-slate-600">+type</span> = input variable &nbsp;·&nbsp;
+                  <span className="text-slate-600">#type</span> = ground constant &nbsp;·&nbsp;
+                  <span className="text-slate-600">-type</span> = output variable
+                </p>
               </div>
             </details>
           </div>
@@ -1115,20 +1183,28 @@ export default function Home() {
 
         {/* ══════════ FOOTER ══════════ */}
         <footer
-          className="border-t border-[var(--border)] px-5 py-2.5 flex items-center justify-between flex-shrink-0"
+          className="border-t border-[var(--border)] px-5 py-2.5 flex items-center gap-4 flex-shrink-0 flex-wrap"
           style={{ background: "rgba(8,11,20,.8)", backdropFilter: "blur(8px)" }}
         >
           <span className="text-[10px] text-slate-700 font-mono">
-            XHAIL · Inductive Logic Programming via Answer Set Programming
+            XHAIL · ILP via ASP
           </span>
-          <a
-            href="https://doi.org/10.1007/s10994-008-5083-8"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] text-slate-700 hover:text-slate-400 transition-colors underline underline-offset-2"
-          >
+          <span className="w-px h-3 bg-[var(--border)] hidden sm:inline-block" />
+          <a href="https://doi.org/10.1007/s10994-008-5083-8" target="_blank" rel="noopener noreferrer"
+            className="text-[10px] text-slate-700 hover:text-slate-400 transition-colors">
             Ray (2009)
           </a>
+          <span className="w-px h-3 bg-[var(--border)] hidden sm:inline-block" />
+          <a href="https://pypi.org/project/xhail/" target="_blank" rel="noopener noreferrer"
+            className="text-[10px] text-slate-700 hover:text-sky-400 transition-colors font-mono">
+            pypi · xhail
+          </a>
+          <span className="w-px h-3 bg-[var(--border)] hidden sm:inline-block" />
+          <a href="https://github.com/everettmakes/xhail" target="_blank" rel="noopener noreferrer"
+            className="text-[10px] text-slate-700 hover:text-slate-400 transition-colors">
+            GitHub
+          </a>
+          <span className="ml-auto text-[10px] text-slate-800 font-mono">v0.1.0</span>
         </footer>
       </div>
     </>

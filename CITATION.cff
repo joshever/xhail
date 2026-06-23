@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+
+title: "XHAIL: eXtended Hybrid Abductive Inductive Learning"
+type: software
+version: "0.1.0"
+date-released: "2024-01-01"
+url: "https://github.com/everettmakes/xhail"
+license: MIT
+
+authors:
+  - family-names: "Everett"
+    given-names: "Josh"
+
+abstract: >
+  A symbolic Inductive Logic Programming (ILP) system that learns interpretable
+  logic-program rules from background knowledge and labelled examples.  The
+  system implements the XHAIL paradigm (Ray, 2009) using a three-phase
+  abduction–deduction–induction pipeline built on the clingo Answer Set
+  Programming solver.
+
+keywords:
+  - inductive-logic-programming
+  - answer-set-programming
+  - symbolic-ai
+  - machine-learning
+  - ilp
+
+references:
+  - type: article
+    title: "Nonmonotonic abductive inductive learning"
+    authors:
+      - family-names: "Ray"
+        given-names: "Oliver"
+    journal: "Journal of Applied Logic"
+    volume: 7
+    issue: 3
+    start: 329
+    end: 340
+    year: 2009
+    doi: "10.1016/j.jal.2008.10.007"

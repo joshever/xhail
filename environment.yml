@@ -1,0 +1,29 @@
+name: xhail
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+
+  # Core runtime (conda-forge has both of these)
+  - conda-forge::clingo>=5.6
+
+  # Dev / test tooling
+  - conda-forge::pytest>=8.0
+  - conda-forge::pytest-cov>=5.0
+
+  # pip-only packages (no conda build for these)
+  - pip:
+      - ply>=3.11
+      - ruff>=0.4
+      - mypy>=1.0
+      - pre-commit>=3.0
+
+      # Web backend
+      - fastapi>=0.110
+      - uvicorn[standard]>=0.29
+      - pydantic>=2.0
+
+      # Install xhail itself in editable mode
+      - -e .

@@ -1,0 +1,317 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+:root {
+  /* Charcoal / near-black surfaces */
+  --bg:            #0d0f10;
+  --surface:       #141618;
+  --surface-2:     #1a1d1f;
+  --surface-3:     #202326;
+  --border:        #272b2e;
+  --border-2:      #313538;
+
+  /* Ice BLUE — phases 1+2, borders, button, focus rings */
+  --blue:          #38bdf8;      /* sky-400 */
+  --blue-light:    #7dd3fa;      /* sky-300 */
+  --blue-pale:     #bae6fd;      /* sky-200 */
+  --blue-dim:      #0c3a55;
+
+  /* Ice GREEN — phase 3, hypothesis, success */
+  --green:         #4ade80;      /* green-400 */
+  --green-light:   #86efac;      /* green-300 */
+  --green-pale:    #bbf7d0;      /* green-200 */
+  --green-dim:     #14532d;
+
+  /* Keep old aliases pointing to their distinct colour */
+  --accent:        #38bdf8;
+  --accent-blue:   #38bdf8;
+  --accent-cyan:   #7dd3fa;
+  --accent-emerald:#4ade80;
+  --accent-dim:    #0c3a55;
+
+  /* Text — white / light gray */
+  --text:          #f0f4f6;
+  --text-dim:      #52595e;
+
+  /* Status */
+  --red:           #f87171;
+  --yellow:        #fbbf24;
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────── */
+::-webkit-scrollbar               { width: 5px; height: 5px; }
+::-webkit-scrollbar-track         { background: transparent; }
+::-webkit-scrollbar-thumb         { background: var(--border-2); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover   { background: #374060; }
+
+/* ── Keyframe animations ───────────────────────────────────────────────── */
+
+@keyframes gradient-x {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
+  50%       { box-shadow: 0 0 0 1px rgba(255,255,255,.16); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes count-in {
+  from { opacity: 0; transform: scale(.85); }
+  to   { opacity: 1; transform: scale(1);   }
+}
+
+@keyframes spin-once {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dash-march {
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes ping-dot {
+  0%, 100% { transform: scale(1);   opacity: 1;   }
+  50%       { transform: scale(1.5); opacity: .6;  }
+}
+
+/* ── Utility classes ───────────────────────────────────────────────────── */
+
+.gradient-text {
+  background: linear-gradient(135deg, #7dd3fa 0%, #38bdf8 40%, #4ade80 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-x 5s ease infinite;
+}
+
+.logo-glow {
+  animation: pulse-glow 3.5s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fade-in-up .35s ease both;
+}
+
+.animate-fade-in {
+  animation: fade-in .25s ease both;
+}
+
+.spin {
+  animation: spin-once .75s linear infinite;
+}
+
+/* ── Skeleton shimmer ──────────────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface)   25%,
+    var(--surface-3) 50%,
+    var(--surface)   75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: 5px;
+}
+
+/* ── Stat pill ─────────────────────────────────────────────────────────── */
+.stat-pill {
+  animation: count-in .3s ease both;
+}
+.stat-pill:nth-child(1) { animation-delay: .04s; }
+.stat-pill:nth-child(2) { animation-delay: .09s; }
+.stat-pill:nth-child(3) { animation-delay: .14s; }
+.stat-pill:nth-child(4) { animation-delay: .19s; }
+.stat-pill:nth-child(5) { animation-delay: .24s; }
+
+/* ── Code editor ───────────────────────────────────────────────────────── */
+.code-editor {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12.5px;
+  line-height: 1.75;
+  tab-size: 2;
+  resize: none;
+  background: #0b0d0e;
+  color: #d4e8ef;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 14px 16px;
+  width: 100%;
+  outline: none;
+  transition: border-color .2s;
+}
+
+.code-editor:focus {
+  border-color: rgba(255, 255, 255, .18);
+  box-shadow: none;
+}
+
+/* ── Phase cards ───────────────────────────────────────────────────────── */
+.phase-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color .2s;
+}
+
+.phase-card:hover {
+  border-color: var(--border-2);
+}
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
+}
+
+.phase-header:hover {
+  background: rgba(255, 255, 255, .03);
+}
+
+/* ── Hypothesis rules ──────────────────────────────────────────────────── */
+.hypothesis-rule {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  background: rgba(74, 222, 128, .055);
+  border: 1px solid rgba(74, 222, 128, .22);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #86efac;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  animation: fade-in-up .3s ease both;
+  transition: background .15s, border-color .15s;
+}
+
+.hypothesis-rule:hover {
+  background: rgba(74, 222, 128, .09);
+  border-color: rgba(74, 222, 128, .35);
+}
+
+.hypothesis-rule:nth-child(1) { animation-delay: .04s; }
+.hypothesis-rule:nth-child(2) { animation-delay: .09s; }
+.hypothesis-rule:nth-child(3) { animation-delay: .14s; }
+.hypothesis-rule:nth-child(4) { animation-delay: .19s; }
+.hypothesis-rule:nth-child(5) { animation-delay: .24s; }
+
+/* ── Run button — charcoal/white ───────────────────────────────────────── */
+.run-btn {
+  background: #2a2e31;
+  color: #f0f4f6;
+  border: 1px solid #3d4347;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, box-shadow .15s, transform .12s, opacity .15s;
+  box-shadow: none;
+}
+
+.run-btn:hover:not(:disabled) {
+  background: #333739;
+  border-color: #4a5055;
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
+  transform: translateY(-1px);
+}
+
+.run-btn:active:not(:disabled) {
+  transform: translateY(0);
+  background: #252829;
+}
+
+.run-btn:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Ghost button ──────────────────────────────────────────────────────── */
+.ghost-btn {
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 11px;
+  background: transparent;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ghost-btn:hover {
+  color: var(--text);
+  border-color: var(--border-2);
+  background: var(--surface);
+}
+
+/* ── Benchmark button ──────────────────────────────────────────────────── */
+.bench-btn {
+  text-align: left;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 12px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+  width: 100%;
+}
+
+.bench-btn:hover {
+  border-color: var(--border-2);
+  background: var(--surface-2);
+}
+
+.bench-btn.active {
+  border-color: rgba(56, 189, 248, .5);
+  background: rgba(255, 255, 255, .04);
+  box-shadow: none;
+}
+
+/* ── Ping dot (loading) ────────────────────────────────────────────────── */
+.ping-dot {
+  animation: ping-dot 1.2s ease-in-out infinite;
+}
+
+/* ── Details / syntax ref ──────────────────────────────────────────────── */
+details summary { list-style: none; }
+details summary::-webkit-details-marker { display: none; }

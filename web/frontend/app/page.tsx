@@ -473,10 +473,9 @@ function PipelineIdleState() {
       {/* Key stats */}
       <div className="flex gap-2 flex-wrap justify-center">
         {[
-          { value: "2ms",  label: "penguins",       color: "#38bdf8" },
-          { value: "64×",  label: "vs Java XHAIL",  color: "#7dd3fa" },
-          { value: "10",   label: "benchmarks",     color: "#4ade80" },
-          { value: "v0.1", label: "on PyPI",        color: "#86efac" },
+          { value: "2ms",  label: "penguins",   color: "#38bdf8" },
+          { value: "10",   label: "benchmarks", color: "#4ade80" },
+          { value: "v0.1", label: "on PyPI",    color: "#86efac" },
         ].map(({ value, label, color }) => (
           <div key={label}
             className="flex flex-col items-center px-4 py-2.5 rounded-lg border"
@@ -810,7 +809,6 @@ export default function Home() {
           <span className="w-px h-3 bg-[var(--border)] hidden sm:inline-block" />
           {[
             { v: "2ms",  l: "penguins",      c: "#38bdf8" },
-            { v: "64×",  l: "speedup",       c: "#7dd3fa" },
             { v: "10",   l: "benchmarks",    c: "#4ade80" },
           ].map(({ v, l, c }) => (
             <span key={l} className="text-[10px] font-mono">

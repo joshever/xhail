@@ -10,7 +10,8 @@ name = "xhail"
 version = "0.1.0"
 description = "XHAIL: eXtended Hybrid Abductive Inductive Learning — a symbolic ILP system built on Answer Set Programming"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 keywords = [
     "inductive-logic-programming",
@@ -27,7 +28,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 dependencies = [

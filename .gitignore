@@ -58,3 +58,4 @@ play/
 *.swp
 *.swo
 Thumbs.db
+pytest-cache-files-*

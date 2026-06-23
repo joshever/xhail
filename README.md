@@ -35,6 +35,7 @@ flies(V1) :- not penguin(V1).
 - [Comparison to other ILP systems](#comparison-to-other-ilp-systems)
 - [Roadmap](#roadmap)
 - [Citation](#citation)
+- [Local development](#local-development)
 
 ---
 
@@ -123,14 +124,6 @@ python experiments/run_benchmarks.py --jobs 1  # sequential
 Requires **Python ≥ 3.10**. `clingo` is installed automatically.
 
 ```bash
-git clone https://github.com/everettmakes/xhail.git
-cd xhail
-pip install -e ".[dev]"
-```
-
-Or from PyPI:
-
-```bash
 pip install xhail
 ```
 
@@ -138,8 +131,6 @@ Verify:
 
 ```bash
 xhail --version
-xhail run experiments/benchmarks/penguins.lp
-# flies(V1) :- not penguin(V1).
 ```
 
 ---
@@ -325,6 +316,32 @@ pytest tests/test_benchmarks.py::TestTrainsBenchmark -v
   pages   = {329--340},
   year    = {2009}
 }
+```
+
+---
+
+## Local development
+
+Clone the repo and install in editable mode with dev dependencies:
+
+```bash
+git clone https://github.com/everettmakes/xhail.git
+cd xhail
+pip install -e ".[dev]"
+```
+
+Run the tests:
+
+```bash
+pytest
+pytest --cov=xhail --cov-report=term-missing   # with coverage
+```
+
+Run the benchmarks:
+
+```bash
+python experiments/run_benchmarks.py           # parallel (default: all cores)
+python experiments/run_benchmarks.py --jobs 1  # sequential
 ```
 
 ---

@@ -265,9 +265,15 @@ def learn(
         DeductionTimeoutError: If the deduction phase exceeds the time limit.
     """
     # Resolve source to either a file path or a raw string
-    if isinstance(source, Path) or (isinstance(source, str) and (
-        source.endswith(".lp") or Path(source).exists()
-    )):
+    def _looks_like_path(s: str) -> bool:
+        if len(s) > 255:
+            return False
+        try:
+            return s.endswith(".lp") or Path(s).exists()
+        except OSError:
+            return False
+
+    if isinstance(source, Path) or (isinstance(source, str) and _looks_like_path(source)):
         source_path = Path(source)
         if not source_path.exists():
             raise FileNotFoundError(f"Input file not found: {source_path}")

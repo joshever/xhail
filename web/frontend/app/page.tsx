@@ -301,35 +301,39 @@ initially(on(c, table)).
     icon: "🦠",
     tag: "Temporal",
     description: "EC disease spread: learn who infects whom via contact network",
-    source: `% Epidemic Spread — learn infection rules from a contact network.
+    source: `% Epidemic Spread — Event Calculus model of disease propagation.
+% Expected hypothesis:
+%   happens(infect(bob),   T) :- holdsAt(ill(alice), T).
+%   happens(infect(carol), T) :- holdsAt(ill(bob),   T).
 
+% ── EC Axioms ──────────────────────────────────────────────────────
 holdsAt(F,T) :- time(T), time(S), S<T, happens(E,S), initiates(E,F,S), not clipped(S,F,T).
 clipped(S,F,T) :- time(S), time(T), time(R), S<R, R<T, happens(E,R), terminates(E,F,R).
 holdsAt(F,T) :- time(T), initially(F), not clipped(0,F,T).
 
-time(0). time(1). time(2). time(3). time(4).
+% ── Domain ─────────────────────────────────────────────────────────
+time(0). time(1). time(2). time(3). time(4). time(5).
 person(alice). person(bob). person(carol).
 
-initiates(infect(P),  ill(P), T) :- person(P), time(T).
+initiates(infect(P),   ill(P), T) :- person(P), time(T).
+initiates(contract(P), ill(P), T) :- person(P), time(T).
 terminates(recover(P), ill(P), T) :- person(P), time(T).
 
-% Contact network
-contact(alice, bob,   1).
-contact(bob,   carol, 2).
+% ── Background: alice is patient zero ──────────────────────────────
+happens(contract(alice), 0).
+happens(recover(alice), 4).
 
-% Infection only spreads through direct contact
-:- happens(infect(P), T), not contact(_, P, T).
-
-% Alice is patient zero; recovers at T=3
-initially(ill(alice)).
-happens(recover(alice), 3).
-
+% ── Examples ───────────────────────────────────────────────────────
 #example holdsAt(ill(alice), 1).
+#example holdsAt(ill(alice), 2).
 #example holdsAt(ill(bob),   2).
+#example holdsAt(ill(bob),   3).
 #example holdsAt(ill(carol), 3).
-#example not holdsAt(ill(alice), 4).
+#example not holdsAt(ill(bob),   1).
+#example not holdsAt(ill(carol), 2).
+#example not holdsAt(ill(alice), 5).
 
-% '#person' is a ground marker: specific names appear in the hypothesis.
+% ── Mode declarations ──────────────────────────────────────────────
 #modeh happens(infect(#person), +time).
 #modeb holdsAt(ill(#person), +time).`,
   },

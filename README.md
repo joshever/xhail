@@ -33,7 +33,6 @@ flies(V1) :- not penguin(V1).
 - [Repository layout](#repository-layout)
 - [Engineering notes](#engineering-notes)
 - [Comparison to other ILP systems](#comparison-to-other-ilp-systems)
-- [Roadmap](#roadmap)
 - [Citation](#citation)
 - [Local development](#local-development)
 
@@ -279,21 +278,6 @@ pytest tests/test_benchmarks.py::TestTrainsBenchmark -v
 **vs ILASP.** Both use clingo and support NAF. ILASP treats hypothesis search as a single optimisation; XHAIL exposes Δ and K as intermediate results, which makes it easier to trace why a particular hypothesis was or wasn't found.
 
 **vs FastLAS.** FastLAS uses a faster partial evaluation strategy and scales better to large search spaces. XHAIL is a better fit for smaller problems where interpretability of the search process matters.
-
----
-
-## Roadmap
-
-| Phase | Description | Status |
-|-------|-------------|--------|
-| 0 | Correctness & stabilisation — 14 defects fixed, regression tests | ✅ Done |
-| 1 | Repository professionalisation — packaging, public API, CLI | ✅ Done |
-| 2 | Testing & CI — GitHub Actions, Codecov | ✅ Done |
-| 3 | Experimental framework — 10 benchmarks, metrics runner | ✅ Done |
-| 4 | Performance — BFS leaf collection, type-member cache, predicate-indexed BFS, parallel runner | ✅ Done |
-| 5 | Research positioning — related-work comparison | ✅ Done |
-| 6 | Technical report | ✅ Done |
-| 7 | Extensions — noisy examples, neuro-symbolic integration | 🔲 Planned |
 
 ---
 

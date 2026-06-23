@@ -299,14 +299,9 @@ pytest tests/test_benchmarks.py::TestTrainsBenchmark -v
 
 ## Citation
 
-```bibtex
-@software{everett2025xhail,
-  author = {Everett, Josh},
-  title  = {{XHAIL}: eXtended Hybrid Abductive Inductive Learning},
-  url    = {https://github.com/everettmakes/xhail},
-  year   = {2025}
-}
+This implementation is based on:
 
+```bibtex
 @article{ray2009xhail,
   author  = {Ray, Oliver},
   title   = {Nonmonotonic abductive inductive learning},

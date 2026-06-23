@@ -9,7 +9,6 @@ Covers:
 - Modeh / Modeb program generation
 """
 
-
 from xhail.language.structures import Modeb, Modeh
 from xhail.language.terms import (
     Atom,
@@ -24,6 +23,7 @@ from xhail.language.terms import (
 # ---------------------------------------------------------------------------
 # Atom
 # ---------------------------------------------------------------------------
+
 
 class TestAtom:
     def test_zero_arity(self):
@@ -59,6 +59,7 @@ class TestAtom:
 # Normal
 # ---------------------------------------------------------------------------
 
+
 class TestNormal:
     def test_str(self):
         assert str(Normal("abc")) == "abc"
@@ -83,6 +84,7 @@ class TestNormal:
 # Literal
 # ---------------------------------------------------------------------------
 
+
 class TestLiteral:
     def test_positive(self):
         lit = Literal(Atom("bird", [Normal("X")]), False)
@@ -105,6 +107,7 @@ class TestLiteral:
 # Fact
 # ---------------------------------------------------------------------------
 
+
 class TestFact:
     def test_fact_with_args(self):
         f = Fact(Atom("bird", [Normal("a")]))
@@ -118,6 +121,7 @@ class TestFact:
 # ---------------------------------------------------------------------------
 # Constraint
 # ---------------------------------------------------------------------------
+
 
 class TestConstraint:
     def test_single_literal(self):
@@ -142,6 +146,7 @@ class TestConstraint:
 # ---------------------------------------------------------------------------
 # Clause
 # ---------------------------------------------------------------------------
+
 
 class TestClause:
     def _make_penguins_clause(self):
@@ -207,6 +212,7 @@ class TestClause:
 # ---------------------------------------------------------------------------
 # Modeh / Modeb program generation
 # ---------------------------------------------------------------------------
+
 
 class TestModehProgram:
     def test_standard_arity_generates_choice_rule(self):

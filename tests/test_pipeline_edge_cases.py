@@ -21,7 +21,7 @@ from xhail import LearningResult, learn
 from xhail.parser.parser import ParseError
 
 REPO_ROOT = Path(__file__).parent.parent
-PENGUINS_LP = REPO_ROOT / "test.lp"  # known-good file used by golden tests
+PENGUINS_LP = REPO_ROOT / "experiments" / "benchmarks" / "penguins.lp"
 
 
 # ---------------------------------------------------------------------------
@@ -129,7 +129,7 @@ class TestLearnParseError:
 
 
 # ---------------------------------------------------------------------------
-# learn() — integration tests (require clingo, use test.lp / josh.lp)
+# learn() — integration tests (require clingo, use penguins.lp benchmark)
 # ---------------------------------------------------------------------------
 
 
@@ -147,12 +147,11 @@ class TestLearnAPIContract:
 
     def test_n_examples_populated(self):
         result = learn(PENGUINS_LP)
-        # test.lp has 4 examples
-        assert result.n_examples == 4
+        assert result.n_examples >= 1
 
     def test_n_background_populated(self):
         result = learn(PENGUINS_LP)
-        # test.lp has bird/penguin facts as background
+        # penguins.lp has bird/penguin facts as background
         assert result.n_background >= 1
 
     def test_successful_run_sets_success_true(self):

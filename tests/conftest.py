@@ -4,6 +4,7 @@ pytest configuration for the XHAIL test suite.
 Adds the repo root to sys.path so that `import xhail` resolves to the
 xhail/ package directory regardless of where pytest is invoked from.
 """
+
 import sys
 from pathlib import Path
 
@@ -23,6 +24,6 @@ def ensure_output_dir():
     to this directory.  It is gitignored after Phase 1 cleanup; for now
     we just make sure it exists so tests don't fail with FileNotFoundError.
     """
-    output_dir = REPO_ROOT / 'xhail' / 'output'
+    output_dir = REPO_ROOT / "xhail" / "output"
     output_dir.mkdir(parents=True, exist_ok=True)
     yield

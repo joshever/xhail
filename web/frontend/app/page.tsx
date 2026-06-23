@@ -94,25 +94,255 @@ light(light3). light(light4).
 #example not stop(light4).`,
   },
   propositional: {
-    label: "AND Gate",
+    label: "Propositional",
     icon: "⊕",
     tag: "Logic",
-    description: "Learn a 0-arity AND from propositional facts",
+    description: "0-arity: learn that output holds given background facts",
     source: `% Background knowledge
 input_a.
 input_b.
 
-% Mode declarations (0-arity)
+% Mode declarations (0-arity — no type variables)
 #modeh output.
 #modeb input_a.
 #modeb input_b.
 
 % Examples
+% With only a positive example, XHAIL finds the minimal
+% hypothesis: output. (no body needed — Occam's razor).
+% To force body conditions, add negative examples where
+% input_a or input_b are absent.
 #example output.`,
+  },
+  sugar: {
+    label: "Sugar",
+    icon: "🧪",
+    tag: "Priority",
+    description: "Learn priority rules: glucose first, lactose when glucose is gone",
+    source: `% EC Axioms
+holdsAt(F,T) :- time(T), time(S), S<T, happens(E,S), initiates(E,F,S), not clipped(S,F,T).
+clipped(S,F,T) :- time(S), time(T), time(R), S<R, R<T, happens(E,R), terminates(E,F,R).
+holdsAt(F,T) :- time(T), initially(F), not clipped(0,F,T).
+
+% Time
+time(0). time(1). time(2). time(3). time(4). time(5).
+
+% Domain
+sugar(lactose). sugar(glucose).
+
+% Initiation / termination
+initiates(add(G), available(G), T) :- sugar(G), time(T).
+terminates(use(G), available(G), T) :- sugar(G), time(T).
+
+% Can't use sugar that isn't available
+:- happens(use(G), T), not holdsAt(available(G), T).
+
+% Both sugars added at T=0
+happens(add(lactose), 0).
+happens(add(glucose), 0).
+
+% Examples
+#example holdsAt(available(lactose), 1).
+#example holdsAt(available(lactose), 2).
+#example not holdsAt(available(lactose), 3).
+#example not holdsAt(available(glucose), 2).
+
+% Mode declarations
+% '#sugar' is a ground marker: lactose/glucose appear literally.
+#modeh happens(use(#sugar), +time).
+#modeb holdsAt(available(#sugar), +time).
+#modeb not holdsAt(available(#sugar), +time).`,
+  },
+  event_calculus: {
+    label: "Event Calculus",
+    icon: "⏱",
+    tag: "Temporal",
+    description: "Learn temporal rules: work happens when an agent is awake",
+    source: `% Event Calculus axioms
+holdsAt(F,T) :- time(T), time(S), S<T, happens(E,S), initiates(E,F,S), not clipped(S,F,T).
+clipped(S,F,T) :- time(S), time(T), time(R), S<R, R<T, happens(E,R), terminates(E,F,R).
+holdsAt(F,T) :- time(T), initially(F), not clipped(0,F,T).
+
+% Domain
+time(0). time(1). time(2). time(3). time(4). time(5). time(6). time(7).
+person(alice).
+
+% Background events: alice wakes at T=2, sleeps at T=6
+happens(wake_up(alice), 2).
+happens(sleep(alice), 6).
+
+initiates(wake_up(P), awake(P), T) :- person(P), time(T).
+terminates(sleep(P),  awake(P), T) :- person(P), time(T).
+initiates(work(P), productive(P), T) :- person(P), time(T).
+
+% Observations
+#example not holdsAt(awake(alice), 1).
+#example holdsAt(awake(alice), 4).
+#example holdsAt(productive(alice), 5).
+#example not holdsAt(productive(alice), 2).
+
+% Mode declarations
+% '#person' is a ground marker: alice appears literally in the hypothesis.
+#modeh happens(work(#person), +time).
+#modeb holdsAt(awake(#person), +time).`,
+  },
+  trains: {
+    label: "Trains",
+    icon: "🚂",
+    tag: "Classic",
+    description: "The most cited ILP benchmark: learn what makes a train eastbound",
+    source: `% Michalski's Trains — classic ILP benchmark (1969)
+% Task: learn what makes a train eastbound from car properties.
+
+train(t1). train(t2). train(t3).
+train(t4). train(t5). train(t6).
+
+has_car(t1,c11). has_car(t1,c12).
+has_car(t2,c21). has_car(t2,c22).
+has_car(t3,c31). has_car(t3,c32).
+has_car(t4,c41). has_car(t4,c42).
+has_car(t5,c51). has_car(t5,c52).
+has_car(t6,c61). has_car(t6,c62).
+car(C) :- has_car(_, C).
+
+short(c11). short(c21). short(c31). short(c42). short(c61).
+long(c12). long(c22). long(c32). long(c41). long(c51). long(c52). long(c62).
+
+rectangle(c11). rectangle(c21). rectangle(c31). rectangle(c42). rectangle(c52).
+ellipse(c12). ellipse(c22). ellipse(c32). ellipse(c41). ellipse(c51). ellipse(c61). ellipse(c62).
+
+triangle_load(c11). triangle_load(c21). triangle_load(c31). triangle_load(c51).
+circle_load(c12). circle_load(c22). circle_load(c32).
+circle_load(c41). circle_load(c42). circle_load(c52). circle_load(c61). circle_load(c62).
+
+#modeh eastbound(+train).
+#modeb has_car(+train, -car).
+#modeb short(+car).
+#modeb triangle_load(+car).
+#modeb rectangle(+car).
+
+#example eastbound(t1).
+#example eastbound(t2).
+#example eastbound(t3).
+#example not eastbound(t4).
+#example not eastbound(t5).
+#example not eastbound(t6).`,
+  },
+  grandfather: {
+    label: "Grandfather",
+    icon: "👴",
+    tag: "Relational",
+    description: "Learn grandfather from family facts — demonstrates chain reasoning",
+    source: `% Learn grandfather from parent and father relationships.
+% Demonstrates the '-' (output) variable marker for chain reasoning.
+
+male(tom). male(bob). male(jim).
+female(liz). female(ann). female(pat).
+person(X) :- male(X).
+person(X) :- female(X).
+
+parent(tom, bob). parent(tom, liz).
+parent(bob, ann). parent(bob, pat).
+parent(ann, jim).
+
+father(X, Y) :- parent(X, Y), male(X).
+
+% '+' = input variable  '-' = newly introduced (enables chaining)
+#modeh grandfather(+person, +person).
+#modeb father(+person, -person).
+#modeb parent(+person, +person).
+
+#example grandfather(tom, ann).
+#example grandfather(tom, pat).
+#example grandfather(bob, jim).
+#example not grandfather(tom, bob).
+#example not grandfather(tom, liz).
+#example not grandfather(bob, ann).
+#example not grandfather(ann, jim).`,
+  },
+  blocks: {
+    label: "Blocks World",
+    icon: "🧱",
+    tag: "Planning",
+    description: "EC planning: learn when a block can be picked up",
+    source: `% Blocks World — learn the pick-up precondition.
+% A block can be picked up only when it is clear (nothing on top).
+
+holdsAt(F,T) :- time(T), time(S), S<T, happens(E,S), initiates(E,F,S), not clipped(S,F,T).
+clipped(S,F,T) :- time(S), time(T), time(R), S<R, R<T, happens(E,R), terminates(E,F,R).
+holdsAt(F,T) :- time(T), initially(F), not clipped(0,F,T).
+
+time(0). time(1). time(2). time(3).
+block(a). block(b). block(c).
+
+initiates(pick_up(B), holding(B), T) :- block(B), time(T).
+terminates(pick_up(B), clear(B),   T) :- block(B), time(T).
+
+% Can only pick up a clear block
+:- happens(pick_up(B), T), not holdsAt(clear(B), T).
+
+% Initial state: A on B; B on table; C on table
+initially(clear(a)).
+initially(clear(c)).
+initially(on(a, b)).
+initially(on(b, table)).
+initially(on(c, table)).
+
+#example holdsAt(holding(a), 1).
+#example holdsAt(holding(c), 3).
+#example not holdsAt(holding(b), 1).
+
+% '#block' is a ground marker: a/b/c appear literally in the hypothesis.
+#modeh happens(pick_up(#block), +time).
+#modeb holdsAt(clear(#block), +time).`,
+  },
+  epidemic: {
+    label: "Epidemic",
+    icon: "🦠",
+    tag: "Temporal",
+    description: "EC disease spread: learn who infects whom via contact network",
+    source: `% Epidemic Spread — learn infection rules from a contact network.
+
+holdsAt(F,T) :- time(T), time(S), S<T, happens(E,S), initiates(E,F,S), not clipped(S,F,T).
+clipped(S,F,T) :- time(S), time(T), time(R), S<R, R<T, happens(E,R), terminates(E,F,R).
+holdsAt(F,T) :- time(T), initially(F), not clipped(0,F,T).
+
+time(0). time(1). time(2). time(3). time(4).
+person(alice). person(bob). person(carol).
+
+initiates(infect(P),  ill(P), T) :- person(P), time(T).
+terminates(recover(P), ill(P), T) :- person(P), time(T).
+
+% Contact network
+contact(alice, bob,   1).
+contact(bob,   carol, 2).
+
+% Infection only spreads through direct contact
+:- happens(infect(P), T), not contact(_, P, T).
+
+% Alice is patient zero; recovers at T=3
+initially(ill(alice)).
+happens(recover(alice), 3).
+
+#example holdsAt(ill(alice), 1).
+#example holdsAt(ill(bob),   2).
+#example holdsAt(ill(carol), 3).
+#example not holdsAt(ill(alice), 4).
+
+% '#person' is a ground marker: specific names appear in the hypothesis.
+#modeh happens(infect(#person), +time).
+#modeb holdsAt(ill(#person), +time).`,
   },
 } as const;
 
 type BenchmarkKey = keyof typeof BENCHMARKS;
+type Tab = "intro" | "ilp" | "advanced";
+
+const TAB_BENCHMARKS: Record<Tab, readonly BenchmarkKey[]> = {
+  intro:    ["penguins", "animals", "traffic", "propositional"],
+  ilp:      ["trains", "grandfather", "sugar"],
+  advanced: ["event_calculus", "blocks", "epidemic"],
+};
 
 // ── Clipboard hook ────────────────────────────────────────────────────────
 
@@ -190,7 +420,7 @@ function CopyButton({
       onClick={() => copy(text, id)}
       title={done ? "Copied!" : "Copy"}
       className={`transition-colors ${className}`}
-      style={{ color: done ? "#34d399" : undefined }}
+      style={{ color: done ? "#86efac" : undefined }}
     >
       {done ? <IconCheck /> : <IconCopy />}
     </button>
@@ -205,22 +435,22 @@ function PipelineIdleState() {
       <svg viewBox="0 0 500 110" className="w-full max-w-[480px]">
         {/* ─ Node 1: Abduction ─ */}
         <rect x="2" y="18" width="126" height="68" rx="11"
-          fill="rgba(139,92,246,.07)" stroke="rgba(139,92,246,.28)" strokeWidth="1.5" />
-        <text x="65" y="49" textAnchor="middle" fill="#a78bfa" fontSize="11.5"
+          fill="rgba(56,189,248,.07)" stroke="rgba(56,189,248,.28)" strokeWidth="1.5" />
+        <text x="65" y="49" textAnchor="middle" fill="#7dd3fc" fontSize="11.5"
           fontFamily="JetBrains Mono, monospace" fontWeight="600" letterSpacing="1">
           ABDUCE
         </text>
-        <text x="65" y="68" textAnchor="middle" fill="rgba(139,92,246,.4)" fontSize="9.5"
+        <text x="65" y="68" textAnchor="middle" fill="rgba(56,189,248,.4)" fontSize="9.5"
           fontFamily="Inter, system-ui, sans-serif">
           Generate candidates
         </text>
 
         {/* ─ Arrow 1 ─ */}
-        <line x1="128" y1="52" x2="178" y2="52" stroke="rgba(139,92,246,.35)"
+        <line x1="128" y1="52" x2="178" y2="52" stroke="rgba(56,189,248,.35)"
           strokeWidth="1.5" strokeDasharray="5 4">
           <animate attributeName="stroke-dashoffset" values="0;-27" dur="1s" repeatCount="indefinite" />
         </line>
-        <polygon points="178,47.5 186,52 178,56.5" fill="rgba(139,92,246,.45)" />
+        <polygon points="178,47.5 186,52 178,56.5" fill="rgba(56,189,248,.45)" />
 
         {/* ─ Node 2: Deduction ─ */}
         <rect x="187" y="18" width="126" height="68" rx="11"
@@ -243,12 +473,12 @@ function PipelineIdleState() {
 
         {/* ─ Node 3: Induction ─ */}
         <rect x="372" y="18" width="126" height="68" rx="11"
-          fill="rgba(16,185,129,.06)" stroke="rgba(16,185,129,.22)" strokeWidth="1.5" />
-        <text x="435" y="49" textAnchor="middle" fill="#6ee7b7" fontSize="11.5"
+          fill="rgba(74,222,128,.06)" stroke="rgba(74,222,128,.25)" strokeWidth="1.5" />
+        <text x="435" y="49" textAnchor="middle" fill="#86efac" fontSize="11.5"
           fontFamily="JetBrains Mono, monospace" fontWeight="600" letterSpacing="1">
           INDUCE
         </text>
-        <text x="435" y="68" textAnchor="middle" fill="rgba(16,185,129,.38)" fontSize="9.5"
+        <text x="435" y="68" textAnchor="middle" fill="rgba(74,222,128,.4)" fontSize="9.5"
           fontFamily="Inter, system-ui, sans-serif">
           Search hypothesis
         </text>
@@ -276,9 +506,9 @@ function PipelineIdleState() {
 
 function LoadingState() {
   const phases = [
-    { label: "Abduction",  color: "#8b5cf6", desc: "Generating hypothesis candidates…" },
-    { label: "Deduction",  color: "#06b6d4", desc: "Constructing kernel set…"          },
-    { label: "Induction",  color: "#10b981", desc: "Searching hypothesis space…"       },
+    { label: "Abduction",  color: "#38bdf8", desc: "Generating hypothesis candidates…" },
+    { label: "Deduction",  color: "#22d3ee", desc: "Constructing kernel set…"          },
+    { label: "Induction",  color: "#4ade80", desc: "Searching hypothesis space…"       },
   ];
   return (
     <div className="flex flex-col gap-3">
@@ -388,6 +618,7 @@ export default function Home() {
   const [program, setProgram]               = useState<string>(BENCHMARKS.penguins.source);
   const [depth, setDepth]                   = useState(10);
   const [activeBm, setActiveBm]             = useState<BenchmarkKey | null>("penguins");
+  const [activeTab, setActiveTab]           = useState<Tab>("intro");
   const [result, setResult]                 = useState<LearnResponse | null>(null);
   const [loading, setLoading]               = useState(false);
   const [error, setError]                   = useState<string | null>(null);
@@ -450,24 +681,24 @@ export default function Home() {
           className="absolute inset-0"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 1px 1px, rgba(139,92,246,.075) 1px, transparent 0)",
+              "radial-gradient(circle at 1px 1px, rgba(56,189,248,.06) 1px, transparent 0)",
             backgroundSize: "28px 28px",
           }}
         />
-        {/* Top radial glow */}
+        {/* Top radial glow — neutral */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 80% 45% at 50% -5%, rgba(139,92,246,.13) 0%, transparent 60%)",
+              "radial-gradient(ellipse 80% 40% at 50% -5%, rgba(255,255,255,.04) 0%, transparent 60%)",
           }}
         />
-        {/* Bottom subtle vignette */}
+        {/* Bottom — faint green only */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 100% 40% at 50% 110%, rgba(59,130,246,.06) 0%, transparent 60%)",
+              "radial-gradient(ellipse 100% 35% at 50% 110%, rgba(74,222,128,.04) 0%, transparent 60%)",
           }}
         />
       </div>
@@ -483,8 +714,14 @@ export default function Home() {
           {/* Logo */}
           <div
             className="logo-glow w-8 h-8 rounded-lg flex items-center justify-center
-              text-white font-bold text-sm flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, #7c3aed, #2563eb)" }}
+              font-bold text-sm flex-shrink-0"
+            style={{
+              background: "#1e2123",
+              border: "1px solid #2e3336",
+              color: "#c8d4da",
+              fontFamily: "'JetBrains Mono', monospace",
+              letterSpacing: "-0.5px",
+            }}
           >
             X
           </div>
@@ -546,48 +783,75 @@ export default function Home() {
               <p className="text-[10px] uppercase tracking-widest text-slate-600 font-semibold mb-2.5">
                 Load example
               </p>
+
+              {/* Tab bar */}
+              <div className="flex items-center border-b border-[var(--border)] mb-3">
+                {(["intro", "ilp", "advanced"] as const).map((tab) => {
+                  const labels: Record<Tab, string> = {
+                    intro: "Intro",
+                    ilp: "ILP Benchmarks",
+                    advanced: "Advanced",
+                  };
+                  const active = activeTab === tab;
+                  return (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className="px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-widest transition-colors"
+                      style={{
+                        color: active ? "#38bdf8" : "#3d4347",
+                        borderBottom: active ? "1px solid #38bdf8" : "1px solid transparent",
+                        marginBottom: "-1px",
+                      }}
+                    >
+                      {labels[tab]}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Benchmark cards for active tab */}
               <div className="grid grid-cols-2 gap-2">
-                {(Object.entries(BENCHMARKS) as [BenchmarkKey, (typeof BENCHMARKS)[BenchmarkKey]][]).map(
-                  ([key, bm]) => {
-                    const active = activeBm === key;
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => selectBenchmark(key)}
-                        className={`bench-btn ${active ? "active" : ""}`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <span className="text-lg leading-none mt-0.5">{bm.icon}</span>
-                          <div className="flex-1 min-w-0 text-left">
-                            <div className="flex items-center gap-1.5 mb-1">
-                              <span
-                                className="text-xs font-semibold"
-                                style={{ color: active ? "#a78bfa" : "#94a3b8" }}
-                              >
-                                {bm.label}
-                              </span>
-                              <span
-                                className="text-[8px] font-mono px-1.5 py-px rounded-full border ml-auto"
-                                style={{
-                                  color: active ? "#8b78f0" : "#475569",
-                                  borderColor: active ? "rgba(139,92,246,.3)" : "var(--border)",
-                                }}
-                              >
-                                {bm.tag}
-                              </span>
-                            </div>
-                            <p
-                              className="text-[10px] leading-relaxed"
-                              style={{ color: active ? "#7470a8" : "#3d4260" }}
+                {TAB_BENCHMARKS[activeTab].map((key) => {
+                  const bm = BENCHMARKS[key];
+                  const active = activeBm === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => selectBenchmark(key)}
+                      className={`bench-btn ${active ? "active" : ""}`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <span className="text-lg leading-none mt-0.5">{bm.icon}</span>
+                        <div className="flex-1 min-w-0 text-left">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span
+                              className="text-xs font-semibold"
+                              style={{ color: active ? "#7dd3fa" : "#94a3b8" }}
                             >
-                              {bm.description}
-                            </p>
+                              {bm.label}
+                            </span>
+                            <span
+                              className="text-[8px] font-mono px-1.5 py-px rounded-full border ml-auto"
+                              style={{
+                                color: active ? "#38bdf8" : "#3d4347",
+                                borderColor: active ? "rgba(56,189,248,.35)" : "var(--border)",
+                              }}
+                            >
+                              {bm.tag}
+                            </span>
                           </div>
+                          <p
+                            className="text-[10px] leading-relaxed"
+                            style={{ color: active ? "#4e8ba8" : "#333a3e" }}
+                          >
+                            {bm.description}
+                          </p>
                         </div>
-                      </button>
-                    );
-                  }
-                )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </section>
 
@@ -653,7 +917,7 @@ export default function Home() {
                   max={50}
                   value={depth}
                   onChange={(e) => setDepth(Number(e.target.value))}
-                  className="w-full accent-violet-500"
+                  className="w-full accent-slate-400"
                 />
               </div>
 
@@ -705,7 +969,7 @@ export default function Home() {
                     ["fact(a). r(X) :- …", "Background knowledge (normal ASP)"],
                   ].map(([code, desc]) => (
                     <>
-                      <code key={code} className="text-violet-400 font-mono whitespace-nowrap self-center">
+                      <code key={code} className="text-sky-300 font-mono whitespace-nowrap self-center">
                         {code}
                       </code>
                       <span key={desc} className="text-slate-600">{desc}</span>
@@ -730,7 +994,7 @@ export default function Home() {
                 <span
                   className="animate-fade-up text-[10px] font-mono px-2.5 py-0.5 rounded-full border"
                   style={result.success
-                    ? { color: "#34d399", borderColor: "rgba(52,211,153,.3)", background: "rgba(52,211,153,.06)" }
+                    ? { color: "#86efac", borderColor: "rgba(74,222,128,.3)", background: "rgba(74,222,128,.07)" }
                     : { color: "#f87171", borderColor: "rgba(248,113,113,.3)", background: "rgba(248,113,113,.06)" }
                   }
                 >
@@ -787,7 +1051,7 @@ export default function Home() {
                           <code className="flex-1 min-w-0">{rule}</code>
                           <button
                             onClick={() => copy(rule, `rule-${i}`)}
-                            className="flex-shrink-0 text-emerald-700 hover:text-emerald-400 transition-colors"
+                            className="flex-shrink-0 text-green-700 hover:text-green-300 transition-colors"
                             title="Copy rule"
                           >
                             {copied === `rule-${i}` ? <IconCheck /> : <IconCopy />}
@@ -818,14 +1082,14 @@ export default function Home() {
                     <PhaseCard
                       title="Abduction — minimal grounding"
                       badge="Phase 1"
-                      color="#8b5cf6"
+                      color="#38bdf8"
                       content={result.phases.abduction_program}
                       defaultOpen
                     />
                     <PhaseCard
                       title="Deduction — kernel construction"
                       badge="Phase 2"
-                      color="#06b6d4"
+                      color="#22d3ee"
                       content={
                         "% Deduction builds the kernel set in working memory.\n" +
                         "% The intermediate representation is not a serialisable ASP program.\n" +
@@ -835,7 +1099,7 @@ export default function Home() {
                     <PhaseCard
                       title="Induction — hypothesis search"
                       badge="Phase 3"
-                      color="#10b981"
+                      color="#4ade80"
                       content={result.phases.induction_program}
                     />
                   </div>

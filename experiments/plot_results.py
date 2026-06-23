@@ -73,15 +73,17 @@ def load_latest(results_dir: Path) -> list[dict]:
 
 def _setup_style(plt) -> None:
     """Apply a clean, publication-friendly style."""
-    plt.rcParams.update({
-        "figure.dpi": 150,
-        "font.size": 11,
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-        "axes.grid": True,
-        "grid.alpha": 0.35,
-        "grid.linestyle": "--",
-    })
+    plt.rcParams.update(
+        {
+            "figure.dpi": 150,
+            "font.size": 11,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "axes.grid": True,
+            "grid.alpha": 0.35,
+            "grid.linestyle": "--",
+        }
+    )
 
 
 PALETTE = ["#4C72B0", "#DD8452", "#55A868", "#C44E52", "#8172B3"]
@@ -163,10 +165,17 @@ def plot_summary_table(rows: list[dict], out_dir: Path, fmt: str) -> Path:
     for r in rows:
         ok = "✓" if r["success"] == "True" else "✗"
         hyp = r["hypothesis"][:40] + "…" if len(r["hypothesis"]) > 40 else r["hypothesis"]
-        table_data.append([
-            r["benchmark"], ok, r["n_rules"], r["n_examples"],
-            f"{float(r['runtime_s']):.3f}", f"{float(r['rule_complexity']):.1f}", hyp,
-        ])
+        table_data.append(
+            [
+                r["benchmark"],
+                ok,
+                r["n_rules"],
+                r["n_examples"],
+                f"{float(r['runtime_s']):.3f}",
+                f"{float(r['rule_complexity']):.1f}",
+                hyp,
+            ]
+        )
 
     fig, ax = plt.subplots(figsize=(13, 1.2 + 0.45 * len(rows)))
     ax.axis("off")
@@ -210,11 +219,15 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     p.add_argument(
-        "--results-dir", type=Path, default=RESULTS_DIR,
+        "--results-dir",
+        type=Path,
+        default=RESULTS_DIR,
         help="Directory containing results.csv",
     )
     p.add_argument(
-        "--format", choices=["png", "pdf", "svg"], default="png",
+        "--format",
+        choices=["png", "pdf", "svg"],
+        default="png",
         help="Output figure format",
     )
     return p.parse_args()

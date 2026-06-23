@@ -55,6 +55,30 @@ app.add_middleware(
 _BENCHMARKS_DIR = Path(__file__).parent.parent.parent / "experiments" / "benchmarks"
 
 BENCHMARK_META = {
+    "trains": {
+        "title": "Michalski's Trains",
+        "description": "The most cited ILP benchmark (1969): learn what makes a train eastbound from car properties.",  # noqa: E501
+        "expected": "eastbound(V1) :- has_car(V1, V2), short(V2), triangle_load(V2).",
+        "file": "trains.lp",
+    },
+    "grandfather": {
+        "title": "Grandfather",
+        "description": "Classic genealogy task: learn grandfather from father and parent, demonstrating chain reasoning.",
+        "expected": "grandfather(V1, V2) :- father(V1, V3), parent(V3, V2).",
+        "file": "grandfather.lp",
+    },
+    "blocks": {
+        "title": "Blocks World",
+        "description": "EC planning domain: learn when a block can be picked up (it must be clear).",
+        "expected": "happens(pick_up(a),T) :- holdsAt(clear(a),T).\nhappens(pick_up(c),T) :- holdsAt(clear(c),T).",
+        "file": "blocks.lp",
+    },
+    "epidemic": {
+        "title": "Epidemic Spread",
+        "description": "EC disease propagation: learn who infects whom based on the contact network.",
+        "expected": "happens(infect(bob),T) :- holdsAt(ill(alice),T).\nhappens(infect(carol),T) :- holdsAt(ill(bob),T).",
+        "file": "epidemic.lp",
+    },
     "penguins": {
         "title": "Penguins",
         "description": "Classic ILP task: learn that birds fly unless they are penguins.",
@@ -74,10 +98,22 @@ BENCHMARK_META = {
         "file": "traffic.lp",
     },
     "propositional": {
-        "title": "Propositional Circuit",
-        "description": "Learn a 0-arity AND gate: output holds when both inputs are active.",
-        "expected": "output :- input_a, input_b.",
+        "title": "Propositional",
+        "description": "0-arity: learn that output holds given background facts (minimal hypothesis).",
+        "expected": "output.",
         "file": "propositional.lp",
+    },
+    "sugar": {
+        "title": "Sugar Domain",
+        "description": "Learn priority-ordered sugar consumption: glucose first, lactose only when glucose is unavailable.",
+        "expected": "happens(use(glucose),T) :- holdsAt(available(glucose),T).\nhappens(use(lactose),T) :- holdsAt(available(lactose),T), not holdsAt(available(glucose),T).",
+        "file": "sugar.lp",
+    },
+    "event_calculus": {
+        "title": "Event Calculus",
+        "description": "Learn agent behaviour over time: work happens when the agent is awake.",
+        "expected": "happens(work(alice),V1) :- holdsAt(awake(alice),V1).",
+        "file": "event_calculus.lp",
     },
 }
 

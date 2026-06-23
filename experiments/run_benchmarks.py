@@ -37,8 +37,10 @@ Metrics recorded per benchmark
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import csv
 import json
+import os
 import resource
 import sys
 import time
@@ -67,7 +69,7 @@ def _peak_memory_mb() -> float:
     # Linux reports bytes; macOS reports bytes too (both as int)
     # resource.ru_maxrss is in kilobytes on Linux, bytes on macOS
     if sys.platform == "darwin":
-        return usage / (1024 ** 2)
+        return usage / (1024**2)
     return usage / 1024  # Linux: kb → MiB
 
 
@@ -143,9 +145,19 @@ def run_benchmark(
 
 
 CSV_FIELDS = [
-    "benchmark", "success", "n_rules", "n_examples", "n_background",
-    "runtime_s", "peak_memory_mb", "rule_complexity", "hypothesis",
-    "error", "seed", "depth", "timestamp",
+    "benchmark",
+    "success",
+    "n_rules",
+    "n_examples",
+    "n_background",
+    "runtime_s",
+    "peak_memory_mb",
+    "rule_complexity",
+    "hypothesis",
+    "error",
+    "seed",
+    "depth",
+    "timestamp",
 ]
 
 
@@ -167,8 +179,14 @@ def write_json(rows: list[dict], path: Path) -> None:
         json.dump(rows, f, indent=2)
 
 
-def print_summary(rows: list[dict]) -> None:
-    """Print a human-readable results table to stdout."""
+def print_summary(rows: list[dict], wall_time: float | None = None) -> None:
+    """Print a human-readable results table to stdout.
+
+    Args:
+        rows: List of benchmark result dicts.
+        wall_time: If provided (parallel mode), show wall-clock time alongside
+            the sum of per-benchmark CPU times.
+    """
     header = f"{'Benchmark':<18} {'OK':>4} {'Rules':>5} {'Time(s)':>8} {'Mem(MB)':>8}  Hypothesis"
     sep = "-" * 80
     print(sep)
@@ -184,8 +202,15 @@ def print_summary(rows: list[dict]) -> None:
         )
     print(sep)
     n_ok = sum(1 for r in rows if r["success"])
-    total_time = sum(r["runtime_s"] for r in rows)
-    print(f"  {n_ok}/{len(rows)} benchmarks solved  |  total time: {total_time:.3f}s")
+    cpu_time = sum(r["runtime_s"] for r in rows)
+    if wall_time is not None:
+        print(
+            f"  {n_ok}/{len(rows)} benchmarks solved  |  "
+            f"wall time: {wall_time:.3f}s  |  CPU time: {cpu_time:.3f}s  "
+            f"(~{cpu_time / wall_time:.1f}× speedup)"
+        )
+    else:
+        print(f"  {n_ok}/{len(rows)} benchmarks solved  |  total time: {cpu_time:.3f}s")
     print(sep)
 
 
@@ -202,12 +227,22 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--benchmark",
         metavar="NAME",
-        help="Run only this benchmark (stem of .lp file, e.g. 'penguins'). "
-             "Omit to run all.",
+        help="Run only this benchmark (stem of .lp file, e.g. 'penguins'). Omit to run all.",
     )
     p.add_argument("--depth", type=int, default=10, help="Deduction depth.")
     p.add_argument("--seed", type=int, default=0, help="Random seed (reserved for future use).")
     p.add_argument("--timeout", type=float, default=60.0, help="Per-benchmark timeout in seconds.")
+    p.add_argument(
+        "--jobs",
+        "-j",
+        type=int,
+        default=0,
+        metavar="N",
+        help=(
+            "Number of parallel worker processes (default: 0 = all CPU cores). "
+            "Use --jobs 1 to force sequential execution."
+        ),
+    )
     p.add_argument(
         "--no-append",
         action="store_true",
@@ -237,15 +272,66 @@ def main() -> None:
             print(f"No .lp files found in {BENCHMARKS_DIR}", file=sys.stderr)
             sys.exit(1)
 
-    print(f"Running {len(lp_files)} benchmark(s) [depth={args.depth}, seed={args.seed}]")
+    n_workers = args.jobs if args.jobs > 0 else os.cpu_count() or 1
+    # Cap workers to number of benchmarks — no point spinning up more processes
+    n_workers = min(n_workers, len(lp_files))
+    parallel = n_workers > 1 and len(lp_files) > 1
 
+    mode_label = f"parallel, {n_workers} workers" if parallel else "sequential"
+    print(
+        f"Running {len(lp_files)} benchmark(s) [depth={args.depth}, seed={args.seed}, {mode_label}]"
+    )
+
+    wall_t0 = time.perf_counter()
     rows: list[dict] = []
-    for lp in lp_files:
-        print(f"  {lp.stem}...", end=" ", flush=True)
-        row = run_benchmark(lp, depth=args.depth, seed=args.seed)
-        rows.append(row)
-        status = "OK" if row["success"] else ("ERROR" if row["error"] else "NO HYP")
-        print(f"{status}  ({row['runtime_s']:.3f}s)")
+
+    if parallel:
+        # Submit all benchmarks concurrently; preserve input order for the
+        # results table while printing completions as they arrive.
+        futures: dict[concurrent.futures.Future, str] = {}
+        with concurrent.futures.ProcessPoolExecutor(max_workers=n_workers) as pool:
+            for lp in lp_files:
+                fut = pool.submit(run_benchmark, lp, args.depth, args.seed)
+                futures[fut] = lp.stem
+
+            completed: dict[str, dict] = {}
+
+            for fut in concurrent.futures.as_completed(futures):
+                name = futures[fut]
+                try:
+                    row = fut.result()
+                except Exception as exc:  # noqa: BLE001
+                    row = {
+                        "benchmark": name,
+                        "success": False,
+                        "n_rules": 0,
+                        "n_examples": 0,
+                        "n_background": 0,
+                        "runtime_s": 0.0,
+                        "peak_memory_mb": 0.0,
+                        "rule_complexity": 0.0,
+                        "hypothesis": "",
+                        "error": f"{type(exc).__name__}: {exc}",
+                        "seed": args.seed,
+                        "depth": args.depth,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    }
+                status = "OK" if row["success"] else ("ERROR" if row["error"] else "NO HYP")
+                print(f"  {name}...  {status}  ({row['runtime_s']:.3f}s)", flush=True)
+                completed[name] = row
+
+        rows = [completed[lp.stem] for lp in lp_files]  # restore input order
+    else:
+        for lp in lp_files:
+            print(f"  {lp.stem}...", end=" ", flush=True)
+            row = run_benchmark(lp, depth=args.depth, seed=args.seed)
+            rows.append(row)
+            status = "OK" if row["success"] else ("ERROR" if row["error"] else "NO HYP")
+            print(f"{status}  ({row['runtime_s']:.3f}s)")
+
+    # Print wall-clock total when parallel (per-benchmark times don't add up to wall time)
+    if parallel:
+        print()  # extra blank line — completions printed out-of-order above
 
     # Write results
     results_dir = args.results_dir
@@ -262,8 +348,9 @@ def main() -> None:
     write_json(existing + rows, json_path)
     write_json(rows, latest_path)
 
+    wall_elapsed = time.perf_counter() - wall_t0
     print(f"\nResults written to {results_dir}/")
-    print_summary(rows)
+    print_summary(rows, wall_elapsed if parallel else None)
 
 
 if __name__ == "__main__":

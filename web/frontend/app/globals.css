@@ -6,20 +6,38 @@
 
 /* ── Design tokens ─────────────────────────────────────────────────────── */
 :root {
-  --bg:            #080b14;
-  --surface:       #0e1220;
-  --surface-2:     #131826;
-  --surface-3:     #181d2e;
-  --border:        #1c2033;
-  --border-2:      #252a3f;
-  --accent:        #8b5cf6;
-  --accent-blue:   #3b82f6;
-  --accent-cyan:   #06b6d4;
-  --accent-emerald:#10b981;
-  --accent-dim:    #5b37d4;
-  --text:          #e2e4f0;
-  --text-dim:      #636882;
-  --green:         #34d399;
+  /* Charcoal / near-black surfaces */
+  --bg:            #0d0f10;
+  --surface:       #141618;
+  --surface-2:     #1a1d1f;
+  --surface-3:     #202326;
+  --border:        #272b2e;
+  --border-2:      #313538;
+
+  /* Ice BLUE — phases 1+2, borders, button, focus rings */
+  --blue:          #38bdf8;      /* sky-400 */
+  --blue-light:    #7dd3fa;      /* sky-300 */
+  --blue-pale:     #bae6fd;      /* sky-200 */
+  --blue-dim:      #0c3a55;
+
+  /* Ice GREEN — phase 3, hypothesis, success */
+  --green:         #4ade80;      /* green-400 */
+  --green-light:   #86efac;      /* green-300 */
+  --green-pale:    #bbf7d0;      /* green-200 */
+  --green-dim:     #14532d;
+
+  /* Keep old aliases pointing to their distinct colour */
+  --accent:        #38bdf8;
+  --accent-blue:   #38bdf8;
+  --accent-cyan:   #7dd3fa;
+  --accent-emerald:#4ade80;
+  --accent-dim:    #0c3a55;
+
+  /* Text — white / light gray */
+  --text:          #f0f4f6;
+  --text-dim:      #52595e;
+
+  /* Status */
   --red:           #f87171;
   --yellow:        #fbbf24;
 }
@@ -50,14 +68,8 @@ html, body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(139,92,246,.45),
-                0 0 22px rgba(139,92,246,.18);
-  }
-  50% {
-    box-shadow: 0 0 18px rgba(139,92,246,.75),
-                0 0 40px rgba(139,92,246,.28);
-  }
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,.08); }
+  50%       { box-shadow: 0 0 0 1px rgba(255,255,255,.16); }
 }
 
 @keyframes fade-in-up {
@@ -96,7 +108,7 @@ html, body {
 /* ── Utility classes ───────────────────────────────────────────────────── */
 
 .gradient-text {
-  background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 50%, #34d399 100%);
+  background: linear-gradient(135deg, #7dd3fa 0%, #38bdf8 40%, #4ade80 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -150,8 +162,8 @@ html, body {
   line-height: 1.75;
   tab-size: 2;
   resize: none;
-  background: #060910;
-  color: #c8cce8;
+  background: #0b0d0e;
+  color: #d4e8ef;
   border: 1px solid var(--border);
   border-top: none;
   border-radius: 0 0 8px 8px;
@@ -162,8 +174,8 @@ html, body {
 }
 
 .code-editor:focus {
-  border-color: rgba(139, 92, 246, .45);
-  box-shadow: 0 0 0 1px rgba(139, 92, 246, .15) inset;
+  border-color: rgba(255, 255, 255, .18);
+  box-shadow: none;
 }
 
 /* ── Phase cards ───────────────────────────────────────────────────────── */
@@ -190,18 +202,18 @@ html, body {
 }
 
 .phase-header:hover {
-  background: rgba(139, 92, 246, .05);
+  background: rgba(255, 255, 255, .03);
 }
 
 /* ── Hypothesis rules ──────────────────────────────────────────────────── */
 .hypothesis-rule {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  background: rgba(52, 211, 153, .055);
-  border: 1px solid rgba(52, 211, 153, .18);
+  background: rgba(74, 222, 128, .055);
+  border: 1px solid rgba(74, 222, 128, .22);
   border-radius: 8px;
   padding: 10px 14px;
-  color: #6ee7b7;
+  color: #86efac;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -211,8 +223,8 @@ html, body {
 }
 
 .hypothesis-rule:hover {
-  background: rgba(52, 211, 153, .09);
-  border-color: rgba(52, 211, 153, .28);
+  background: rgba(74, 222, 128, .09);
+  border-color: rgba(74, 222, 128, .35);
 }
 
 .hypothesis-rule:nth-child(1) { animation-delay: .04s; }
@@ -221,28 +233,30 @@ html, body {
 .hypothesis-rule:nth-child(4) { animation-delay: .19s; }
 .hypothesis-rule:nth-child(5) { animation-delay: .24s; }
 
-/* ── Run button ────────────────────────────────────────────────────────── */
+/* ── Run button — charcoal/white ───────────────────────────────────────── */
 .run-btn {
-  background: linear-gradient(135deg, #7c3aed, #2563eb);
-  color: white;
-  border: none;
+  background: #2a2e31;
+  color: #f0f4f6;
+  border: 1px solid #3d4347;
   cursor: pointer;
-  transition: box-shadow .2s, transform .15s, opacity .15s;
-  box-shadow: 0 2px 14px rgba(124, 58, 237, .38);
+  transition: background .15s, border-color .15s, box-shadow .15s, transform .12s, opacity .15s;
+  box-shadow: none;
 }
 
 .run-btn:hover:not(:disabled) {
-  box-shadow: 0 4px 22px rgba(124, 58, 237, .58);
+  background: #333739;
+  border-color: #4a5055;
+  box-shadow: 0 2px 10px rgba(0,0,0,.35);
   transform: translateY(-1px);
 }
 
 .run-btn:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(124, 58, 237, .4);
+  background: #252829;
 }
 
 .run-btn:disabled {
-  opacity: .4;
+  opacity: .35;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -288,10 +302,9 @@ html, body {
 }
 
 .bench-btn.active {
-  border-color: rgba(139, 92, 246, .5);
-  background: rgba(139, 92, 246, .07);
-  box-shadow: 0 0 0 1px rgba(139, 92, 246, .15),
-              inset 0 0 24px rgba(139, 92, 246, .03);
+  border-color: rgba(56, 189, 248, .5);
+  background: rgba(255, 255, 255, .04);
+  box-shadow: none;
 }
 
 /* ── Ping dot (loading) ────────────────────────────────────────────────── */

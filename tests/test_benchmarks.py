@@ -221,15 +221,23 @@ class TestBenchmarkRunner:
         spec.loader.exec_module(mod)
 
         row = {
-            "benchmark": "test", "success": True, "n_rules": 1,
-            "n_examples": 2, "n_background": 3, "runtime_s": 0.1,
-            "peak_memory_mb": 0.0, "rule_complexity": 1.0,
-            "hypothesis": "p(X) :- q(X).", "error": "",
-            "seed": 0, "depth": 10, "timestamp": "2024-01-01T00:00:00Z",
+            "benchmark": "test",
+            "success": True,
+            "n_rules": 1,
+            "n_examples": 2,
+            "n_background": 3,
+            "runtime_s": 0.1,
+            "peak_memory_mb": 0.0,
+            "rule_complexity": 1.0,
+            "hypothesis": "p(X) :- q(X).",
+            "error": "",
+            "seed": 0,
+            "depth": 10,
+            "timestamp": "2024-01-01T00:00:00Z",
         }
         out = tmp_path / "out.csv"
         mod.write_csv([row], out, append=False)
         assert out.exists()
         content = out.read_text()
         assert "benchmark" in content  # header
-        assert "test" in content       # data
+        assert "test" in content  # data

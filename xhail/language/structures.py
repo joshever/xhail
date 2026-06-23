@@ -2,10 +2,10 @@ import copy
 
 from ..language.terms import Atom, Normal, PlaceMarker
 
-
 # ---------------------------------------------------------------------------
 # Shared helper
 # ---------------------------------------------------------------------------
+
 
 def generalise_atom(atom: Atom, n: int = 1, replace_outputs: bool = True):
     """Replace PlaceMarker terms in *atom* with fresh variable Normals.
@@ -21,21 +21,28 @@ def generalise_atom(atom: Atom, n: int = 1, replace_outputs: bool = True):
         ``(atom, n)`` where *n* is the next unused variable counter.
     """
     for idt, term in enumerate(atom.terms):
-        if isinstance(term, PlaceMarker) and (replace_outputs or term.marker == "+"):
-            atom.terms[idt] = Normal(f"V{n}")
-            atom.terms[idt].setType(term.type)
+        if isinstance(term, PlaceMarker) and (replace_outputs or term.marker in ("+", "#")):
+            # '#' (ground-constant) placemarkers are treated like '+' (input) here:
+            # both become typed variables so the ASP abduction program can enumerate
+            # the right constants via type constraints (e.g. sugar(V1)).
+            # Full '#' semantics (keeping the constant ground in the hypothesis) is a
+            # known limitation and is tracked as future work.
+            new_normal = Normal(f"V{n}")
+            new_normal.setType(term.type)
+            atom.terms[idt] = new_normal
             n += 1
-        elif not isinstance(term, PlaceMarker):
-            term, n = generalise_atom(term, n, replace_outputs)
+        elif isinstance(term, Atom):
+            # Recurse into compound sub-terms (e.g. happens(use(+sugar),+time)).
+            atom.terms[idt], n = generalise_atom(term, n, replace_outputs)
     return atom, n
 
 
 # ----- STRUCTURE CLASS DEFINITIONS ------ #
 # ---------- example ----------- #
 class Example:
-    KEY_WORD = '#example'
-    WEIGHT_OPERATOR = '='
-    PRIORITY_OPERATOR = '@'
+    KEY_WORD = "#example"
+    WEIGHT_OPERATOR = "="
+    PRIORITY_OPERATOR = "@"
     weight = 1
     priority = 1
 
@@ -51,30 +58,37 @@ class Example:
 
     def createProgram(self):
         program = []
-        negation_string = 'not ' if self.negation else ''
-        program.append('%#maximize{' + f'{str(self.weight)}@{str(self.priority)} : {negation_string}{self.atom}' + '}.')
-        program.append(f':- {self.atom}.' if self.negation else f':- not {self.atom}.')
-        return '\n'.join(program)
+        negation_string = "not " if self.negation else ""
+        program.append(
+            "%#maximize{"
+            + f"{str(self.weight)}@{str(self.priority)} : {negation_string}{self.atom}"
+            + "}."
+        )
+        program.append(f":- {self.atom}." if self.negation else f":- not {self.atom}.")
+        return "\n".join(program)
 
     def __str__(self):
-        return '#example '+ ('not ' if self.negation else '') + str(self.atom)
+        return "#example " + ("not " if self.negation else "") + str(self.atom)
+
 
 # ---------- modeh ----------- #
 class Modeh:
-    KEY_WORD = '#modeh'
-    WEIGHT_OPERATOR = '='
-    PRIORITY_OPERATOR = '@'
-    CONSTRAINT_OPERATOR = ':'
-    CONSTRAINT_SEPARATOR = '-'
+    KEY_WORD = "#modeh"
+    WEIGHT_OPERATOR = "="
+    PRIORITY_OPERATOR = "@"
+    CONSTRAINT_OPERATOR = ":"
+    CONSTRAINT_SEPARATOR = "-"
     weight = 1
     priority = 2
-    min = 0 #default 0
-    max = 1000000 #this just has to be super big by default
+    min = 0  # default 0
+    max = 1000000  # this just has to be super big by default
 
-    def __init__(self, atom: Atom, n: str): #these will be placeholder atoms
+    def __init__(self, atom: Atom, n: str):  # these will be placeholder atoms
         self.atom = atom
         self.n = n
-        self.types = [term.type for term in atom.terms]
+        # Collect type labels from PlaceMarker terms only; Atom sub-terms (e.g.
+        # happens(use(+sugar),+time)) don't have a .type attribute and are skipped.
+        self.types = [term.type for term in atom.terms if isinstance(term, PlaceMarker)]
 
     def setWeight(self, weight):
         self.weight = weight
@@ -98,36 +112,56 @@ class Modeh:
         # 0-arity case: no type constraints or variables needed
         if not generalised_atom.terms:
             program = []
-            program.append(f'{self.min} ' + '{ abduced_' + str(generalised_atom) + ' } ' + f'{self.max}.')
-            program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)} : abduced_{generalised_atom}' + '}.')
-            program.append(f'{generalised_atom} :- abduced_{generalised_atom}.')
-            return '\n'.join(program)
+            program.append(
+                f"{self.min} " + "{ abduced_" + str(generalised_atom) + " } " + f"{self.max}."
+            )
+            program.append(
+                "#minimize{"
+                + f"{str(self.weight)}@{str(self.priority)} : abduced_{generalised_atom}"
+                + "}."
+            )
+            program.append(f"{generalised_atom} :- abduced_{generalised_atom}.")
+            return "\n".join(program)
 
-        types = ', '.join(generalised_atom.getTypes())
-        variables = ', '.join([f"V{i}" for i in range(1, n)])
+        types = ", ".join(generalised_atom.getTypes())
+        variables = ", ".join([f"V{i}" for i in range(1, n)])
 
         program = []
-        program.append(str(self.min) + ' { abduced_' + str(generalised_atom) + ' : ' + types + ' } ' + str(self.max) + '.')
-        program.append('#minimize{' + f'{str(self.weight)}@{str(self.priority)}, {variables}: abduced_{generalised_atom}, {types}' + '}.')
-        program.append(f'{generalised_atom} :- abduced_{generalised_atom}, {types}.')
-        return '\n'.join(program)
+        program.append(
+            str(self.min)
+            + " { abduced_"
+            + str(generalised_atom)
+            + " : "
+            + types
+            + " } "
+            + str(self.max)
+            + "."
+        )
+        program.append(
+            "#minimize{"
+            + f"{str(self.weight)}@{str(self.priority)}, {variables}: abduced_{generalised_atom}, {types}"
+            + "}."
+        )
+        program.append(f"{generalised_atom} :- abduced_{generalised_atom}, {types}.")
+        return "\n".join(program)
 
     def __str__(self):
-        return '#modeh ' + str(self.atom)
+        return "#modeh " + str(self.atom)
+
 
 # ---------- modeb ----------- #
 class Modeb:
-    KEY_WORD = '#modeb'
-    WEIGHT_OPERATOR = '='
-    PRIORITY_OPERATOR = '@'
-    CONSTRAINT_OPERATOR = ':'
-    CONSTRAINT_SEPARATOR = '-'
+    KEY_WORD = "#modeb"
+    WEIGHT_OPERATOR = "="
+    PRIORITY_OPERATOR = "@"
+    CONSTRAINT_OPERATOR = ":"
+    CONSTRAINT_SEPARATOR = "-"
     weight = 1
     priority = 1
-    min = 0 #default 0
-    max = 1000000 #this just has to be super big by default
+    min = 0  # default 0
+    max = 1000000  # this just has to be super big by default
 
-    def __init__(self, atom: Atom, n: str, negation=False): #these will be placeholder atoms
+    def __init__(self, atom: Atom, n: str, negation=False):  # these will be placeholder atoms
         self.atom = atom
         self.n = n
         self.negation = negation
@@ -151,12 +185,14 @@ class Modeb:
         if self.negation:
             new_atom = copy.deepcopy(self.atom)
             generalised_atom, _ = self.generalise(new_atom)
-            not_pred = 'not_' + generalised_atom.predicate  # D1 fix: was a nested same-quote f-string (PEP 701)
+            not_pred = (
+                "not_" + generalised_atom.predicate
+            )  # D1 fix: was a nested same-quote f-string (PEP 701)
             not_atom = Atom(not_pred, generalised_atom.terms)
             if not generalised_atom.terms:  # 0-arity case
                 program = f"{not_atom} :- not {generalised_atom}."
             else:
-                types = ', '.join(generalised_atom.getTypes())
+                types = ", ".join(generalised_atom.getTypes())
                 program = f"{not_atom} :- not {generalised_atom}, {types}."
         else:
             program = ""
@@ -164,5 +200,5 @@ class Modeb:
         return program
 
     def __str__(self):
-        neg = 'not ' if self.negation else ''  # D1 fix: was a nested same-quote f-string (PEP 701)
-        return f'#modeb {neg}{self.atom}'
+        neg = "not " if self.negation else ""  # D1 fix: was a nested same-quote f-string (PEP 701)
+        return f"#modeb {neg}{self.atom}"

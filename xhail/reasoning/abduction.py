@@ -5,6 +5,7 @@ from .utils import load_background, load_examples
 
 logger = logging.getLogger(__name__)
 
+
 # ---------- abductor ----------- #
 class Abduction:
     # ---------- examples, modehs, background, model required ----------- #
@@ -16,17 +17,17 @@ class Abduction:
         self.model = model
 
     def loadAbducibles(self, modehs):
-        abduciblesProgram = '%ABDUCIBLES%\n'
+        abduciblesProgram = "%ABDUCIBLES%\n"
         for modeh in modehs:
-            abduciblesProgram += modeh.createProgram() + '\n'
-        return abduciblesProgram + '\n'
+            abduciblesProgram += modeh.createProgram() + "\n"
+        return abduciblesProgram + "\n"
 
     def loadNegations(self, modebs):
-        negationProgram = '%NEGATIONS%\n'
+        negationProgram = "%NEGATIONS%\n"
         for modeb in modebs:
             if modeb.negation:
-                negationProgram += modeb.createProgram() + '\n'
-        return negationProgram + '\n'
+                negationProgram += modeb.createProgram() + "\n"
+        return negationProgram + "\n"
 
     # ---------- run the abductive phase ---------- #
     def runPhase(self):

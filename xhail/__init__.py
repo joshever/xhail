@@ -22,7 +22,13 @@ Original XHAIL algorithm:
     Journal of Applied Logic, 7(3), 329–340.
 """
 
-from .core import LearningResult, learn
+from .core import LearningResult, PhaseCallback, learn, learn_from_string
 
 __version__ = "0.1.0"
-__all__ = ["learn", "LearningResult", "__version__"]
+__all__ = [
+    "learn",
+    "learn_from_string",
+    "LearningResult",
+    "PhaseCallback",
+    "__version__",
+]

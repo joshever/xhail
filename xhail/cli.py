@@ -36,9 +36,7 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument(
-        "--version", action="version", version=f"xhail {__version__}"
-    )
+    parser.add_argument("--version", action="version", version=f"xhail {__version__}")
 
     sub = parser.add_subparsers(dest="command", metavar="COMMAND")
     sub.required = True
@@ -63,7 +61,8 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Maximum deduction depth (default: 10).",
     )
     run_p.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         action="store_true",
         help="Print phase progress to stderr.",
     )
@@ -106,8 +105,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "run":
         return _cmd_run(args)
 
-    parser.print_help()
-    return 1
+    parser.print_help()  # pragma: no cover — unreachable with sub.required=True
+    return 1  # pragma: no cover
 
 
 def _cmd_run(args: argparse.Namespace) -> int:
@@ -141,5 +140,5 @@ def _cmd_run(args: argparse.Namespace) -> int:
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     sys.exit(main())

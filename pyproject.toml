@@ -64,8 +64,13 @@ include = ["xhail", "xhail.*"]
 exclude = ["tests*", "play*"]
 
 [tool.setuptools.package-data]
-# Include .lp files bundled with the package (e.g. xhail/output/*.lp)
-xhail = ["**/*.lp"]
+# No .lp data files are bundled — benchmark .lp files live in experiments/,
+# and xhail/output/ contains only runtime-generated debug output.
+xhail = []
+
+[tool.setuptools.exclude-package-data]
+# Exclude PLY's generated parse table and any runtime-written debug files.
+xhail = ["parser/parsetab.py", "output/*.lp"]
 
 # ---------------------------------------------------------------------------
 # Ruff (linting + formatting)

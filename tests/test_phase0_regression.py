@@ -8,24 +8,26 @@ These tests verify:
   4. ParseError is raised on bad input, not a NoneType crash (D4).
   5. Idiomatic ':- body.' constraint syntax parses (D5).
   6. The Model class uses instance state, not shared class state (D10).
-  7. Golden-output regression for test.lp (penguins task).
-  8. Golden-output regression for josh.lp (traffic task).
+  7. Golden-output regression for penguins.lp (canonical penguins benchmark).
+  8. Golden-output regression for traffic.lp (canonical traffic benchmark).
 
 Tests 7 and 8 are integration tests that call clingo; they are marked
 with the 'integration' pytest mark so they can be skipped in fast CI:
     pytest -m "not integration"
 """
+
 from pathlib import Path
 
 import pytest
 
 REPO_ROOT = Path(__file__).parent.parent
-EXAMPLES_DIR = REPO_ROOT  # .lp files live in the repo root for now
+EXAMPLES_DIR = REPO_ROOT / "experiments" / "benchmarks"
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def run_pipeline(lp_file: Path, depth: int = 10) -> str:
     """Run the full XHAIL 3-phase pipeline via the public API.
@@ -42,6 +44,7 @@ def run_pipeline(lp_file: Path, depth: int = 10) -> str:
 # ---------------------------------------------------------------------------
 # Unit tests — fast, no clingo required
 # ---------------------------------------------------------------------------
+
 
 class TestImports:
     """D1: Package must import cleanly on Python < 3.12 (no nested same-quote f-strings)."""
@@ -64,15 +67,17 @@ class TestConstraintConstructor:
 
     def test_constraint_one_arg(self):
         from xhail.language.terms import Atom, Constraint, Literal
-        body = [Literal(Atom('penguin', []), False)]
+
+        body = [Literal(Atom("penguin", []), False)]
         c = Constraint(body)
-        assert str(c) == ':- penguin.'
+        assert str(c) == ":- penguin."
 
     def test_constraint_str_with_terms(self):
         from xhail.language.terms import Atom, Constraint, Literal, Normal
-        body = [Literal(Atom('bird', [Normal('X')]), False)]
+
+        body = [Literal(Atom("bird", [Normal("X")]), False)]
         c = Constraint(body)
-        assert ':- bird(X).' == str(c)
+        assert ":- bird(X)." == str(c)
 
 
 class TestPropositionalParsing:
@@ -80,39 +85,44 @@ class TestPropositionalParsing:
 
     def test_propositional_fact(self):
         from xhail.parser.parser import Parser
+
         p = Parser()
-        p.loadString('q.')
+        p.loadString("q.")
         result = p.parseProgram()
         assert len(result) == 1
-        assert str(result[0]) == 'q.'
+        assert str(result[0]) == "q."
 
     def test_propositional_rule(self):
         from xhail.parser.parser import Parser
+
         p = Parser()
-        p.loadString('p :- q, r.')
+        p.loadString("p :- q, r.")
         result = p.parseProgram()
         assert len(result) == 1
-        assert 'p' in str(result[0])
+        assert "p" in str(result[0])
 
     def test_propositional_example(self):
         from xhail.parser.parser import Parser
+
         p = Parser()
-        p.loadString('#example p.')
+        p.loadString("#example p.")
         result = p.parseProgram()
         assert len(result) == 1
 
     def test_propositional_modeh(self):
         from xhail.parser.parser import Parser
+
         p = Parser()
-        p.loadString('#modeh q.')
+        p.loadString("#modeh q.")
         result = p.parseProgram()
         assert len(result) == 1
 
-    def test_example1_lp_parses(self):
-        """The repo's own example1.lp must parse without raising."""
+    def test_penguins_lp_parses(self):
+        """The penguins benchmark must parse without raising."""
         from xhail.parser.parser import Parser
+
         p = Parser()
-        p.loadFile(str(EXAMPLES_DIR / 'example1.lp'))
+        p.loadFile(str(EXAMPLES_DIR / "penguins.lp"))
         result = p.parseProgram()
         assert result is not None
         assert len(result) > 0
@@ -123,20 +133,22 @@ class TestParseErrors:
 
     def test_bad_syntax_raises_parse_error(self):
         from xhail.parser.parser import ParseError, Parser
+
         p = Parser()
-        p.loadString(':-.')  # bare :- with no body
+        p.loadString(":-.")  # bare :- with no body
         with pytest.raises((ParseError, Exception)):
             p.parseProgram()
 
     def test_parse_error_is_informative(self):
         """ParseError message should mention the problem token, not be empty."""
         from xhail.parser.parser import Parser
+
         p = Parser()
-        p.loadString('this is not valid %%%')
+        p.loadString("this is not valid %%%")
         try:
             p.parseProgram()
         except Exception as exc:
-            assert str(exc) != ''
+            assert str(exc) != ""
 
 
 class TestConstraintSyntax:
@@ -145,8 +157,9 @@ class TestConstraintSyntax:
     def test_implies_constraint(self):
         from xhail.language.terms import Constraint
         from xhail.parser.parser import Parser
+
         p = Parser()
-        p.loadString(':- penguin(X).')
+        p.loadString(":- penguin(X).")
         result = p.parseProgram()
         assert len(result) == 1
         assert isinstance(result[0], Constraint)
@@ -155,8 +168,9 @@ class TestConstraintSyntax:
         """Backward-compat: 'not body.' constraint form must still parse."""
         from xhail.language.terms import Constraint
         from xhail.parser.parser import Parser
+
         p = Parser()
-        p.loadString('not penguin(X).')
+        p.loadString("not penguin(X).")
         result = p.parseProgram()
         assert len(result) == 1
         assert isinstance(result[0], Constraint)
@@ -167,23 +181,21 @@ class TestModelInstanceState:
 
     def test_programs_are_independent(self):
         from xhail.reasoning.model import Model
+
         m1 = Model([], [], [], [], 5)
         m2 = Model([], [], [], [], 5)
-        m1.setProgram('hello.')
-        assert m2.getProgram() == '', (
-            "m2.program was contaminated by m1 — still a class attribute"
-        )
+        m1.setProgram("hello.")
+        assert m2.getProgram() == "", "m2.program was contaminated by m1 — still a class attribute"
 
     def test_kernels_are_independent(self):
         from xhail.language.terms import Atom, Clause
         from xhail.reasoning.model import Model
+
         m1 = Model([], [], [], [], 5)
         m2 = Model([], [], [], [], 5)
-        fake_clause = Clause(Atom('test', []), [])
+        fake_clause = Clause(Atom("test", []), [])
         m1.setKernel([fake_clause])
-        assert m2.getKernel() == [], (
-            "m2.kernel was contaminated by m1 — still a class attribute"
-        )
+        assert m2.getKernel() == [], "m2.kernel was contaminated by m1 — still a class attribute"
 
 
 class TestAtomStr:
@@ -191,13 +203,15 @@ class TestAtomStr:
 
     def test_zero_arity_str(self):
         from xhail.language.terms import Atom
-        a = Atom('flies', [])
-        assert str(a) == 'flies'
+
+        a = Atom("flies", [])
+        assert str(a) == "flies"
 
     def test_nonzero_arity_str(self):
         from xhail.language.terms import Atom, Normal
-        a = Atom('flies', [Normal('X')])
-        assert str(a) == 'flies(X)'
+
+        a = Atom("flies", [Normal("X")])
+        assert str(a) == "flies(X)"
 
 
 class TestNormalInstanceType:
@@ -205,10 +219,11 @@ class TestNormalInstanceType:
 
     def test_type_is_instance_attr(self):
         from xhail.language.terms import Normal
-        n1 = Normal('a')
-        n2 = Normal('b')
-        n1.setType('bird')
-        assert n2.getType() == '', (
+
+        n1 = Normal("a")
+        n2 = Normal("b")
+        n1.setType("bird")
+        assert n2.getType() == "", (
             "n2.type was contaminated by n1.setType — still a class attribute"
         )
 
@@ -216,6 +231,7 @@ class TestNormalInstanceType:
 # ---------------------------------------------------------------------------
 # Integration tests — run the full pipeline (require clingo)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 class TestGoldenOutputs:
@@ -227,25 +243,18 @@ class TestGoldenOutputs:
     """
 
     def test_penguins_learns_correct_rule(self):
-        """test.lp (penguins): should learn that all non-penguins fly."""
-        output = run_pipeline(EXAMPLES_DIR / 'test.lp')
-        assert 'flies' in output, f"Expected 'flies' in output, got:\n{output}"
-        assert 'penguin' in output, f"Expected 'penguin' in output, got:\n{output}"
+        """penguins.lp: should learn that all non-penguins fly."""
+        output = run_pipeline(EXAMPLES_DIR / "penguins.lp")
+        assert "flies" in output, f"Expected 'flies' in output, got:\n{output}"
+        assert "penguin" in output, f"Expected 'penguin' in output, got:\n{output}"
         # The canonical rule: flies(V1) :- not penguin(V1).
-        assert 'not penguin' in output, (
-            f"Expected negation-as-failure over penguin, got:\n{output}"
-        )
+        assert "not penguin" in output, f"Expected negation-as-failure over penguin, got:\n{output}"
 
     def test_traffic_learns_rules(self):
-        """josh.lp (traffic): should learn drive rules involving atlight/red/emergency."""
-        output = run_pipeline(EXAMPLES_DIR / 'josh.lp')
-        assert 'drive' in output, f"Expected 'drive' in output, got:\n{output}"
-        # At minimum, one of the two expected body predicates should appear
-        has_atlight = 'atlight' in output
-        has_emergency = 'emergency' in output
-        assert has_atlight or has_emergency, (
-            f"Expected 'atlight' or 'emergency' in learned rules, got:\n{output}"
-        )
+        """traffic.lp: should learn stop/red rule."""
+        output = run_pipeline(EXAMPLES_DIR / "traffic.lp")
+        assert "stop" in output, f"Expected 'stop' in output, got:\n{output}"
+        assert "red" in output, f"Expected 'red' in learned rule body, got:\n{output}"
 
     def test_multi_rule_heads_are_correct(self):
         """
@@ -259,7 +268,8 @@ class TestGoldenOutputs:
         mammal in rule heads (never a body predicate as a head).
         """
         from xhail import learn
-        result = learn(REPO_ROOT / 'experiments' / 'benchmarks' / 'animals.lp')
+
+        result = learn(REPO_ROOT / "experiments" / "benchmarks" / "animals.lp")
         assert result.success, "Animals benchmark should produce a hypothesis"
         for rule in result.hypothesis:
             head = rule.split(" :- ")[0].strip()
@@ -278,12 +288,7 @@ class TestGoldenOutputs:
         from xhail.reasoning.abduction import Abduction
         from xhail.reasoning.model import Model
 
-        prog = (
-            "bird(a). bird(b).\n"
-            "#modeh flies(+bird).\n"
-            "#example flies(a).\n"
-            "#example flies(b).\n"
-        )
+        prog = "bird(a). bird(b).\n#modeh flies(+bird).\n#example flies(a).\n#example flies(b).\n"
         parser = Parser()
         parser.loadString(prog)
         parser.parseProgram()
@@ -291,11 +296,11 @@ class TestGoldenOutputs:
         model = Model(EX, MH, MB, BG, 5)
         Abduction(model).runPhase()
 
-        delta = model.getDelta()   # was: AttributeError: 'Model' has no attribute 'getAtoms'
+        delta = model.getDelta()  # was: AttributeError: 'Model' has no attribute 'getAtoms'
         assert isinstance(delta, list), "getDelta() should return a list"
         assert len(delta) > 0, "getDelta() should return at least one abduced atom"
         predicates = {atom.predicate for atom in delta}
-        assert 'flies' in predicates, f"Expected 'flies' in delta predicates, got {predicates}"
+        assert "flies" in predicates, f"Expected 'flies' in delta predicates, got {predicates}"
 
 
 class TestParseModelDirectConversion:
@@ -307,12 +312,11 @@ class TestParseModelDirectConversion:
         through the PLY parser.  We mock the clingo symbol API with a
         simple stub to keep this test fast and dependency-free.
         """
-        import types
-        from xhail.reasoning.model import Model
-        from xhail.language.terms import Fact, Atom, Normal
-
         # Build a minimal stub that looks like clingo.Symbol
         import clingo as _clingo
+
+        from xhail.language.terms import Fact, Normal
+        from xhail.reasoning.model import Model
 
         def make_sym(name, args=()):
             sym = _clingo.Function(name, [_clingo.Function(a, []) for a in args])
@@ -342,7 +346,6 @@ class TestUpdateAtomTypesNested:
         (non-existent) and raised AttributeError.
         """
         from xhail.language.terms import Atom, Normal, PlaceMarker
-        from xhail.language.structures import Modeh, Modeb
         from xhail.reasoning.induction import Induction
         from xhail.reasoning.model import Model
 
@@ -352,8 +355,8 @@ class TestUpdateAtomTypesNested:
 
         # An atom whose term is itself an Atom (nested) — this exercises the
         # isinstance(term2, Atom) branch in updateAtomTypes.
-        outer_mode = Atom('outer', [Atom('inner', [PlaceMarker('+', 'thing')])])
-        outer_atom = Atom('outer', [Atom('inner', [Normal('x')])])
+        outer_mode = Atom("outer", [Atom("inner", [PlaceMarker("+", "thing")])])
+        outer_atom = Atom("outer", [Atom("inner", [Normal("x")])])
 
         # Should not raise; return (False, None) since 'inner' has no matching PlaceMarker path
         # or (True, atom) if types line up — either way, no AttributeError.

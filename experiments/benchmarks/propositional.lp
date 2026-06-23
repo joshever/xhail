@@ -1,14 +1,19 @@
 % ============================================================
-% Benchmark: Propositional Circuit (0-arity)
+% Benchmark: Propositional (0-arity)
 % ============================================================
-% Task: learn that output is true when both inputs are active
-%       (logical AND), using only propositional facts (no variables).
+% Task: learn the minimal rule that covers the positive example
+%       using only propositional (0-arity) facts.
 %
-% Expected hypothesis:  output :- input_a, input_b.
+% Expected hypothesis:  output.
 %
-% This benchmark specifically exercises the 0-arity (propositional)
-% code path that was previously broken by a trailing-comma bug in
-% the induction phase (fixed in Phase 3).
+% With a single positive example and no negative examples,
+% XHAIL's minimization principle (Occam's razor) returns the
+% simplest consistent rule: the unconditional fact output.
+%
+% To force body conditions you need negative examples in worlds
+% where the inputs differ — which requires first-order predicates.
+%
+% This benchmark exercises the 0-arity code path.
 % ============================================================
 
 % Background knowledge

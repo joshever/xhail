@@ -1,0 +1,12 @@
+# Files to include in the source distribution (sdist) beyond the defaults.
+include LICENSE README.md pyproject.toml
+
+# Benchmark examples — useful for developers cloning the repo, not shipped in wheel.
+recursive-include experiments *.lp
+
+# Exclude runtime-generated files that should never be in a release.
+exclude xhail/parser/parsetab.py
+exclude xhail/output/*.lp
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store
